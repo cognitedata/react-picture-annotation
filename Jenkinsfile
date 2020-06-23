@@ -7,7 +7,7 @@ def label = "${REPO}-${UUID.randomUUID().toString().substring(0, 5)}"
 podTemplate(
   label: label,
   containers: [containerTemplate(name: 'node',
-                                image: 'node:8',
+                                image: 'node:10',
                                 envVars: [
                                   envVar(key: 'CI', value: 'true'),
                                   envVar(key: 'NODE_PATH', value: 'src/'),
@@ -66,9 +66,6 @@ podTemplate(
       }
       stage('Check linting') {
         sh('yarn lint');
-      }
-      stage('Execute tests') {
-        sh('yarn test');
       }
       stage('Build package') {
         sh('yarn build')
