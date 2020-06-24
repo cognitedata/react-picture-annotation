@@ -48,7 +48,7 @@
     "@storybook/react": "^5.3.19",
     "@svgr/rollup": "^5.4.0",
     "@types/jest": "^25.2.3",
-    "@types/react": "^16.9.35",
+    "@types/react": "^16.9.40",
     "@types/react-dom": "^16.9.8",
     "@types/storybook__react": "^5.2.1",
     "babel-loader": "^8.1.0",
