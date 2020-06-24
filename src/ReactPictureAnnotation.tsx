@@ -1,6 +1,5 @@
 import React, { MouseEventHandler, TouchEventHandler } from "react";
 import pdfjs from "pdfjs-dist";
-// @ts-ignore
 import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import { IAnnotation } from "./Annotation";
 import { IAnnotationState } from "./annotation/AnnotationState";
