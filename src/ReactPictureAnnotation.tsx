@@ -1,5 +1,7 @@
 import React, { MouseEventHandler, TouchEventHandler } from "react";
 import pdfjs from "pdfjs-dist";
+// @ts-ignore
+import pdfjsWorker from "pdfjs-dist/build/pdf.worker.entry";
 import { IAnnotation } from "./Annotation";
 import { IAnnotationState } from "./annotation/AnnotationState";
 import { DefaultAnnotationState } from "./annotation/DefaultAnnotationState";
@@ -7,7 +9,7 @@ import DefaultInputSection from "./DefaultInputSection";
 import { IShape, IShapeBase, RectShape } from "./Shape";
 import Transformer, { ITransformer } from "./Transformer";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = pdfjsWorker;
 
 interface IReactPictureAnnotationProps {
   annotationData?: IAnnotation[];
@@ -627,7 +629,14 @@ export default class ReactPictureAnnotation extends React.Component<
     if (this._PDF_DOC) {
       const page = await this._PDF_DOC.getPage(pageNum);
       const viewport = page.getViewport({
-        scale: this.props.width / (page.view[2] / 4),
+        scale: Math.min(
+          Math.max(
+            this.props.width / (page.view[2] / 4),
+            this.props.height / (page.view[3] / 4),
+            1
+          ),
+          8
+        ),
       });
       const canvas = document.createElement("canvas");
       const ctx = canvas.getContext("2d")!;
