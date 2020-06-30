@@ -7,7 +7,7 @@ import DefaultInputSection from "./DefaultInputSection";
 import { IShape, IShapeBase, RectShape } from "./Shape";
 import Transformer, { ITransformer } from "./Transformer";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdf-hub-bundles.cogniteapp.com/dependencies/pdfjs@2.1.4/pdf.worker.js`;
+pdfjs.GlobalWorkerOptions.workerSrc = `https://cdf-hub-bundles.cogniteapp.com/dependencies/pdfjs-dist@2.4.456/build/pdf.worker.min.js`;
 
 interface IReactPictureAnnotationProps {
   annotationData?: IAnnotation[];
