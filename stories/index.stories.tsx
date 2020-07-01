@@ -114,7 +114,7 @@ storiesOf("Annotator", module)
       >(defaultAnnotations);
 
       const [selectedId, setSelectedId] = useState<string | null>("a");
-      const [page, setPage] = useState<number>(0);
+      const [page, setPage] = useState<number>(1);
 
       const onResize = () => {
         setSize({
@@ -130,7 +130,7 @@ storiesOf("Annotator", module)
         };
       }, []);
       action("onSelect");
-      let total = 0;
+      const [total, setTotal] = useState<number>(1);
       const annotationRef = React.createRef<ReactPictureAnnotation>();
       return (
         <>
@@ -147,7 +147,7 @@ storiesOf("Annotator", module)
               setSelectedId(e);
             }}
             onPDFLoaded={({ pages }) => {
-              total = pages;
+              setTotal(pages);
             }}
             pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
           />
@@ -159,13 +159,10 @@ storiesOf("Annotator", module)
               right: "50%",
             }}
           >
-            <button onClick={() => setPage(page - 1)} disabled={page === 0}>
+            <button onClick={() => setPage(page - 1)} disabled={page === 1}>
               Prev
             </button>
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={page === total - 1}
-            >
+            <button onClick={() => setPage(page + 1)} disabled={page === total}>
               Next
             </button>
           </div>
