@@ -623,7 +623,7 @@ export default class ReactPictureAnnotation extends React.Component<
     }
   };
 
-  private loadPDFPage = async (pageNum = (this.props.page || 0) + 1) => {
+  private loadPDFPage = async (pageNum = this.props.page || 1) => {
     if (this._PDF_DOC) {
       const page = await this._PDF_DOC.getPage(pageNum);
       const viewport = page.getViewport({
