@@ -28,7 +28,8 @@ interface IReactPictureAnnotationProps {
     editable: boolean,
     annotation: IAnnotation,
     onChange: (value: string) => void,
-    onDelete: () => void
+    onDelete: () => void,
+    height: number
   ) => React.ReactElement;
   onAnnotationUpdate?: (annotation: IAnnotation) => void;
   onAnnotationCreate?: (annotation: IAnnotation) => void;
@@ -98,10 +99,7 @@ export default class ReactPictureAnnotation extends React.Component<
   public pendingShapeId: string | null = null;
 
   public state = {
-    inputPosition: {
-      left: 0,
-      top: 0,
-    },
+    inputPosition: { left: 0, right: 0, maxHeight: 0 } as React.CSSProperties,
     showInput: false,
   };
   private currentAnnotationData: IAnnotation[] = [];
@@ -298,7 +296,10 @@ export default class ReactPictureAnnotation extends React.Component<
               editable,
               this.selectedItem,
               this.onInputCommentChange,
-              this.onDelete
+              this.onDelete,
+              typeof inputPosition.maxHeight! === "number"
+                ? inputPosition.maxHeight!
+                : Number(inputPosition.maxHeight!)
             )}
           </div>
         )}
