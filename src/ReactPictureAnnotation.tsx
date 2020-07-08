@@ -9,6 +9,14 @@ import Transformer, { ITransformer } from "./Transformer";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `https://cdf-hub-bundles.cogniteapp.com/dependencies/pdfjs-dist@2.4.456/build/pdf.worker.min.js`;
 
+export type RenderItemPreviewFunc = (
+  editable: boolean,
+  annotation: IAnnotation,
+  onChange: (value: string) => void,
+  onDelete: () => void,
+  height: React.CSSProperties["maxHeight"]
+) => React.ReactElement;
+
 interface IReactPictureAnnotationProps {
   annotationData?: IAnnotation[];
   selectedId?: string | null;
@@ -24,13 +32,7 @@ interface IReactPictureAnnotationProps {
   creatable?: boolean;
   hoverable?: boolean;
   drawLabel: boolean;
-  renderItemPreview: (
-    editable: boolean,
-    annotation: IAnnotation,
-    onChange: (value: string) => void,
-    onDelete: () => void,
-    height: number
-  ) => React.ReactElement;
+  renderItemPreview: RenderItemPreviewFunc;
   onAnnotationUpdate?: (annotation: IAnnotation) => void;
   onAnnotationCreate?: (annotation: IAnnotation) => void;
   onAnnotationDelete?: (annotation: IAnnotation) => void;
