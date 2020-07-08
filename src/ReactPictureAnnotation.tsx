@@ -299,9 +299,7 @@ export default class ReactPictureAnnotation extends React.Component<
               this.selectedItem,
               this.onInputCommentChange,
               this.onDelete,
-              typeof inputPosition.maxHeight! === "number"
-                ? inputPosition.maxHeight!
-                : Number(inputPosition.maxHeight!)
+              inputPosition.maxHeight
             )}
           </div>
         )}
