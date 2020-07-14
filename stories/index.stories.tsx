@@ -388,6 +388,68 @@ storiesOf("Annotator", module)
 
     return <AnnotationComponent />;
   })
+  .add("Custom Render", () => {
+    const AnnotationComponent = () => {
+      const [size, setSize] = useState({
+        width: window.innerWidth - 16,
+        height: window.innerHeight - 16,
+      });
+
+      const [annotationData, setAnnotationData] = useState<
+        IAnnotation<IShapeData>[]
+      >(
+        defaultAnnotations.map((el) => ({
+          ...el,
+          mark: {
+            ...el.mark,
+            draw: (canvas, x, y, width, height) => {
+              canvas.beginPath();
+              canvas.fillStyle = "green";
+              canvas.arc(
+                x + width / 2,
+                y + height / 2,
+                Math.min(height, width) / 2,
+                0,
+                2 * Math.PI
+              );
+              canvas.stroke();
+              canvas.fill();
+            },
+          },
+        }))
+      );
+
+      const [selectedId, setSelectedId] = useState<string | null>("a");
+
+      const onResize = () => {
+        setSize({
+          width: window.innerWidth - 16,
+          height: window.innerHeight - 16,
+        });
+      };
+
+      useEffect(() => {
+        window.addEventListener("resize", onResize);
+        return () => {
+          window.removeEventListener("resize", onResize);
+        };
+      }, []);
+
+      return (
+        <ReactPictureAnnotation
+          width={size.width}
+          height={size.height}
+          annotationData={annotationData}
+          onChange={(data) => setAnnotationData(data)}
+          selectedId={selectedId}
+          onSelect={(e) => setSelectedId(e)}
+          image="https://unsplash.it/1200/600"
+        />
+      );
+    };
+
+    return <AnnotationComponent />;
+  })
   .add("No Labels", () => {
     const AnnotationComponent = () => {
       const [size, setSize] = useState({
