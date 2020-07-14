@@ -22,6 +22,13 @@ export interface IShapeBase {
   backgroundColor?: string;
   strokeWidth?: number;
   strokeColor?: string;
+  draw?: (
+    canvas2D: CanvasRenderingContext2D,
+    x: number,
+    y: number,
+    width: number,
+    height: number
+  ) => void;
 }
 
 export interface IShapeAdjustBase extends Partial<IShapeBase> {}
@@ -137,46 +144,47 @@ export class RectShape implements IShape {
     const { mark } = this.annotationData;
     const { x, y, width, height } = calculateTruePosition(mark);
     canvas2D.save();
-
-    canvas2D.shadowBlur = 10;
-    canvas2D.shadowColor = mark.shadowColor || shapeStyle.shapeShadowStyle;
-    canvas2D.strokeStyle = mark.strokeColor || shapeStyle.shapeStrokeStyle;
-    canvas2D.lineWidth = mark.strokeWidth || 4;
-    canvas2D.strokeRect(
-      x - canvas2D.lineWidth / 2,
-      y - canvas2D.lineWidth / 2,
-      width + canvas2D.lineWidth,
-      height + canvas2D.lineWidth
-    );
-    canvas2D.restore();
-    if (selected) {
-      canvas2D.fillStyle = mark.backgroundColor || shapeStyle.shapeBackground;
-      canvas2D.fillRect(
+    if (this.annotationData.mark.draw) {
+      this.annotationData.mark.draw(canvas2D, x, y, width, height);
+    } else {
+      canvas2D.shadowBlur = 10;
+      canvas2D.shadowColor = mark.shadowColor || shapeStyle.shapeShadowStyle;
+      canvas2D.strokeStyle = mark.strokeColor || shapeStyle.shapeStrokeStyle;
+      canvas2D.lineWidth = mark.strokeWidth || 4;
+      canvas2D.strokeRect(
         x - canvas2D.lineWidth / 2,
         y - canvas2D.lineWidth / 2,
         width + canvas2D.lineWidth,
         height + canvas2D.lineWidth
       );
-    } else {
-      const { comment } = this.annotationData;
-      if (comment && drawLabel) {
-        canvas2D.font = `${shapeStyle.fontSize}px ${shapeStyle.fontFamily}`;
-        const metrics = canvas2D.measureText(comment);
-        canvas2D.save();
-        canvas2D.fillStyle = shapeStyle.fontBackground;
+      if (selected) {
+        canvas2D.fillStyle = mark.backgroundColor || shapeStyle.shapeBackground;
         canvas2D.fillRect(
-          x,
-          y,
-          metrics.width + shapeStyle.padding * 2,
-          shapeStyle.fontSize + shapeStyle.padding * 2
+          x - canvas2D.lineWidth / 2,
+          y - canvas2D.lineWidth / 2,
+          width + canvas2D.lineWidth,
+          height + canvas2D.lineWidth
         );
-        canvas2D.textBaseline = "top";
-        canvas2D.fillStyle = shapeStyle.fontColor;
-        canvas2D.fillText(
-          comment,
-          x + shapeStyle.padding,
-          y + shapeStyle.padding
-        );
+      } else {
+        const { comment } = this.annotationData;
+        if (comment && drawLabel) {
+          canvas2D.font = `${shapeStyle.fontSize}px ${shapeStyle.fontFamily}`;
+          const metrics = canvas2D.measureText(comment);
+          canvas2D.fillStyle = shapeStyle.fontBackground;
+          canvas2D.fillRect(
+            x,
+            y,
+            metrics.width + shapeStyle.padding * 2,
+            shapeStyle.fontSize + shapeStyle.padding * 2
+          );
+          canvas2D.textBaseline = "top";
+          canvas2D.fillStyle = shapeStyle.fontColor;
+          canvas2D.fillText(
+            comment,
+            x + shapeStyle.padding,
+            y + shapeStyle.padding
+          );
+        }
       }
     }
     canvas2D.restore();
