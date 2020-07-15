@@ -1,5 +1,7 @@
 import React, { MouseEventHandler, TouchEventHandler } from "react";
 import pdfjs from "pdfjs-dist";
+import { PDFDocument, rgb } from "pdf-lib";
+import parseColor from "parse-color";
 import { IAnnotation } from "./Annotation";
 import { IAnnotationState } from "./annotation/AnnotationState";
 import { DefaultAnnotationState } from "./annotation/DefaultAnnotationState";
@@ -512,6 +514,77 @@ export default class ReactPictureAnnotation extends React.Component<
       }
     }
     this.props.onLoading(false);
+  };
+
+  public downloadFile = async (
+    fileName: string,
+    drawText: boolean = true,
+    drawBox: boolean = true
+  ) => {
+    if (!this._PDF_DOC || !this.currentImageElement) {
+      return;
+    }
+    const { annotationData } = this.props;
+
+    const pdfDoc = await PDFDocument.load(await this._PDF_DOC!.getData());
+
+    // Get the first page of the document
+    const pages = pdfDoc.getPages();
+    const currentPage = pages[this.props.page ? this.props.page - 1 : 0];
+
+    // Get the width and height of the first page
+    const { width: pageWidth, height: pageHeight } = currentPage.getSize();
+    if (annotationData) {
+      annotationData.forEach((el) => {
+        const color = parseColor(el.mark.strokeColor || "grey").rgb;
+
+        let { x, y, width, height } = this.calculateShapePositionNoOffset(
+          el.mark
+        );
+
+        x = x / this.currentImageElement!.width;
+        width = width / this.currentImageElement!.width;
+        y = y / this.currentImageElement!.height;
+        height = height / this.currentImageElement!.height;
+        if (drawText) {
+          currentPage.drawText(el.comment || "annotation", {
+            x: x * pageWidth + 2,
+            y: pageHeight - (y + height) * pageHeight - 12,
+            size: 12,
+          });
+        }
+        if (drawBox) {
+          currentPage.drawRectangle({
+            x: x * pageWidth,
+            y: pageHeight - y * pageHeight,
+            width: width * pageWidth,
+            height: -height * pageHeight,
+            borderWidth: el.mark.strokeWidth || 2,
+            borderColor: rgb(color[0] / 255, color[1] / 255, color[2] / 255),
+          });
+        }
+      });
+    }
+
+    // Draw a string of text diagonally across the first page
+
+    const pdfBytes = await pdfDoc.save();
+
+    const blob = new Blob([pdfBytes], {
+      type: "application/pdf",
+    });
+
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = fileName;
+    document.body.appendChild(a);
+    a.style.display = "none";
+    a.click();
+    a.remove();
+
+    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
   };
 
   private syncAnnotationData = () => {

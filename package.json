@@ -1,13 +1,13 @@
 {
   "name": "@cognite/react-picture-annotation",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "A simple annotation component.",
   "main": "dist/index.js",
   "module": "dist/index.es.js",
   "typings": "dist/types/src/index.d.ts",
   "scripts": {
     "build": "tsc --build && rollup -c ./rollup.config.ts",
-    "storybook": "start-storybook -p 6006 --debug-webpack --no-dll",
+    "storybook": "start-storybook -p 6006  --no-dll",
     "build-storybook": "build-storybook",
     "commit": "npx git-cz",
     "precommit": "lint-staged",
@@ -42,8 +42,10 @@
     "@babel/preset-typescript": "^7.10.1",
     "@storybook/addon-a11y": "^5.3.19",
     "@storybook/addon-actions": "^5.3.19",
+    "@storybook/addon-essentials": "^5.3.19",
     "@storybook/addon-info": "^5.3.19",
     "@storybook/addon-links": "^5.3.19",
+    "@storybook/addon-storysource": "^5.3.19",
     "@storybook/addons": "^5.3.19",
     "@storybook/react": "^5.3.19",
     "@svgr/rollup": "^5.4.0",
@@ -52,6 +54,7 @@
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8",
     "@types/storybook__react": "^5.2.1",
+    "@types/styled-components": "^5.1.1",
     "babel-loader": "^8.1.0",
     "commitizen": "^4.1.2",
     "cz-conventional-changelog": "3.2.0",
@@ -83,10 +86,13 @@
     "typescript": "^3.9.5"
   },
   "dependencies": {
+    "parse-color": "^1.0.0",
+    "pdf-lib": "^1.9.0",
     "pdfjs-dist": "^2.4.456",
     "prop-types": "^15.7.2",
     "reselect": "^4.0.0",
-    "rollup-plugin-node-polyfills": "^0.2.1"
+    "rollup-plugin-node-polyfills": "^0.2.1",
+    "styled-components": "^5.1.1"
   },
   "husky": {
     "hooks": {
