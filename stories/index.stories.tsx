@@ -563,6 +563,62 @@ storiesOf("Annotator", module)
       </Wrapper>
     );
   })
+  .add("Custom Render using scale", () => {
+    const AnnotationComponent = () => {
+      const [size, setSize] = useState({
+        width: window.innerWidth - 16,
+        height: window.innerHeight - 16,
+      });
+
+      const [annotationData, setAnnotationData] = useState<
+        IAnnotation<IShapeData>[]
+      >(
+        defaultAnnotations.map((el) => ({
+          ...el,
+          mark: {
+            ...el.mark,
+            draw: (canvas, x, y, w, h, scale) => {
+              const fontSize = 16 * (scale || 0);
+              canvas.font = `${fontSize}px verdana`;
+
+              canvas.fillStyle = "black";
+              canvas.fillText("Scaled text", x, y);
+            },
+          },
+        }))
+      );
+
+      const [selectedId, setSelectedId] = useState<string | null>("a");
+
+      const onResize = () => {
+        setSize({
+          width: window.innerWidth - 16,
+          height: window.innerHeight - 16,
+        });
+      };
+
+      useEffect(() => {
+        window.addEventListener("resize", onResize);
+        return () => {
+          window.removeEventListener("resize", onResize);
+        };
+      }, []);
+
+      return (
+        <ReactPictureAnnotation
+          width={size.width}
+          height={size.height}
+          annotationData={annotationData}
+          onChange={(data) => setAnnotationData(data)}
+          selectedId={selectedId}
+          onSelect={(e) => setSelectedId(e)}
+          image="https://unsplash.it/1200/600"
+        />
+      );
+    };
+
+    return <AnnotationComponent />;
+  })
   .add("Buttons", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,

@@ -27,7 +27,8 @@ export interface IShapeBase {
     x: number,
     y: number,
     width: number,
-    height: number
+    height: number,
+    scale: number
   ) => void;
 }
 
@@ -54,7 +55,8 @@ export interface IShape {
     canvas2D: CanvasRenderingContext2D,
     calculateTruePosition: (shapeData: IShapeBase) => IShapeBase,
     selected: boolean,
-    drawLabel: boolean
+    drawLabel: boolean,
+    scale: number
   ) => IShapeBase;
   getAnnotationData: () => IAnnotation;
   adjustMark: (adjustBase: IShapeAdjustBase) => void;
@@ -139,13 +141,14 @@ export class RectShape implements IShape {
     canvas2D: CanvasRenderingContext2D,
     calculateTruePosition: (shapeData: IShapeBase) => IShapeBase,
     selected: boolean,
-    drawLabel: boolean
+    drawLabel: boolean,
+    scale: number
   ) => {
     const { mark } = this.annotationData;
     const { x, y, width, height } = calculateTruePosition(mark);
     canvas2D.save();
     if (this.annotationData.mark.draw) {
-      this.annotationData.mark.draw(canvas2D, x, y, width, height);
+      this.annotationData.mark.draw(canvas2D, x, y, width, height, scale);
     } else {
       canvas2D.shadowBlur = 10;
       canvas2D.shadowColor = mark.shadowColor || shapeStyle.shapeShadowStyle;
