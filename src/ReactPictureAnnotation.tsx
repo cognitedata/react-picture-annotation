@@ -641,7 +641,10 @@ export default class ReactPictureAnnotation extends React.Component<
           }
 
           const noXYRotate = !(pageRotation === 90 || pageRotation === 270);
-
+          if (el.mark.draw) {
+            // We drew this using the code above - skip
+            return;
+          }
           if (!!el.comment && drawText) {
             currentPage.drawText(el.comment, {
               x:
