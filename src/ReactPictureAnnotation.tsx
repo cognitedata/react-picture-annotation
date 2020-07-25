@@ -534,26 +534,117 @@ export default class ReactPictureAnnotation extends React.Component<
     const pages = pdfDoc.getPages();
     const pageNum = this.props.page ? this.props.page - 1 : 0;
     const currentPage = pages[pageNum];
-
     const fontSize = 12;
     const pageRotation = this.getPageRotation(currentPage) % 360;
+    const { canvas: testCanvas, ctx: testCtx } = this.createContext(
+      await this._PDF_DOC!.getPage(pageNum + 1)
+    );
+
+    const fontsize = 96;
+    const fontface = "verdana";
+
+    testCtx.font = fontsize + "px " + fontface;
+
+    testCtx.textAlign = "left";
+    testCtx.textBaseline = "top";
+    testCtx.fillStyle = "blue";
+    testCtx.fillRect(0, 0, 100, fontsize + 4);
+    testCtx.fillStyle = "white";
+    testCtx.fillText("hello", 2, 2);
+
+    const pData = await new Promise((resolve) => {
+      testCanvas.toBlob((blob) => {
+        blob?.arrayBuffer().then(resolve);
+      }, "image/jpg");
+    });
+
+    // @ts-ignore;
+    const pImage = await pdfDoc.embedPng(pData);
+
+    currentPage.drawImage(pImage, {
+      x: 500,
+      y: 500,
+      width: 100,
+      height: 300,
+    });
 
     // Get the width and height of the first page
     const { width: pageWidth, height: pageHeight } = currentPage.getSize();
+
+    const bCanvas = document.createElement("canvas");
+    const bCtx = bCanvas.getContext("2d")!;
+
+    bCanvas.width = pageWidth;
+    bCanvas.height = pageHeight;
+
+    bCtx.strokeStyle = "red";
+    bCtx.strokeRect(5, 5, pageWidth - 10, pageHeight - 10);
+
+    const allDrawAnnotations = (annotationData || []).filter(
+      (el) => el.mark.draw
+    );
+    // bCtx.rotate(pageRotation * (Math.PI / 180));
+    allDrawAnnotations.forEach((el) => {
+      if (el.mark.draw) {
+        const { x, y } = this.calculateShapePositionNoOffset(el.mark);
+        console.log(1, x, y);
+        const drawX = (x / this.currentImageElement?.height) * pageWidth;
+        const drawY = (y / this.currentImageElement?.width) * pageHeight;
+        console.log("2", drawX, drawY);
+        const nextX = pageWidth - drawY;
+        const nextY = drawX;
+        console.log(3, nextX, nextY);
+        bCtx.save();
+        bCtx.translate(nextX, nextY);
+        bCtx.rotate(((360 - pageRotation) * Math.PI) / 180);
+        bCtx.translate(-nextX, -nextY);
+        el.mark.draw(
+          bCtx,
+          nextX,
+          nextY,
+          pageWidth,
+          pageHeight,
+          this.scaleState.scale * 2
+        );
+        bCtx.restore();
+      }
+    });
+
+    const bData = await new Promise((resolve) => {
+      bCanvas.toBlob((blob) => {
+        blob?.arrayBuffer().then(resolve);
+      }, "image/jpg");
+    });
+
+    // @ts-ignore;
+    const bImage = await pdfDoc.embedPng(bData);
+
+    currentPage.drawImage(bImage, {
+      x: 0,
+      y: 0,
+      width: pageWidth,
+      height: pageHeight,
+    });
+
     if (annotationData) {
       await Promise.all(
         annotationData.map(async (el) => {
-          const color = parseColor(el.mark.strokeColor || "grey").rgb;
+          const color = parseColor(el.mark.strokeColor || "blue").rgb;
 
           let { x, y, width, height } = this.calculateShapePositionNoOffset(
             el.mark
           );
-
-          x = x / this.currentImageElement!.width;
+          const {
+            x: staticX,
+            y: staticY,
+          } = this.calculateShapePositionNoOffset(el.mark);
+          console.log("a", this.calculateShapePositionNoOffset(el.mark));
+          console.log(pageWidth, this.currentImageElement?.width);
+          x = x / this.currentImageElement?.width;
           width = width / this.currentImageElement!.width;
-          y = y / this.currentImageElement!.height;
+          y = y / this.currentImageElement?.height;
           height = height / this.currentImageElement!.height;
-
+          console.log("pct", x, y);
           // rotations are dumb!
           // const rotationRads = pageRotation * Math.PI / 180;
 
@@ -595,29 +686,30 @@ export default class ReactPictureAnnotation extends React.Component<
 
           const noXYRotate = !(pageRotation === 90 || pageRotation === 270);
           if (el.mark.draw) {
-            const { scale } = this.scaleState;
-
-            const { canvas, ctx } = this.createContext(
-              await this._PDF_DOC!.getPage(pageNum + 1)
-            );
-            el.mark.draw(
-              ctx,
-              0,
-              0,
-              width * pageWidth,
-              height * pageHeight,
-              scale
-            );
-
-            const jpegData = canvas.toDataURL("image/jpeg");
-            const jpgImage = await pdfDoc.embedJpg(jpegData);
-
-            currentPage.drawImage(jpgImage, {
-              x: (drawX + (noXYRotate ? 0 : width)) * pageWidth,
-              y: (drawY + (noXYRotate ? -height : 0)) * pageHeight,
-              width: width * pageWidth,
-              height: height * pageHeight,
-            });
+            // const { scale } = this.scaleState;
+            // const { canvas, ctx } = this.createContext(
+            //   await this._PDF_DOC!.getPage(pageNum + 1)
+            // );
+            // el.mark.draw(ctx, 0, 0, 200, 200, 4);
+            // el.mark.draw(ctx, 0, 0, 200, 200, 4);
+            // ctx.rotate(10 * (Math.PI / 180));
+            // el.mark.draw(ctx, 0, 0, 200, 200, 4);
+            // const pngData = await new Promise((resolve) => {
+            //   canvas.toBlob((bl) => {
+            //     bl?.arrayBuffer().then(resolve);
+            //   });
+            // });
+            // // const jpegData = canvas.toDataURL("image/jpeg");
+            // // @ts-ignore
+            // const pngImage = await pdfDoc.embedPng(pngData);
+            // console.log(pageRotation, x * pageWidth, y * pageHeight);
+            // console.log(staticX, staticY);
+            // currentPage.drawImage(pngImage, {
+            //   x: 0,
+            //   y: 0,
+            //   width: 200,
+            //   height: 200,
+            // });
           } else {
             if (!!el.comment && drawText) {
               currentPage.drawText(el.comment, {
