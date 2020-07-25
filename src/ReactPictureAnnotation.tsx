@@ -536,37 +536,6 @@ export default class ReactPictureAnnotation extends React.Component<
     const currentPage = pages[pageNum];
     const fontSize = 12;
     const pageRotation = this.getPageRotation(currentPage) % 360;
-    const { canvas: testCanvas, ctx: testCtx } = this.createContext(
-      await this._PDF_DOC!.getPage(pageNum + 1)
-    );
-
-    const fontsize = 96;
-    const fontface = "verdana";
-
-    testCtx.font = fontsize + "px " + fontface;
-
-    testCtx.textAlign = "left";
-    testCtx.textBaseline = "top";
-    testCtx.fillStyle = "blue";
-    testCtx.fillRect(0, 0, 100, fontsize + 4);
-    testCtx.fillStyle = "white";
-    testCtx.fillText("hello", 2, 2);
-
-    const pData = await new Promise((resolve) => {
-      testCanvas.toBlob((blob) => {
-        blob?.arrayBuffer().then(resolve);
-      }, "image/jpg");
-    });
-
-    // @ts-ignore;
-    const pImage = await pdfDoc.embedPng(pData);
-
-    currentPage.drawImage(pImage, {
-      x: 500,
-      y: 500,
-      width: 100,
-      height: 300,
-    });
 
     // Get the width and height of the first page
     const { width: pageWidth, height: pageHeight } = currentPage.getSize();
@@ -577,23 +546,17 @@ export default class ReactPictureAnnotation extends React.Component<
     bCanvas.width = pageWidth;
     bCanvas.height = pageHeight;
 
-    bCtx.strokeStyle = "red";
-    bCtx.strokeRect(5, 5, pageWidth - 10, pageHeight - 10);
-
     const allDrawAnnotations = (annotationData || []).filter(
       (el) => el.mark.draw
     );
-    // bCtx.rotate(pageRotation * (Math.PI / 180));
+
     allDrawAnnotations.forEach((el) => {
       if (el.mark.draw) {
         const { x, y } = this.calculateShapePositionNoOffset(el.mark);
-        console.log(1, x, y);
-        const drawX = (x / this.currentImageElement?.height) * pageWidth;
-        const drawY = (y / this.currentImageElement?.width) * pageHeight;
-        console.log("2", drawX, drawY);
+        const drawX = (x / (this.currentImageElement?.height || 1)) * pageWidth;
+        const drawY = (y / (this.currentImageElement?.width || 1)) * pageHeight;
         const nextX = pageWidth - drawY;
         const nextY = drawX;
-        console.log(3, nextX, nextY);
         bCtx.save();
         bCtx.translate(nextX, nextY);
         bCtx.rotate(((360 - pageRotation) * Math.PI) / 180);
@@ -611,13 +574,12 @@ export default class ReactPictureAnnotation extends React.Component<
     });
 
     const bData = await new Promise((resolve) => {
-      bCanvas.toBlob((blob) => {
-        blob?.arrayBuffer().then(resolve);
-      }, "image/jpg");
+      bCanvas.toBlob((blb) => {
+        blb?.arrayBuffer().then(resolve);
+      });
     });
 
-    // @ts-ignore;
-    const bImage = await pdfDoc.embedPng(bData);
+    const bImage = await pdfDoc.embedPng(bData as ArrayBuffer);
 
     currentPage.drawImage(bImage, {
       x: 0,
@@ -634,17 +596,11 @@ export default class ReactPictureAnnotation extends React.Component<
           let { x, y, width, height } = this.calculateShapePositionNoOffset(
             el.mark
           );
-          const {
-            x: staticX,
-            y: staticY,
-          } = this.calculateShapePositionNoOffset(el.mark);
-          console.log("a", this.calculateShapePositionNoOffset(el.mark));
-          console.log(pageWidth, this.currentImageElement?.width);
-          x = x / this.currentImageElement?.width;
+
+          x = x / (this.currentImageElement?.width || 1);
           width = width / this.currentImageElement!.width;
-          y = y / this.currentImageElement?.height;
+          y = y / (this.currentImageElement?.height || 1);
           height = height / this.currentImageElement!.height;
-          console.log("pct", x, y);
           // rotations are dumb!
           // const rotationRads = pageRotation * Math.PI / 180;
 
@@ -685,58 +641,28 @@ export default class ReactPictureAnnotation extends React.Component<
           }
 
           const noXYRotate = !(pageRotation === 90 || pageRotation === 270);
-          if (el.mark.draw) {
-            // const { scale } = this.scaleState;
-            // const { canvas, ctx } = this.createContext(
-            //   await this._PDF_DOC!.getPage(pageNum + 1)
-            // );
-            // el.mark.draw(ctx, 0, 0, 200, 200, 4);
-            // el.mark.draw(ctx, 0, 0, 200, 200, 4);
-            // ctx.rotate(10 * (Math.PI / 180));
-            // el.mark.draw(ctx, 0, 0, 200, 200, 4);
-            // const pngData = await new Promise((resolve) => {
-            //   canvas.toBlob((bl) => {
-            //     bl?.arrayBuffer().then(resolve);
-            //   });
-            // });
-            // // const jpegData = canvas.toDataURL("image/jpeg");
-            // // @ts-ignore
-            // const pngImage = await pdfDoc.embedPng(pngData);
-            // console.log(pageRotation, x * pageWidth, y * pageHeight);
-            // console.log(staticX, staticY);
-            // currentPage.drawImage(pngImage, {
-            //   x: 0,
-            //   y: 0,
-            //   width: 200,
-            //   height: 200,
-            // });
-          } else {
-            if (!!el.comment && drawText) {
-              currentPage.drawText(el.comment, {
-                x:
-                  (drawX + (noXYRotate ? 0 : width)) * pageWidth +
-                  (noXYRotate ? 2 : -fontSize),
-                y:
-                  (drawY + (noXYRotate ? -height : 0)) * pageHeight +
-                  (noXYRotate ? -fontSize : -2),
-                size: fontSize,
-                rotate: degrees(pageRotation),
-              });
-            }
-            if (drawBox) {
-              currentPage.drawRectangle({
-                x: drawX * pageWidth,
-                y: drawY * pageHeight,
-                width: width * pageWidth,
-                height: -height * pageHeight,
-                borderWidth: el.mark.strokeWidth || 2,
-                borderColor: rgb(
-                  color[0] / 255,
-                  color[1] / 255,
-                  color[2] / 255
-                ),
-              });
-            }
+
+          if (!!el.comment && drawText) {
+            currentPage.drawText(el.comment, {
+              x:
+                (drawX + (noXYRotate ? 0 : width)) * pageWidth +
+                (noXYRotate ? 2 : -fontSize),
+              y:
+                (drawY + (noXYRotate ? -height : 0)) * pageHeight +
+                (noXYRotate ? -fontSize : -2),
+              size: fontSize,
+              rotate: degrees(pageRotation),
+            });
+          }
+          if (drawBox) {
+            currentPage.drawRectangle({
+              x: drawX * pageWidth,
+              y: drawY * pageHeight,
+              width: width * pageWidth,
+              height: -height * pageHeight,
+              borderWidth: el.mark.strokeWidth || 2,
+              borderColor: rgb(color[0] / 255, color[1] / 255, color[2] / 255),
+            });
           }
         })
       );
