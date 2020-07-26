@@ -521,7 +521,8 @@ export default class ReactPictureAnnotation extends React.Component<
   public downloadFile = async (
     fileName: string,
     drawText: boolean = true,
-    drawBox: boolean = true
+    drawBox: boolean = true,
+    immediateDownload: boolean = true
   ) => {
     if (!this._PDF_DOC || !this.currentImageElement) {
       return;
@@ -673,23 +674,26 @@ export default class ReactPictureAnnotation extends React.Component<
 
     // Draw a string of text diagonally across the first page
 
-    const pdfBytes = await pdfDoc.save();
+    if (!immediateDownload) {
+      const pdfBytes = await pdfDoc.save();
 
-    const blob = new Blob([pdfBytes], {
-      type: "application/pdf",
-    });
+      const blob = new Blob([pdfBytes], {
+        type: "application/pdf",
+      });
 
-    const url = window.URL.createObjectURL(blob);
+      const url = window.URL.createObjectURL(blob);
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = fileName;
-    document.body.appendChild(a);
-    a.style.display = "none";
-    a.click();
-    a.remove();
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.style.display = "none";
+      a.click();
+      a.remove();
 
-    setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
+    }
+    return pdfDoc;
   };
 
   private syncAnnotationData = () => {
