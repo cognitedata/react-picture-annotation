@@ -2,7 +2,6 @@ import { storiesOf } from "@storybook/react";
 import React, { useEffect, useState } from "react";
 import { action } from "@storybook/addon-actions";
 import styled from "styled-components";
-
 import { ReactPictureAnnotation } from "../src";
 import { IAnnotation } from "../src/Annotation";
 import { IShapeData } from "../src/Shape";

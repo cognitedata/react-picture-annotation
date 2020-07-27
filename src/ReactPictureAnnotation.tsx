@@ -336,7 +336,8 @@ export default class ReactPictureAnnotation extends React.Component<
           this.calculateShapePosition,
           isSelected,
           this.props.drawLabel,
-          scale
+          scale,
+          false
         );
 
         if (isSelected) {
@@ -598,14 +599,20 @@ export default class ReactPictureAnnotation extends React.Component<
 
           const noXYRotate = !(pageRotation === 90 || pageRotation === 270);
           if (el.mark.draw) {
+            const newX = drawX * pageWidth * DOWNLOAD_SCALE;
+            const newY = (1 - drawY) * pageHeight * DOWNLOAD_SCALE;
+            bCtx.translate(0, 0);
             bCtx.save();
+            bCtx.translate(newX, newY);
+            bCtx.rotate((-pageRotation * Math.PI) / 180);
             el.mark.draw(
               bCtx,
-              x * DOWNLOAD_SCALE * pageWidth,
-              y * DOWNLOAD_SCALE * pageHeight,
-              width * pageWidth,
-              height * pageHeight,
-              this.scaleState.scale * 2 * DOWNLOAD_SCALE
+              0,
+              0,
+              width * pageWidth * DOWNLOAD_SCALE,
+              height * pageHeight * DOWNLOAD_SCALE,
+              this.scaleState.scale * 2 * DOWNLOAD_SCALE,
+              true
             );
             bCtx.restore();
             return;
@@ -635,6 +642,7 @@ export default class ReactPictureAnnotation extends React.Component<
         })
       );
     }
+    document.body.append(bCanvas);
 
     // draw custom ones
     if (drawCustom) {
