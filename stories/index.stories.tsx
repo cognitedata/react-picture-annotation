@@ -6,7 +6,6 @@ import styled from "styled-components";
 import { ReactPictureAnnotation } from "../src";
 import { IAnnotation } from "../src/Annotation";
 import { IShapeData } from "../src/Shape";
-import examplePdf from "./ASAAY-04-00003-0015.pdf";
 
 const defaultAnnotations = [
   {
@@ -750,28 +749,44 @@ storiesOf("Annotator", module)
     const [annotationData, setAnnotationData] = useState<
       IAnnotation<IShapeData>[]
     >(
-      defaultAnnotations.map((el) => ({
-        ...el,
-        mark: {
-          ...el.mark,
-          draw: (ctx, x, y, _, _2, scale) => {
-            console.log("hello?", ctx, x, y, _, _2, scale);
-            const fontsize = scale * 28;
-            const fontface = "verdana";
-            const text = "Hello!";
+      defaultAnnotations
+        .map(
+          (el, i) =>
+            ({
+              ...el,
+              mark: {
+                ...el.mark,
+                draw: (ctx, x, y, _, _2, scale) => {
+                  const fontsize = scale * 28;
+                  const fontface = "verdana";
+                  const text = `Hello! - ${i}`;
 
-            ctx.font = fontsize + "px " + fontface;
-            const textWidth = ctx.measureText(text).width + 8;
+                  ctx.font = fontsize + "px " + fontface;
+                  const textWidth = ctx.measureText(text).width + 8;
 
-            ctx.textAlign = "left";
-            ctx.textBaseline = "top";
-            ctx.fillStyle = "red";
-            ctx.fillRect(x, y, textWidth, fontsize + 4);
-            ctx.fillStyle = "white";
-            ctx.fillText(text, x + 4, y + 2);
-          },
-        },
-      }))
+                  ctx.textAlign = "left";
+                  ctx.textBaseline = "top";
+                  ctx.fillStyle = "red";
+                  ctx.fillRect(x, y, textWidth, fontsize + 4);
+                  ctx.fillStyle = "white";
+                  ctx.fillText(text, x + 4, y + 2);
+                },
+              },
+            } as IAnnotation<IShapeData>)
+        )
+        .concat([
+          {
+            id: "additional",
+            comment: "Hello World2",
+            mark: {
+              type: "RECT",
+              width: 0.2,
+              height: 0.3,
+              x: 0.1,
+              y: 0.25,
+            },
+          } as IAnnotation<IShapeData>,
+        ])
     );
 
     const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -804,7 +819,7 @@ storiesOf("Annotator", module)
             setSelectedId(e);
             action("onSelect")(e);
           }}
-          pdf={examplePdf}
+          pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
           ref={annotationRef}
         />
         <div style={{ position: "absolute", zIndex: 1000 }}>

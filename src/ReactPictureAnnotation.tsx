@@ -522,6 +522,7 @@ export default class ReactPictureAnnotation extends React.Component<
     fileName: string,
     drawText: boolean = true,
     drawBox: boolean = true,
+    drawCustom: boolean = true,
     immediateDownload: boolean = true
   ) => {
     if (!this._PDF_DOC || !this.currentImageElement) {
@@ -541,53 +542,13 @@ export default class ReactPictureAnnotation extends React.Component<
     // Get the width and height of the first page
     const { width: pageWidth, height: pageHeight } = currentPage.getSize();
 
+    const DOWNLOAD_SCALE = 4;
+
     const bCanvas = document.createElement("canvas");
     const bCtx = bCanvas.getContext("2d")!;
 
-    bCanvas.width = pageWidth;
-    bCanvas.height = pageHeight;
-
-    const allDrawAnnotations = (annotationData || []).filter(
-      (el) => el.mark.draw
-    );
-
-    allDrawAnnotations.forEach((el) => {
-      if (el.mark.draw) {
-        const { x, y } = this.calculateShapePositionNoOffset(el.mark);
-        const drawX = (x / (this.currentImageElement?.height || 1)) * pageWidth;
-        const drawY = (y / (this.currentImageElement?.width || 1)) * pageHeight;
-        const nextX = pageWidth - drawY;
-        const nextY = drawX;
-        bCtx.save();
-        bCtx.translate(nextX, nextY);
-        bCtx.rotate(((360 - pageRotation) * Math.PI) / 180);
-        bCtx.translate(-nextX, -nextY);
-        el.mark.draw(
-          bCtx,
-          nextX,
-          nextY,
-          pageWidth,
-          pageHeight,
-          this.scaleState.scale * 2
-        );
-        bCtx.restore();
-      }
-    });
-
-    const bData = await new Promise((resolve) => {
-      bCanvas.toBlob((blb) => {
-        blb?.arrayBuffer().then(resolve);
-      });
-    });
-
-    const bImage = await pdfDoc.embedPng(bData as ArrayBuffer);
-
-    currentPage.drawImage(bImage, {
-      x: 0,
-      y: 0,
-      width: pageWidth,
-      height: pageHeight,
-    });
+    bCanvas.width = pageWidth * DOWNLOAD_SCALE;
+    bCanvas.height = pageHeight * DOWNLOAD_SCALE;
 
     if (annotationData) {
       await Promise.all(
@@ -603,18 +564,12 @@ export default class ReactPictureAnnotation extends React.Component<
           y = y / (this.currentImageElement?.height || 1);
           height = height / this.currentImageElement!.height;
           // rotations are dumb!
-          // const rotationRads = pageRotation * Math.PI / 180;
 
           // These coords are now from bottom/left
           const coordsFromBottomLeft: { x: number; y: number } = {
             x,
             y: 1 - y,
           };
-          // if(pageRotation === 90 || pageRotation === 270){
-          //   coordsFromBottomLeft.y = width - ((y + fontSize) / this.currentImageElement!.height);
-          // } else{
-          //   coordsFromBottomLeft.y = height - ((y + fontSize) / this.currentImageElement!.height);
-          // }
 
           let drawX = null;
           let drawY = null;
@@ -643,7 +598,16 @@ export default class ReactPictureAnnotation extends React.Component<
 
           const noXYRotate = !(pageRotation === 90 || pageRotation === 270);
           if (el.mark.draw) {
-            // We drew this using the code above - skip
+            bCtx.save();
+            el.mark.draw(
+              bCtx,
+              x * DOWNLOAD_SCALE * pageWidth,
+              y * DOWNLOAD_SCALE * pageHeight,
+              width * pageWidth,
+              height * pageHeight,
+              this.scaleState.scale * 2 * DOWNLOAD_SCALE
+            );
+            bCtx.restore();
             return;
           }
           if (!!el.comment && drawText) {
@@ -672,9 +636,27 @@ export default class ReactPictureAnnotation extends React.Component<
       );
     }
 
+    // draw custom ones
+    if (drawCustom) {
+      const bData = await new Promise((resolve) => {
+        bCanvas.toBlob((blb) => {
+          blb?.arrayBuffer().then(resolve);
+        });
+      });
+
+      const bImage = await pdfDoc.embedPng(bData as ArrayBuffer);
+
+      currentPage.drawImage(bImage, {
+        x: 0,
+        y: 0,
+        width: pageWidth,
+        height: pageHeight,
+      });
+    }
+
     // Draw a string of text diagonally across the first page
 
-    if (!immediateDownload) {
+    if (immediateDownload) {
       const pdfBytes = await pdfDoc.save();
 
       const blob = new Blob([pdfBytes], {
