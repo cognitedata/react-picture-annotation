@@ -40,6 +40,7 @@ interface IReactPictureAnnotationProps {
   onAnnotationDelete?: (annotation: IAnnotation) => void;
   onPDFLoaded?: (props: { pages: number }) => void;
   onLoading: (loading: boolean) => void;
+  onReady?: (element: ReactPictureAnnotation) => void;
 }
 
 interface IStageState {
@@ -508,6 +509,9 @@ export default class ReactPictureAnnotation extends React.Component<
     } else {
       nextImageNode.addEventListener("load", () => {
         this.currentImageElement = nextImageNode;
+        if (this.props.onReady) {
+          this.props.onReady(this);
+        }
         loadProperDimentions();
       });
       nextImageNode.alt = "";
