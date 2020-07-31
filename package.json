@@ -49,7 +49,7 @@
     "@storybook/addons": "^5.3.19",
     "@storybook/react": "^5.3.19",
     "@svgr/rollup": "^5.4.0",
-    "@types/jest": "^26.0.5",
+    "@types/jest": "^26.0.8",
     "@types/pdfjs-dist": "^2.1.5",
     "@types/react": "^16.9.43",
     "@types/react-dom": "^16.9.8",
