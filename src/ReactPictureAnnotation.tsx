@@ -616,7 +616,7 @@ export default class ReactPictureAnnotation extends React.Component<
               0,
               width * pageWidth * DOWNLOAD_SCALE,
               height * pageHeight * DOWNLOAD_SCALE,
-              this.scaleState.scale * 2 * DOWNLOAD_SCALE,
+              1,
               true
             );
             bCtx.restore();
