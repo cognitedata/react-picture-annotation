@@ -86,7 +86,7 @@
   },
   "dependencies": {
     "parse-color": "^1.0.0",
-    "pdf-lib": "^1.9.0",
+    "pdf-lib": "^1.10.0",
     "pdfjs-dist": "^2.4.456",
     "prop-types": "^15.7.2",
     "reselect": "^4.0.0",
