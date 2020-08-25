@@ -46,7 +46,7 @@
     "@semantic-release/github": "^7.0.7",
     "@semantic-release/npm": "^7.0.5",
     "@semantic-release/release-notes-generator": "^9.0.1",
-    "@storybook/addon-a11y": "^6.0.15",
+    "@storybook/addon-a11y": "^6.0.17",
     "@storybook/addon-actions": "^6.0.15",
     "@storybook/addon-essentials": "^6.0.15",
     "@storybook/addon-info": "^5.3.19",
