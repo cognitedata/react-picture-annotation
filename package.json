@@ -63,7 +63,7 @@
     "@types/styled-components": "^5.1.2",
     "babel-loader": "^8.1.0",
     "commitizen": "^4.2.1",
-    "cz-conventional-changelog": "3.2.1",
+    "cz-conventional-changelog": "3.3.0",
     "husky": "^4.2.5",
     "jest": "^26.4.2",
     "lint-staged": "^10.2.9",
