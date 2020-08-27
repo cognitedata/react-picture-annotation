@@ -67,7 +67,7 @@
     "husky": "^4.2.5",
     "jest": "^26.4.2",
     "lint-staged": "^10.2.9",
-    "prettier": "^2.0.5",
+    "prettier": "^2.1.1",
     "react-docgen-typescript-loader": "^3.7.2",
     "rollup": "^2.26.5",
     "rollup-plugin-babel": "^4.3.2",
