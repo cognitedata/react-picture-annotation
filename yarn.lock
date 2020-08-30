@@ -14184,10 +14184,10 @@ rollup-plugin-peer-deps-external@^2.2.3:
   resolved "https://registry.yarnpkg.com/rollup-plugin-peer-deps-external/-/rollup-plugin-peer-deps-external-2.2.3.tgz#059a8aec1eefb48a475e9fcedc3b9e3deb521213"
   integrity sha512-W6IePXTExGXVDAlfZbNUUrx3GxUOZP248u5n4a4ID1XZMrbQ+uGeNiEfapvdzwx0qZi5DNH/hDLiPUP+pzFIxg==
 
-rollup-plugin-postcss@^3.1.5:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/rollup-plugin-postcss/-/rollup-plugin-postcss-3.1.5.tgz#4bcc19a7f95ab8fb17fb0ca59080fe3887421db2"
-  integrity sha512-oPD3ubb1JDBwzNMca+OZUpYxyxrIw9ihhUyvEbOwzzj0rR2UEKm8GtfhFXVGDWwBGp5HIK8ss/r8vRStYDddRA==
+rollup-plugin-postcss@^3.1.7:
+  version "3.1.7"
+  resolved "https://registry.yarnpkg.com/rollup-plugin-postcss/-/rollup-plugin-postcss-3.1.7.tgz#e5c82c030bb319704b6e64efcbacd8c4f2888979"
+  integrity sha512-zArMsaZdW6MW/YivTSsZ4ASbWN9Qm+dMuSlhrQgh5JZMrxqikcm398qdgyyhSNlrOaz07JgER2o2/2+HXMoYfQ==
   dependencies:
     chalk "^4.0.0"
     concat-with-sourcemaps "^1.1.0"
