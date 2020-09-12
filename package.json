@@ -87,7 +87,7 @@
     "rollup-plugin-typescript2": "^0.27.2",
     "rollup-plugin-url": "^3.0.1",
     "semantic-release": "^17.1.1",
-    "stylelint": "^13.7.0",
+    "stylelint": "^13.7.1",
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-config-rational-order": "^0.1.2",
     "stylelint-config-standard": "^20.0.0",
