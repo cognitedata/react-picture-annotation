@@ -104,7 +104,7 @@
     "@rollup/plugin-alias": "^3.1.1",
     "@storybook/addon-knobs": "^6.0.21",
     "parse-color": "^1.0.0",
-    "pdf-lib": "^1.10.0",
+    "pdf-lib": "^1.11.0",
     "pdfjs-dist": "^2.4.456",
     "react-is": "^16.13.1",
     "reselect": "^4.0.0",
