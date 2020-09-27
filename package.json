@@ -82,7 +82,7 @@
     "react": "^16.13.1",
     "react-docgen-typescript-loader": "^3.7.2",
     "rollup": "^2.27.1",
-    "rollup-plugin-typescript2": "^0.27.2",
+    "rollup-plugin-typescript2": "^0.27.3",
     "semantic-release": "^17.1.2",
     "ts-jest": "^26.4.0",
     "tslint": "^6.1.3",
