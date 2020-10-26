@@ -11,7 +11,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - uses: rlespinasse/github-slug-action@master
+      - uses: rlespinasse/github-slug-action@1.1.1
 
       - name: Print slug variables
         run: |
