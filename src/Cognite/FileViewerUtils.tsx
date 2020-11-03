@@ -11,6 +11,25 @@ export interface ProposedCogniteAnnotation extends PendingCogniteAnnotation {
   id: string;
 }
 
+export type CustomizableCogniteAnnotation = CogniteAnnotation &
+  ProposedCogniteAnnotation & {
+    mark: {
+      backgroundColor?: string;
+      strokeColor?: string;
+      strokeWidth?: number;
+      draw?: (
+        canvas: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        width: number,
+        height: number
+      ) => void;
+    };
+  };
+
+/**
+ * If there is no allowCustomAnnotations flag, those are the colors of the annotations.
+ */
 export const selectAnnotationColor = <T extends PendingCogniteAnnotation>(
   annotation: T,
   isSelected = false
@@ -63,11 +82,12 @@ export const selectAnnotationColor = <T extends PendingCogniteAnnotation>(
 };
 
 export const convertCogniteAnnotationToIAnnotation = (
-  el: CogniteAnnotation | ProposedCogniteAnnotation,
-  isSelected = false
+  el: CustomizableCogniteAnnotation,
+  isSelected = false,
+  allowCustomAnnotations: boolean
 ) => {
   const isPending = typeof el.id === "string";
-  return {
+  const annotation = {
     id: `${el.id}`,
     comment: el.label || "No Label",
     page: el.page,
@@ -80,7 +100,20 @@ export const convertCogniteAnnotationToIAnnotation = (
       strokeWidth: 2,
       strokeColor: isPending ? "yellow" : selectAnnotationColor(el, isSelected),
     },
-  } as IAnnotation<IRectShapeData>;
+  } as any;
+
+  if (allowCustomAnnotations) {
+    if (el?.mark?.backgroundColor)
+      annotation.mark.backgroundColor = el.mark.backgroundColor;
+    if (el?.mark?.strokeColor) {
+      annotation.mark.strokeColor = el.mark.strokeColor;
+    }
+    if (el?.mark?.strokeWidth !== undefined) {
+      annotation.mark.strokeWidth = el.mark.strokeWidth;
+    }
+    if (el?.mark?.draw) annotation.mark.draw = el.mark.draw;
+  }
+  return annotation as IAnnotation<IRectShapeData>;
 };
 
 export const isSameResource = (

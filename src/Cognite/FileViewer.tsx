@@ -36,6 +36,10 @@ export type ViewerEditCallbacks = {
 
 export type ViewerProps = {
   /**
+   * If true, you can customize the color and shape of annotation boxes.
+   */
+  allowCustomAnnotations?: boolean;
+  /**
    * File will tell the viewer what file to show.
    */
   file?: FileInfo;
@@ -52,6 +56,10 @@ export type ViewerProps = {
    */
   hoverable?: boolean;
   /**
+   * Used when an annotation needs to be selected on start
+   */
+  selectedId?: string | null;
+  /**
    * Used when `disableAutoFetch` is true to supply `annotations` to display
    */
   annotations?: (CogniteAnnotation | ProposedCogniteAnnotation)[];
@@ -64,7 +72,8 @@ export type ViewerProps = {
    */
   renderAnnotation?: (
     el: CogniteAnnotation | ProposedCogniteAnnotation,
-    isSelected: boolean
+    isSelected: boolean,
+    allowCustomAnnotations: boolean
   ) => IAnnotation<IRectShapeData>;
   /**
    * Override how an annotation box is drawn on top of the file
@@ -103,6 +112,7 @@ export type ViewerProps = {
 };
 
 export const FileViewer = ({
+  allowCustomAnnotations = false,
   file: fileFromProps,
   hideLabel = true,
   hoverable = false,
@@ -113,6 +123,7 @@ export const FileViewer = ({
   renderItemPreview = () => <></>,
   creatable,
   editable,
+  selectedId,
   pagination = "normal",
   hideControls = false,
   loader,
@@ -153,12 +164,6 @@ export const FileViewer = ({
   }, [annotationsFromProps, setAnnotations]);
 
   useEffect(() => {
-    if (onAnnotationSelected) {
-      onAnnotationSelected(selectedAnnotation);
-    }
-  }, [selectedAnnotation, onAnnotationSelected]);
-
-  useEffect(() => {
     if (fileFromProps) {
       setFile(fileFromProps);
     }
@@ -169,7 +174,8 @@ export const FileViewer = ({
       annotations.map((el) =>
         renderAnnotation(
           el,
-          selectedAnnotation ? isSameResource(el, selectedAnnotation) : false
+          selectedAnnotation ? isSameResource(el, selectedAnnotation) : false,
+          !!allowCustomAnnotations
         )
       ),
     [annotations, selectedAnnotation]
@@ -214,7 +220,7 @@ export const FileViewer = ({
                 width: el.boundingBox.xMax - el.boundingBox.xMin,
                 height: el.boundingBox.yMax - el.boundingBox.yMin,
                 backgroundColor: `${Colors["midblue-4"].hex()}88`,
-                strokeWidth: 0,
+                strokeWidth: 2,
               },
               disableClick: true,
             } as IAnnotation<IRectShapeData>)
@@ -287,6 +293,10 @@ export const FileViewer = ({
     const annotation = annotations.find((el) => `${el.id}` === `${id}`);
     if (annotation) {
       setSelectedAnnotation(annotation);
+
+      if (onAnnotationSelected && id !== selectedId) {
+        onAnnotationSelected(annotation);
+      }
     }
   };
 
@@ -392,6 +402,7 @@ export const FileViewer = ({
       )}
       <ReactPictureAnnotation
         ref={annotatorRef}
+        selectedId={selectedId}
         drawLabel={!hideLabel}
         hoverable={hoverable}
         editable={editable}
