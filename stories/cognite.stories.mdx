@@ -12,6 +12,7 @@ import {
   AllowCustomization,
   AllowControlledEditing,
   SplitContextAndViewer,
+  CustomizedAnnotations,
   Playground,
 } from './cognite.stories.tsx';
 
@@ -91,6 +92,35 @@ Sometimes you want various views to also share access to the same annotations, p
 ### Available context props/hooks from `CogniteFileViewer.Context`
 
 <ArgsTable of={stubObserverObj} />
+
+## Customized annotations
+
+You can customize annotations via the advanced CogniteFileViewer. To do that, you need to pass an `allowCustomAnnotations` flag to the `<CogniteFileViewer>` component.
+
+When the `allowCustomAnnotations` flag equals `true`, you can pass an additional argument in your annotation object - `mark`. Here you can define your custom annotation shape.
+
+```
+{
+  mark: {
+    backgroundColor?: string; // this must be in hex or string format
+    strokeColor?: string;
+    strokeWidth?: number;
+    draw?: (
+      canvas: CanvasRenderingContext2D,
+      x: number,
+      y: number,
+      width: number,
+      height: number
+    ) => void;
+  }
+}
+```
+
+The `draw()` function allows you to define a canvas and draw any shape you like. Example of what the `draw()` function might look like is in the story below.
+
+<Canvas>
+  <Story story={CustomizedAnnotations} />
+</Canvas>
 
 ## Playground
 

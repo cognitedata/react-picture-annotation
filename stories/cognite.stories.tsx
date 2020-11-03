@@ -1,21 +1,28 @@
-import React, { useEffect, useState, useMemo } from 'react';
-import { action } from '@storybook/addon-actions';
-import { boolean, select } from '@storybook/addon-knobs';
-import { CogniteFileViewer, ViewerEditCallbacks } from '../src';
-import { imgSdk, imgFile, pdfFile, pdfSdk } from './utils';
+import React, { useEffect, useState, useMemo } from "react";
+import { action } from "@storybook/addon-actions";
+import { boolean, select } from "@storybook/addon-knobs";
+import { CogniteFileViewer, ViewerEditCallbacks } from "../src";
+import {
+  imgSdk,
+  imgFile,
+  imgSdkTwoAnnotations,
+  pdfFile,
+  pdfSdk,
+} from "./utils";
 import {
   listAnnotationsForFile,
   CogniteAnnotation,
-} from '@cognite/annotations';
-import { Button } from '@cognite/cogs.js';
+} from "@cognite/annotations";
+import { CustomizableCogniteAnnotation } from "./Cognite/FileViewerUtils";
+import { Button } from "@cognite/cogs.js";
 import {
   useSelectedAnnotation,
   useExtractFromCanvas,
-} from '../src/Cognite/FileViewerContext';
+} from "../src/Cognite/FileViewerContext";
 import {
   useDownloadPDF,
   useZoomControls,
-} from '../src/Cognite/FileViewerContext';
+} from "../src/Cognite/FileViewerContext";
 
 export const AllowCustomization = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
@@ -26,15 +33,15 @@ export const AllowCustomization = () => {
         annotationsFromCdf.concat([
           {
             id: 123,
-            label: 'David',
+            label: "David",
             createdTime: new Date(),
             lastUpdatedTime: new Date(),
-            type: 'tmp_annotation',
-            status: 'unhandled',
+            type: "tmp_annotation",
+            status: "unhandled",
             box: { xMin: 0.1, xMax: 0.2, yMin: 0.1, yMax: 0.2 },
             version: 5,
             page: 1,
-            source: 'tmp',
+            source: "tmp",
           },
         ])
       );
@@ -126,8 +133,8 @@ export const SplitContextAndViewer = () => {
     } = useSelectedAnnotation();
 
     return (
-      <div style={{ width: 200, background: 'white' }}>
-        <Button onClick={() => download!('testing.pdf')}>Download</Button>
+      <div style={{ width: 200, background: "white" }}>
+        <Button onClick={() => download!("testing.pdf")}>Download</Button>
         <Button onClick={() => zoomIn!()}>Zoom In</Button>
         <Button onClick={() => zoomOut!()}>Zoom Out</Button>
         <Button onClick={() => reset!()}>Reset</Button>
@@ -142,8 +149,8 @@ export const SplitContextAndViewer = () => {
         {selectedAnnotation && (
           <img
             style={{
-              objectFit: 'contain',
-              width: '100%',
+              objectFit: "contain",
+              width: "100%",
             }}
             src={extract!(
               selectedAnnotation.box.xMin,
@@ -158,11 +165,72 @@ export const SplitContextAndViewer = () => {
   };
   return (
     <CogniteFileViewer.Provider sdk={pdfSdk}>
-      <div style={{ height: '100%', width: '100%', display: 'flex' }}>
+      <div style={{ height: "100%", width: "100%", display: "flex" }}>
         <AnotherComponent />
         <CogniteFileViewer.FileViewer file={pdfFile} editable={true} />
       </div>
     </CogniteFileViewer.Provider>
+  );
+};
+
+export const CustomizedAnnotations = () => {
+  const [annotations, setAnnotations] = useState<
+    CustomizableCogniteAnnotation[]
+  >([]);
+  const mark = [
+    {
+      backgroundColor: "#ff110055",
+      strokeColor: "#26ff0055",
+      strokeWidth: 0,
+    },
+    {
+      draw: (
+        canvas: CanvasRenderingContext2D,
+        x: number,
+        y: number,
+        width: number,
+        height: number
+      ) => {
+        canvas.beginPath();
+        canvas.globalCompositeOperation = "multiply";
+        canvas.fillStyle = "#26ff0055";
+        canvas.arc(
+          x + width / 2,
+          y + height / 2,
+          Math.min(height, width) / 2,
+          0,
+          2 * Math.PI
+        );
+        canvas.stroke();
+        canvas.fill();
+      },
+    },
+  ];
+  useEffect(() => {
+    (async () => {
+      const rawAnnotations = await listAnnotationsForFile(
+        imgSdkTwoAnnotations,
+        imgFile
+      );
+      const customizedAnnotations = rawAnnotations.map(
+        (annotation: CustomizableCogniteAnnotation, index: number) => ({
+          ...annotation,
+          mark: mark[index],
+        })
+      );
+      setAnnotations(customizedAnnotations);
+    })();
+  }, [mark]);
+
+  return (
+    <CogniteFileViewer
+      sdk={imgSdk}
+      file={imgFile}
+      disableAutoFetch={true}
+      annotations={annotations}
+      editable={true}
+      allowCustomAnnotations={true}
+    />
   );
 };
 
@@ -171,13 +239,13 @@ export const Playground = () => {
     <CogniteFileViewer
       sdk={pdfSdk}
       file={pdfFile}
-      editable={boolean('Editable', false)}
-      creatable={boolean('Creatable', false)}
-      hideControls={boolean('Hide Controls', false)}
-      hideLabel={boolean('Hide Label', false)}
-      hoverable={boolean('Hoverable', false)}
-      pagination={select('Pagination', ['small', 'normal', false], 'normal')}
-      onAnnotationSelected={action('onAnnotationSelected')}
+      editable={boolean("Editable", false)}
+      creatable={boolean("Creatable", false)}
+      hideControls={boolean("Hide Controls", false)}
+      hideLabel={boolean("Hide Label", false)}
+      hoverable={boolean("Hoverable", false)}
+      pagination={select("Pagination", ["small", "normal", false], "normal")}
+      onAnnotationSelected={action("onAnnotationSelected")}
     />
   );
 };

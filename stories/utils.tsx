@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { CogniteClient } from "@cognite/sdk";
-import { response, orcResults } from "./resources";
+import { response, twoAnnotationsResponse, orcResults } from "./resources";
 import { FileViewerContextObserverPublicProps } from "../src";
 import randomId from "../src/utils/randomId";
 
@@ -21,6 +21,23 @@ export const imgFile = {
   name: "Random File",
   mimeType: "image/png",
 };
+
+export const imgSdkTwoAnnotations = ({
+  events: {
+    list: (..._: any[]) => ({
+      autoPagingToArray: async () => twoAnnotationsResponse,
+    }),
+    update: async (...annotations: any[]) =>
+      annotations.map((el) => el.annotation),
+    create: async (...annotations: any[]) =>
+      annotations.map((el) => ({ ...el, id: randomId() })),
+  },
+  post: async () => ({ data: { items: [{ annotations: orcResults }] } }),
+  files: {
+    retrieve: async () => [imgFile],
+    getDownloadUrls: async () => [{ downloadUrl: "//unsplash.it/800/400" }],
+  },
+} as unknown) as CogniteClient;
 
 export const imgSdk = ({
   events: {
