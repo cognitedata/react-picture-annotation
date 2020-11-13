@@ -12675,10 +12675,10 @@ react-addons-create-fragment@^15.6.2:
     loose-envify "^1.3.1"
     object-assign "^4.1.0"
 
-react-archer@^2.0.2:
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/react-archer/-/react-archer-2.0.2.tgz#aa7f36769d12d1610707b52e287ed57aa93f2436"
-  integrity sha512-olKb+sdqsES0KO2MQ17ziMnk+KoYUXKzpLhtyMcEjbSiLxDzDZpNYPlkFGmogEyRxvxWdvwVxlrQyWf/XDs/Aw==
+react-archer@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/react-archer/-/react-archer-3.0.0.tgz#41c92f3eae80d7e3b1aa2ce66113c46241ac6ced"
+  integrity sha512-+Uc6VyljE+nTWVproEELn1Tlv7MowXMNK7BAc4loji2+U3nTcw3neaAm8xnsNyYxByDjmsjxBR/6Z7/lfBHVig==
   dependencies:
     react-fast-compare "^2.0.4"
     resize-observer-polyfill "1.5.0"

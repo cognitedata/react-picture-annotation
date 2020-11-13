@@ -95,6 +95,16 @@ export default class ArrowBox extends React.Component<ArrowBoxProps> {
 
   render() {
     const { position, renderedArrowWithBox, annotation } = this.props;
+    const arrowStyle = {
+      endShape: {
+        circle: {
+          radius: 2,
+          fillColor: "orange",
+          strokeColor: "orange",
+          strokeWidth: 1,
+        },
+      },
+    };
     return (
       <StyledArcherContainer
         strokeColor="orange"
@@ -108,11 +118,12 @@ export default class ArrowBox extends React.Component<ArrowBoxProps> {
               targetId: `${annotation.id}-target`,
               targetAnchor: "top",
               sourceAnchor: "bottom",
+              style: arrowStyle,
             },
           ]}
         >
           <SourcePoint
-            draggable={false} // TODO temporarily disabled
+            draggable={true}
             position={{
               x: this.state.x,
               y: this.state.y,
