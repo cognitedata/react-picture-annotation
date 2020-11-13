@@ -429,7 +429,8 @@ export class ReactPictureAnnotation extends React.Component<
       }
 
       for (const item of this.shapes) {
-        const itemId = item.getAnnotationData().id;
+        const annotation = item.getAnnotationData();
+        const itemId = annotation.id;
         const isSelected = itemId === this.selectedId;
         const { scale } = this.scaleState;
         const { x, y, height, width } = item.paint(
@@ -441,7 +442,10 @@ export class ReactPictureAnnotation extends React.Component<
           false
         );
 
-        if (this.props.renderArrowPreview) {
+        if (
+          this.props.renderArrowPreview &&
+          this.props.renderArrowPreview(annotation)
+        ) {
           this.setState({
             arrowPreviewPositions: {
               ...this.state.arrowPreviewPositions,

@@ -272,10 +272,7 @@ export const BoxAndArrows = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
   useEffect(() => {
     (async () => {
-      const rawAnnotations = await listAnnotationsForFile(
-        imgSdkTwoAnnotations,
-        imgFile
-      );
+      const rawAnnotations = await listAnnotationsForFile(imgSdk, imgFile);
       setAnnotations(rawAnnotations);
     })();
   }, []);
@@ -320,14 +317,13 @@ export const BoxAndArrows = () => {
       annotations={annotations}
       onAnnotationSelected={action("onAnnotationSelected")}
       renderArrowPreview={(annotation: any) => {
-        if (annotation.id === "1111") {
+        if (annotation.id === "352749521886257")
           return (
             <BoxWrapper>
               <PreviewBox>13</PreviewBox>
               <PreviewBox color="cyan">22</PreviewBox>
             </BoxWrapper>
           );
-        }
         return undefined;
       }}
       renderItemPreview={(anno) => (
