@@ -14,8 +14,6 @@ import { PDFPageProxy, PDFDocumentProxy } from "pdfjs-dist/types/display/api";
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
 import ArrowBox from "./ArrowBox";
 
-pdfjs.GlobalWorkerOptions.workerSrc = `https://cdf-hub-bundles.cogniteapp.com/dependencies/pdfjs-dist@2.4.456/build/pdf.worker.min.js`;
-
 export type RenderItemPreviewFunction = (
   annotation: IAnnotation,
   height: React.CSSProperties["maxHeight"]
