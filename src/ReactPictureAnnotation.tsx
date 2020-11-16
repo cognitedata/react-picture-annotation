@@ -170,13 +170,21 @@ export class ReactPictureAnnotation extends React.Component<
   public componentDidUpdate = async (
     prevProps: IReactPictureAnnotationProps
   ) => {
-    const { width, height, image, pdf, page, annotationData } = this.props;
+    const {
+      width,
+      height,
+      image,
+      pdf,
+      page,
+      renderArrowPreview,
+      annotationData,
+    } = this.props;
     if (prevProps.width !== width || prevProps.height !== height) {
       this.setCanvasDPI();
       this.onShapeChange();
       this.onImageChange();
     }
-    if (!isEqual(prevProps.annotationData, annotationData)) {
+    if (!isEqual(prevProps.renderArrowPreview, renderArrowPreview)) {
       this.loadArrowPreviews();
     }
     if (prevProps.pdf !== pdf) {
@@ -292,18 +300,24 @@ export class ReactPictureAnnotation extends React.Component<
   };
 
   public loadArrowPreviews = () => {
-    const newArrowPreviewPositions = [];
-    for (const annotation in this.props.annotationData) {
-      newArrowPreviewPositions[this.props.annotationData[annotation].id] = {
-        x: 0,
-        y: 0,
+    const newArrowPreviewPositions = {};
+    const annotations = this.props.annotationData;
+    for (const annotation in annotations) {
+      const oldAnnotationPosition = this.state.arrowPreviewPositions[
+        annotations[annotation]?.id
+      ];
+      newArrowPreviewPositions[annotations[annotation].id] = {
+        x: oldAnnotationPosition?.x ?? 0,
+        y: oldAnnotationPosition?.y ?? 0,
       };
     }
-    this.setState({
-      annotationsLoaded: true,
-      arrowPreviewPositions: newArrowPreviewPositions,
-    });
-    this.onShapeChange();
+    this.setState(
+      {
+        annotationsLoaded: true,
+        arrowPreviewPositions: newArrowPreviewPositions,
+      },
+      this.onShapeChange
+    );
   };
 
   public updateBoxPosition = (id: number, offsetX: number, offsetY: number) => {
@@ -345,12 +359,12 @@ export class ReactPictureAnnotation extends React.Component<
       hideArrowPreview,
     } = this.state;
 
-    const showArrowPreview = () =>
+    const showArrowPreview = () => {
       // @ts-ignore
-      annotationData?.map((annotation: any) => {
+      return annotationData?.map((annotation: any) => {
         const position: any = arrowPreviewPositions[annotation.id];
         const arrowBox = renderArrowPreview(annotation);
-        if (position && arrowBox) {
+        if (position && position.x !== 0 && position.y !== 0 && arrowBox) {
           return (
             // @ts-ignore
             <StyledArrowBox
@@ -363,6 +377,7 @@ export class ReactPictureAnnotation extends React.Component<
           );
         }
       });
+    };
 
     const showPreview = (selectedItem: any) => (
       <div
@@ -430,6 +445,8 @@ export class ReactPictureAnnotation extends React.Component<
         return;
       }
 
+      let updatedArrowPreviewPositions: any = this.state.arrowPreviewPositions;
+
       for (const item of this.shapes) {
         const annotation = item.getAnnotationData();
         const itemId = annotation.id;
@@ -443,21 +460,18 @@ export class ReactPictureAnnotation extends React.Component<
           scale,
           false
         );
-
         if (
           this.props.renderArrowPreview &&
           this.props.renderArrowPreview(annotation)
         ) {
-          this.setState({
-            arrowPreviewPositions: {
-              ...this.state.arrowPreviewPositions,
-              [itemId]: {
-                ...this.state.arrowPreviewPositions[itemId],
-                x,
-                y,
-              },
+          updatedArrowPreviewPositions = {
+            ...updatedArrowPreviewPositions,
+            [itemId]: {
+              ...updatedArrowPreviewPositions[itemId],
+              x,
+              y,
             },
-          });
+          };
         }
 
         if (isSelected) {
@@ -509,13 +523,13 @@ export class ReactPictureAnnotation extends React.Component<
           this.setState({ showInput: true, inputPosition });
         }
       }
-
       if (!hasSelectedItem) {
         this.setState({
           showInput: false,
           inputComment: "",
         });
       }
+      this.setState({ arrowPreviewPositions: updatedArrowPreviewPositions });
     }
 
     this.currentAnnotationData = this.shapes.map((item) =>

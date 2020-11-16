@@ -343,6 +343,10 @@ export const BoxAndArrows = () => {
 };
 export const Playground = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
+  const [
+    annotationIdsWithArrowBoxes,
+    setAnnotationIdsWithArrowBoxes,
+  ] = useState([] as number[]);
   useEffect(() => {
     (async () => {
       const rawAnnotations = await listAnnotationsForFile(imgSdk, imgFile);
@@ -350,15 +354,32 @@ export const Playground = () => {
     })();
   }, []);
   const generateArrowPreview = () => {
-    const newAnnotations = annotations.map((annotation: any) => {
-      if (annotation.id % 2 === 0)
-        return {
-          ...annotation,
-          boxPreview: true,
-        };
-      else return annotation;
+    const randomIndex = Math.floor(Math.random() * annotations.length);
+    const randomAnnotation = annotations[randomIndex];
+    if (
+      randomAnnotation &&
+      !annotationIdsWithArrowBoxes.includes(randomAnnotation.id)
+    ) {
+      setAnnotationIdsWithArrowBoxes([
+        ...annotationIdsWithArrowBoxes,
+        randomAnnotation.id,
+      ]);
+    }
+  };
+
+  const renderArrowPreview = (annotation: any) => {
+    const hasPreview = annotationIdsWithArrowBoxes.find((annotationId: any) => {
+      if (typeof annotation.id === "string")
+        return parseInt(annotation.id, 10) === annotationId;
+      else return annotation.id === annotationId;
     });
-    setAnnotations(newAnnotations);
+    if (hasPreview) {
+      return (
+        <div style={{ padding: "5px", backgroundColor: "red" }}>
+          {annotation.id}
+        </div>
+      );
+    } else return undefined;
   };
 
   return (
@@ -374,22 +395,7 @@ export const Playground = () => {
         hideLabel={boolean("Hide Label", false)}
         hoverable={boolean("Hoverable", false)}
         pagination={select("Pagination", ["small", "normal", false], "normal")}
-        renderArrowPreview={(annotation: any) => {
-          if (annotation.boxPreview) {
-            return (
-              <div
-                style={{
-                  padding: "5px",
-                  backgroundColor: "black",
-                  color: "white",
-                }}
-              >
-                test
-              </div>
-            );
-          }
-          return undefined;
-        }}
+        renderArrowPreview={renderArrowPreview}
         renderItemPreview={() => (
           <div
             style={{
