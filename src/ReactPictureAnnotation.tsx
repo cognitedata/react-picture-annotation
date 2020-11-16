@@ -2,6 +2,7 @@ import React, { MouseEventHandler, TouchEventHandler } from "react";
 import * as pdfjs from "pdfjs-dist";
 import { PDFDocument, rgb, PDFPage, degrees } from "pdf-lib";
 import parseColor from "parse-color";
+import { isEqual } from "lodash";
 import { IAnnotation } from "./Annotation";
 import { IAnnotationState } from "./annotation/AnnotationState";
 import { DefaultAnnotationState } from "./annotation/DefaultAnnotationState";
@@ -169,11 +170,14 @@ export class ReactPictureAnnotation extends React.Component<
   public componentDidUpdate = async (
     prevProps: IReactPictureAnnotationProps
   ) => {
-    const { width, height, image, pdf, page } = this.props;
+    const { width, height, image, pdf, page, annotationData } = this.props;
     if (prevProps.width !== width || prevProps.height !== height) {
       this.setCanvasDPI();
       this.onShapeChange();
       this.onImageChange();
+    }
+    if (!isEqual(prevProps.annotationData, annotationData)) {
+      this.loadArrowPreviews();
     }
     if (prevProps.pdf !== pdf) {
       if (pdf) {
@@ -212,8 +216,8 @@ export class ReactPictureAnnotation extends React.Component<
     this.syncAnnotationData();
     this.syncSelectedId();
     if (
-      this.props.annotationData &&
-      this.props.annotationData.length > 0 &&
+      annotationData &&
+      annotationData.length > 0 &&
       !this.state.annotationsLoaded
     )
       this.loadArrowPreviews();

@@ -342,39 +342,78 @@ export const BoxAndArrows = () => {
   );
 };
 export const Playground = () => {
+  const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
+  useEffect(() => {
+    (async () => {
+      const rawAnnotations = await listAnnotationsForFile(imgSdk, imgFile);
+      setAnnotations(rawAnnotations);
+    })();
+  }, []);
+  const generateArrowPreview = () => {
+    const newAnnotations = annotations.map((annotation: any) => {
+      if (annotation.id % 2 === 0)
+        return {
+          ...annotation,
+          boxPreview: true,
+        };
+      else return annotation;
+    });
+    setAnnotations(newAnnotations);
+  };
+
   return (
-    <CogniteFileViewer
-      sdk={pdfSdk}
-      file={pdfFile}
-      editable={boolean("Editable", false)}
-      creatable={boolean("Creatable", false)}
-      hideControls={boolean("Hide Controls", false)}
-      hideLabel={boolean("Hide Label", false)}
-      hoverable={boolean("Hoverable", false)}
-      pagination={select("Pagination", ["small", "normal", false], "normal")}
-      onAnnotationSelected={action("onAnnotationSelected")}
-      renderItemPreview={() => (
-        <div
-          style={{
-            backgroundColor: "white",
-            border: "1px solid black",
-            padding: "5px",
-          }}
-        >
-          <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-          </ul>
-        </div>
-      )}
-    />
+    <>
+      <Button onClick={generateArrowPreview}>Generate boxes</Button>
+      <CogniteFileViewer
+        sdk={imgSdk}
+        file={imgFile}
+        annotations={annotations}
+        editable={boolean("Editable", false)}
+        creatable={boolean("Creatable", false)}
+        hideControls={boolean("Hide Controls", false)}
+        hideLabel={boolean("Hide Label", false)}
+        hoverable={boolean("Hoverable", false)}
+        pagination={select("Pagination", ["small", "normal", false], "normal")}
+        renderArrowPreview={(annotation: any) => {
+          if (annotation.boxPreview) {
+            return (
+              <div
+                style={{
+                  padding: "5px",
+                  backgroundColor: "black",
+                  color: "white",
+                }}
+              >
+                test
+              </div>
+            );
+          }
+          return undefined;
+        }}
+        renderItemPreview={() => (
+          <div
+            style={{
+              backgroundColor: "white",
+              color: "black",
+              border: "1px solid black",
+              padding: "5px",
+            }}
+          >
+            <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+            </ul>
+          </div>
+        )}
+      />
+    </>
   );
 };
