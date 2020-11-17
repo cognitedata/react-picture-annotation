@@ -1,4 +1,4 @@
-export const twoAnnotationsResponse = [
+export const threeAnnotationsResponse = [
   {
     type: "cognite_annotation",
     subtype: "pnid_annotation",
@@ -33,6 +33,24 @@ export const twoAnnotationsResponse = [
     },
     source: "email:anna.gadacz@cognite.com",
     id: 2222,
+    lastUpdatedTime: 1598263653461,
+    createdTime: 1598263653461,
+  },
+  {
+    type: "cognite_annotation",
+    subtype: "pnid_annotation",
+    description: "Thing thing",
+    metadata: {
+      CDF_ANNOTATION_box:
+        '{"xMin":0.2129383340287385,"yMin":0.3275193798449612,"xMax":0.2608961302530543,"yMax":0.39728682170542634}',
+      CDF_ANNOTATION_file_external_id: "dummy.pdf",
+      CDF_ANNOTATION_resource_external_id: "dummyFile",
+      CDF_ANNOTATION_resource_type: "asset",
+      CDF_ANNOTATION_status: "verified",
+      CDF_ANNOTATION_version: "5",
+    },
+    source: "email:anna.gadacz@cognite.com",
+    id: 3333,
     lastUpdatedTime: 1598263653461,
     createdTime: 1598263653461,
   },

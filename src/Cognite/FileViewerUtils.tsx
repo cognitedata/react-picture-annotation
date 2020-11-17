@@ -19,6 +19,7 @@ export type CustomizableCogniteAnnotation = (
     backgroundColor?: string;
     strokeColor?: string;
     strokeWidth?: number;
+    highlight?: boolean;
     draw?: (
       canvas: CanvasRenderingContext2D,
       x: number,
@@ -114,6 +115,9 @@ export const convertCogniteAnnotationToIAnnotation = (
       annotation.mark.strokeWidth = el.mark.strokeWidth;
     }
     if (el?.mark?.draw) annotation.mark.draw = el.mark.draw;
+    if (el?.mark?.highlight) {
+      annotation.mark.highlight = true;
+    }
   }
   return annotation as IAnnotation<IRectShapeData>;
 };

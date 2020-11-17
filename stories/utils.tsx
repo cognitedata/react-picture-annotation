@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { CogniteClient } from "@cognite/sdk";
-import { response, twoAnnotationsResponse, orcResults } from "./resources";
+import { response, threeAnnotationsResponse, orcResults } from "./resources";
 import { FileViewerContextObserverPublicProps } from "../src";
 import randomId from "../src/utils/randomId";
 
@@ -22,10 +22,10 @@ export const imgFile = {
   mimeType: "image/png",
 };
 
-export const imgSdkTwoAnnotations = ({
+export const imgSdkThreeAnnotations = ({
   events: {
     list: (..._: any[]) => ({
-      autoPagingToArray: async () => twoAnnotationsResponse,
+      autoPagingToArray: async () => threeAnnotationsResponse,
     }),
     update: async (...annotations: any[]) =>
       annotations.map((el) => el.annotation),

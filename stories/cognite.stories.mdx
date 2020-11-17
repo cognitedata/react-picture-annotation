@@ -98,7 +98,7 @@ Sometimes you want various views to also share access to the same annotations, p
 
 You can customize annotations via the advanced CogniteFileViewer. To do that, you need to pass an `allowCustomAnnotations` flag to the `<CogniteFileViewer>` component.
 
-When the `allowCustomAnnotations` flag equals `true`, you can pass an additional argument in your annotation object - `mark`. Here you can define your custom annotation shape.
+When the `allowCustomAnnotations` flag equals `true`, you can pass an additional argument in your annotation object - `mark`. Here you can define your custom annotation shape, as well as determine if an annotation is a highlight (which basically just adds padding to the box).
 
 ```
 {
@@ -106,6 +106,7 @@ When the `allowCustomAnnotations` flag equals `true`, you can pass an additional
     backgroundColor?: string; // this must be in hex or string format
     strokeColor?: string;
     strokeWidth?: number;
+    highlight?: boolean;
     draw?: (
       canvas: CanvasRenderingContext2D,
       x: number,

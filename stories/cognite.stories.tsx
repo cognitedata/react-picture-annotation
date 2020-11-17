@@ -5,7 +5,7 @@ import { CogniteFileViewer, ViewerEditCallbacks } from "../src";
 import {
   imgSdk,
   imgFile,
-  imgSdkTwoAnnotations,
+  imgSdkThreeAnnotations,
   pdfFile,
   pdfSdk,
 } from "./utils";
@@ -219,11 +219,14 @@ export const CustomizedAnnotations = () => {
         canvas.fill();
       },
     },
+    {
+      highlight: true,
+    },
   ];
   useEffect(() => {
     (async () => {
       const rawAnnotations = await listAnnotationsForFile(
-        imgSdkTwoAnnotations,
+        imgSdkThreeAnnotations,
         imgFile
       );
       const customizedAnnotations = rawAnnotations.map(

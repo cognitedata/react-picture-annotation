@@ -226,6 +226,7 @@ export const FileViewer = ({
                 height: el.boundingBox.yMax - el.boundingBox.yMin,
                 backgroundColor: `${Colors["midblue-4"].hex()}88`,
                 strokeWidth: 2,
+                highlight: true,
               },
               disableClick: true,
             } as IAnnotation<IRectShapeData>)
