@@ -162,6 +162,7 @@ export class RectShape implements IShape {
         isDownload
       );
     } else {
+      const padding = 5;
       canvas2D.shadowBlur = 10;
       canvas2D.shadowColor = mark.shadowColor || shapeStyle.shapeShadowStyle;
       canvas2D.strokeStyle = mark.strokeColor || shapeStyle.shapeStrokeStyle;
@@ -170,32 +171,32 @@ export class RectShape implements IShape {
         canvas2D.fillStyle = mark.backgroundColor;
         canvas2D.fillRect(
           mark.highlight
-            ? x - canvas2D.lineWidth / 2 - 5
+            ? x - canvas2D.lineWidth / 2 - padding
             : x - canvas2D.lineWidth / 2,
           mark.highlight
-            ? y - canvas2D.lineWidth / 2 - 5
+            ? y - canvas2D.lineWidth / 2 - padding
             : y - canvas2D.lineWidth / 2,
           mark.highlight
-            ? width + canvas2D.lineWidth + 10
+            ? width + canvas2D.lineWidth + padding * 2
             : width + canvas2D.lineWidth,
           mark.highlight
-            ? height + canvas2D.lineWidth + 10
+            ? height + canvas2D.lineWidth + padding * 2
             : height + canvas2D.lineWidth
         );
       }
       if (mark.strokeWidth !== 0) {
         canvas2D.strokeRect(
           mark.highlight
-            ? x - canvas2D.lineWidth / 2 - 5
+            ? x - canvas2D.lineWidth / 2 - padding
             : x - canvas2D.lineWidth / 2,
           mark.highlight
-            ? y - canvas2D.lineWidth / 2 - 5
+            ? y - canvas2D.lineWidth / 2 - padding
             : y - canvas2D.lineWidth / 2,
           mark.highlight
-            ? width + canvas2D.lineWidth + 10
+            ? width + canvas2D.lineWidth + padding * 2
             : width + canvas2D.lineWidth,
           mark.highlight
-            ? height + canvas2D.lineWidth + 10
+            ? height + canvas2D.lineWidth + padding * 2
             : height + canvas2D.lineWidth
         );
       }
@@ -203,16 +204,16 @@ export class RectShape implements IShape {
         canvas2D.fillStyle = mark.backgroundColor || shapeStyle.shapeBackground;
         canvas2D.fillRect(
           mark.highlight
-            ? x - canvas2D.lineWidth / 2 - 5
+            ? x - canvas2D.lineWidth / 2 - padding
             : x - canvas2D.lineWidth / 2,
           mark.highlight
-            ? y - canvas2D.lineWidth / 2 - 5
+            ? y - canvas2D.lineWidth / 2 - padding
             : y - canvas2D.lineWidth / 2,
           mark.highlight
-            ? width + canvas2D.lineWidth + 10
+            ? width + canvas2D.lineWidth + padding * 2
             : width + canvas2D.lineWidth,
           mark.highlight
-            ? height + canvas2D.lineWidth + 10
+            ? height + canvas2D.lineWidth + padding * 2
             : height + canvas2D.lineWidth
         );
       } else {
