@@ -342,39 +342,84 @@ export const BoxAndArrows = () => {
   );
 };
 export const Playground = () => {
-  return (
-    <CogniteFileViewer
-      sdk={pdfSdk}
-      file={pdfFile}
-      editable={boolean("Editable", false)}
-      creatable={boolean("Creatable", false)}
-      hideControls={boolean("Hide Controls", false)}
-      hideLabel={boolean("Hide Label", false)}
-      hoverable={boolean("Hoverable", false)}
-      pagination={select("Pagination", ["small", "normal", false], "normal")}
-      onAnnotationSelected={action("onAnnotationSelected")}
-      renderItemPreview={() => (
-        <div
-          style={{
-            backgroundColor: "white",
-            border: "1px solid black",
-            padding: "5px",
-          }}
-        >
-          <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-            <li>test</li>
-          </ul>
+  const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
+  const [
+    annotationIdsWithArrowBoxes,
+    setAnnotationIdsWithArrowBoxes,
+  ] = useState([] as number[]);
+  useEffect(() => {
+    (async () => {
+      const rawAnnotations = await listAnnotationsForFile(imgSdk, imgFile);
+      setAnnotations(rawAnnotations);
+    })();
+  }, []);
+  const generateArrowPreview = () => {
+    const randomIndex = Math.floor(Math.random() * annotations.length);
+    const randomAnnotation = annotations[randomIndex];
+    if (
+      randomAnnotation &&
+      !annotationIdsWithArrowBoxes.includes(randomAnnotation.id)
+    ) {
+      setAnnotationIdsWithArrowBoxes([
+        ...annotationIdsWithArrowBoxes,
+        randomAnnotation.id,
+      ]);
+    }
+  };
+
+  const renderArrowPreview = (annotation: any) => {
+    const hasPreview = annotationIdsWithArrowBoxes.find((annotationId: any) => {
+      if (typeof annotation.id === "string")
+        return parseInt(annotation.id, 10) === annotationId;
+      else return annotation.id === annotationId;
+    });
+    if (hasPreview) {
+      return (
+        <div style={{ padding: "5px", backgroundColor: "red" }}>
+          {annotation.id}
         </div>
-      )}
-    />
+      );
+    } else return undefined;
+  };
+
+  return (
+    <>
+      <Button onClick={generateArrowPreview}>Generate boxes</Button>
+      <CogniteFileViewer
+        sdk={imgSdk}
+        file={imgFile}
+        annotations={annotations}
+        editable={boolean("Editable", false)}
+        creatable={boolean("Creatable", false)}
+        hideControls={boolean("Hide Controls", false)}
+        hideLabel={boolean("Hide Label", false)}
+        hoverable={boolean("Hoverable", false)}
+        pagination={select("Pagination", ["small", "normal", false], "normal")}
+        renderArrowPreview={renderArrowPreview}
+        renderItemPreview={() => (
+          <div
+            style={{
+              backgroundColor: "white",
+              color: "black",
+              border: "1px solid black",
+              padding: "5px",
+            }}
+          >
+            <ul style={{ margin: 0, padding: 0, listStyleType: "none" }}>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+              <li>test</li>
+            </ul>
+          </div>
+        )}
+      />
+    </>
   );
 };
