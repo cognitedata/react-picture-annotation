@@ -219,8 +219,8 @@ const FileViewerProvider = ({
           const annos = await listAnnotationsForFile(sdk, fetchedFile);
           setAnnotations(annos);
         }
+        setIsLoading(false);
       }
-      setIsLoading(false);
     })();
   }, [sdk, fileId, disableAutoFetch]);
 
