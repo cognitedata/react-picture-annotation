@@ -26,6 +26,7 @@ export class DefaultAnnotationState implements IAnnotationState {
     if (this.context.props.hoverable) {
       this.checkSelectedId(positionX, positionY);
     }
+    this.checkCursor(positionX, positionY);
   };
   public onMouseUp = () => {
     if (!this.hasMoved && !this.hasSelected && this.hasClicked) {
@@ -139,6 +140,39 @@ export class DefaultAnnotationState implements IAnnotationState {
     if (this.context.selectedId) {
       this.context.selectedId = null;
       onShapeChange();
+    }
+  };
+  private checkCursor = (positionX: number, positionY: number) => {
+    const {
+      shapes,
+      props: { creatable, editable },
+    } = this.context;
+    for (let i = shapes.length - 1; i >= 0; i--) {
+      if (
+        shapes[i].checkBoundary(
+          positionX,
+          positionY,
+          this.context.calculateShapePositionNoOffset,
+          (shapes[i].getAnnotationData().mark.strokeWidth || 4) + 10
+        )
+      ) {
+        const { disableClick } = shapes[i].getAnnotationData();
+        if (!disableClick) {
+          if (this.context.canvasRef.current) {
+            this.context.canvasRef.current.style.cursor = "pointer";
+          }
+        }
+        return;
+      }
+    }
+    if (creatable || editable) {
+      if (this.context.canvasRef.current) {
+        this.context.canvasRef.current.style.cursor = "crosshair";
+      }
+      return;
+    }
+    if (this.context.canvasRef.current) {
+      this.context.canvasRef.current.style.cursor = "default";
     }
   };
 }

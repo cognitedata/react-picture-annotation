@@ -120,7 +120,7 @@ export class ReactPictureAnnotation extends React.Component<
   };
   private currentAnnotationData: IAnnotation[] = [];
   private selectedIdTrueValue: string | null = null;
-  private canvasRef = React.createRef<HTMLCanvasElement>();
+  public canvasRef = React.createRef<HTMLCanvasElement>();
   private canvas2D?: CanvasRenderingContext2D | null;
   private imageCanvasRef = React.createRef<HTMLCanvasElement>();
   private imageCanvas2D?: CanvasRenderingContext2D | null;
