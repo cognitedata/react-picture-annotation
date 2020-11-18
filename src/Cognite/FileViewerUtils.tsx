@@ -30,6 +30,13 @@ export type CustomizableCogniteAnnotation = (
   };
 };
 
+export type ArrowPreviewOptions = {
+  baseOffset?: {
+    x?: number;
+    y?: number;
+  };
+};
+
 /**
  * If there is no allowCustomAnnotations flag, those are the colors of the annotations.
  */

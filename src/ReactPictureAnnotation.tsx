@@ -3,6 +3,7 @@ import * as pdfjs from "pdfjs-dist";
 import { PDFDocument, rgb, PDFPage, degrees } from "pdf-lib";
 import parseColor from "parse-color";
 import { isEqual } from "lodash";
+import { ArrowPreviewOptions } from "./Cognite/FileViewerUtils";
 import { IAnnotation } from "./Annotation";
 import { IAnnotationState } from "./annotation/AnnotationState";
 import { DefaultAnnotationState } from "./annotation/DefaultAnnotationState";
@@ -52,6 +53,7 @@ interface IReactPictureAnnotationProps {
   creatable?: boolean;
   hoverable?: boolean;
   drawLabel: boolean;
+  arrowPreviewOptions?: ArrowPreviewOptions;
   renderArrowPreview?: any; // TODO type
   renderItemPreview?: RenderItemPreviewFunction;
   onAnnotationUpdate?: (annotation: IAnnotation) => void;
@@ -351,6 +353,7 @@ export class ReactPictureAnnotation extends React.Component<
         />
       ),
       renderArrowPreview,
+      arrowPreviewOptions,
     } = this.props;
     const {
       showInput,
@@ -371,6 +374,7 @@ export class ReactPictureAnnotation extends React.Component<
               key={`arrow-box-${annotation.id}`}
               annotation={annotation}
               position={position}
+              arrowPreviewOptions={arrowPreviewOptions}
               renderedArrowWithBox={arrowBox}
               updateBoxPosition={this.updateBoxPosition}
             />

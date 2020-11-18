@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { action } from "@storybook/addon-actions";
-import { boolean, select } from "@storybook/addon-knobs";
+import { boolean, number, select } from "@storybook/addon-knobs";
 import { CogniteFileViewer, ViewerEditCallbacks } from "../src";
 import {
   imgSdk,
@@ -347,6 +347,12 @@ export const BoxAndArrows = () => {
       disableAutoFetch={true}
       annotations={annotations}
       onAnnotationSelected={action("onAnnotationSelected")}
+      arrowPreviewOptions={{
+        baseOffset: {
+          x: -40,
+          y: -40,
+        },
+      }}
       renderArrowPreview={(annotation: any) => {
         if (annotation.id === "352749521886257")
           return (
