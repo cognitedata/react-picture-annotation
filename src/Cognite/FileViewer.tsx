@@ -25,6 +25,7 @@ import {
   isPreviewableImage,
   retrieveOCRResults,
   TextBox,
+  ArrowPreviewOptions,
 } from "./FileViewerUtils";
 
 export type ViewerEditCallbacks = {
@@ -79,6 +80,10 @@ export type ViewerProps = {
    * Renders an always visible small draggable display connected to annotation with an arrow.
    */
   renderArrowPreview?: RenderItemPreviewFunction;
+  /**
+   * Options for the arrow preview, if it's defined.
+   */
+  arrowPreviewOptions?: ArrowPreviewOptions;
   /**
    * Override how an annotation box is drawn on top of the file
    */
@@ -137,6 +142,7 @@ export const FileViewer = ({
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
   annotations: annotationsFromProps,
   renderArrowPreview, // TODO
+  arrowPreviewOptions,
 }: ViewerProps) => {
   const {
     annotations,
@@ -439,6 +445,7 @@ export const FileViewer = ({
         onLoading={(isLoading) => setLoading(isLoading)}
         renderItemPreview={renderItemPreview}
         renderArrowPreview={renderArrowPreview}
+        arrowPreviewOptions={arrowPreviewOptions}
         onPDFLoaded={async ({ pages }) => {
           setLoading(false);
           setTotalPages(pages);

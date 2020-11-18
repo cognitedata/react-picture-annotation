@@ -347,6 +347,12 @@ export const BoxAndArrows = () => {
       disableAutoFetch={true}
       annotations={annotations}
       onAnnotationSelected={action("onAnnotationSelected")}
+      arrowPreviewOptions={{
+        baseOffset: {
+          x: -40,
+          y: -40,
+        },
+      }}
       renderArrowPreview={(annotation: any) => {
         if (annotation.id === "352749521886257")
           return (

@@ -126,6 +126,21 @@ The `draw()` function allows you to define a canvas and draw any shape you like.
 
 ## Box and arrows
 
+You can add an additional info box to every annotation, connected to it with an arrow. To do so, use a `renderArrowPreview` prop and pass a component in it which will appear in a box connected to the annotation.
+
+There is one info box per annotation, therefore you can pass `undefined` if you do not wish for the box to appear for a particular annotation.
+
+If you want to customize arrow boxes in other fields than the connected component, you can pass an optional `arrowPreviewOptions` prop:
+
+```
+  arrowPreviewOptions: {
+    baseOffset?: { 
+      x?: number, 
+      y?: number 
+    }
+  }
+```
+
 <Canvas>
   <Story story={BoxAndArrows} />
 </Canvas>

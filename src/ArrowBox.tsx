@@ -1,6 +1,7 @@
 import React from "react";
 import styled from "styled-components";
 import { ArcherContainer, ArcherElement } from "react-archer";
+import { ArrowPreviewOptions } from "./Cognite/FileViewerUtils";
 
 interface PointProps {
   position: any;
@@ -14,6 +15,7 @@ interface ArrowBoxProps extends PointProps, ArrowBoxEvents {
   annotation: any;
   renderedArrowWithBox: any;
   updateBoxPosition: any;
+  arrowPreviewOptions?: ArrowPreviewOptions;
 }
 
 const SourcePoint = styled.div.attrs((props: PointProps) => ({
@@ -53,10 +55,10 @@ export default class ArrowBox extends React.Component<ArrowBoxProps> {
     dragged: false,
     x: this.props.position.x,
     y: this.props.position.y,
-    baseOffsetX: -20,
-    baseOffsetY: -40,
     offsetX: this.props.position.offsetX ?? 0,
     offsetY: this.props.position.offsetY ?? 0,
+    baseOffsetX: this.props.arrowPreviewOptions?.baseOffset?.x ?? -20,
+    baseOffsetY: this.props.arrowPreviewOptions?.baseOffset?.y ?? -40,
   };
 
   private onDragStart = (event: React.DragEvent<HTMLDivElement>): void => {
