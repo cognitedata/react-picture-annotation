@@ -2134,18 +2134,18 @@
     regenerator-runtime "^0.13.7"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-storysource@^6.1.0":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-storysource/-/addon-storysource-6.1.0.tgz#e34fb3fe6c3363a0d0cbdb7f824d2ee1ba866569"
-  integrity sha512-K15yHaA+YSsw+5NHjgsQ6ntKX5gtXZ/m3dDHNxFrLOGmUV4SAeU5JlncbZ+pe2OM3D1eBlARS2sdyBBpVQChJw==
+"@storybook/addon-storysource@^6.1.5":
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-storysource/-/addon-storysource-6.1.5.tgz#f75c8798b2f2ec73d13ee07c21b3f80eaefdcc35"
+  integrity sha512-WEhL5NnKr/L1U5ceroOxSHFepLRDFxLhXXQy6nChU3cc+OPNBKBZmDBkZLK1jpaQW1JdoEo2M6vxjny354NAPw==
   dependencies:
-    "@storybook/addons" "6.1.0"
-    "@storybook/api" "6.1.0"
-    "@storybook/client-logger" "6.1.0"
-    "@storybook/components" "6.1.0"
-    "@storybook/router" "6.1.0"
-    "@storybook/source-loader" "6.1.0"
-    "@storybook/theming" "6.1.0"
+    "@storybook/addons" "6.1.5"
+    "@storybook/api" "6.1.5"
+    "@storybook/client-logger" "6.1.5"
+    "@storybook/components" "6.1.5"
+    "@storybook/router" "6.1.5"
+    "@storybook/source-loader" "6.1.5"
+    "@storybook/theming" "6.1.5"
     core-js "^3.0.1"
     estraverse "^4.2.0"
     loader-utils "^2.0.0"
@@ -2729,23 +2729,6 @@
   dependencies:
     core-js "^3.6.5"
     find-up "^4.1.0"
-
-"@storybook/source-loader@6.1.0":
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/@storybook/source-loader/-/source-loader-6.1.0.tgz#32fc29a873753870639b6aee9796ab56f7d7d1c4"
-  integrity sha512-bSYrbO4l3LV583UiH3th8+zQeN+N7yxOV7S2xDfzCWM0vA4sLi+viBvTh7IvlIgNBh0U6ilJ7wFlOSLzA5R7xQ==
-  dependencies:
-    "@storybook/addons" "6.1.0"
-    "@storybook/client-logger" "6.1.0"
-    "@storybook/csf" "0.0.1"
-    core-js "^3.0.1"
-    estraverse "^4.2.0"
-    global "^4.3.2"
-    loader-utils "^2.0.0"
-    lodash "^4.17.15"
-    prettier "~2.0.5"
-    regenerator-runtime "^0.13.7"
-    source-map "^0.7.3"
 
 "@storybook/source-loader@6.1.5":
   version "6.1.5"
