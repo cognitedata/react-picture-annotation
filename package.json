@@ -91,7 +91,7 @@
     "@cognite/annotations": "^1.0.3",
     "@cognite/cogs.js": "^2.0.3",
     "@cognite/sdk": "^3.2.1",
-    "@storybook/addon-knobs": "^6.1.0",
+    "@storybook/addon-knobs": "^6.1.4",
     "@types/lodash": "^4.14.165",
     "parse-color": "^1.0.0",
     "pdf-lib": "^1.12.0",
