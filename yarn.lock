@@ -2296,16 +2296,16 @@
     react-select "^3.0.8"
     regenerator-runtime "^0.13.7"
 
-"@storybook/addon-links@^6.1.6":
-  version "6.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-6.1.6.tgz#e0723eb9c3db0031687f9328993112e3dc3850be"
-  integrity sha512-WVOr7+Z+IqepR0hFNIXwbdvtjjVF6eEi8meR4QcKI1jk2Tf3JclS+QSPIdwP68WyvIKAJ9+uAnVOK2sOUvVOow==
+"@storybook/addon-links@^6.1.8":
+  version "6.1.8"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-links/-/addon-links-6.1.8.tgz#5fecab85a82810a40472171368cb6fddfe9373be"
+  integrity sha512-8QoyEsYqsVrf70kNyKg7cOPyzGttkYNIVJtvB+SpYAbIboNyhNy63cngyd1I72IwMoCs5CaHMciM1cAkezdOOw==
   dependencies:
-    "@storybook/addons" "6.1.6"
-    "@storybook/client-logger" "6.1.6"
-    "@storybook/core-events" "6.1.6"
+    "@storybook/addons" "6.1.8"
+    "@storybook/client-logger" "6.1.8"
+    "@storybook/core-events" "6.1.8"
     "@storybook/csf" "0.0.1"
-    "@storybook/router" "6.1.6"
+    "@storybook/router" "6.1.8"
     "@types/qs" "^6.9.0"
     core-js "^3.0.1"
     global "^4.3.2"
