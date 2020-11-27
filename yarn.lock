@@ -2314,18 +2314,18 @@
     regenerator-runtime "^0.13.7"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-storysource@^6.1.6":
-  version "6.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-storysource/-/addon-storysource-6.1.6.tgz#34af62a443c0baf3cfb45df0f712f7d0a152cdbb"
-  integrity sha512-RK47hm2n/wgK6mRqlclfxkxJF7O3UXGc0dob0VswQX3wXDCjBmjMyAnNFncuNiq7Xahv6UGDqMVTmM/mJr5BOw==
+"@storybook/addon-storysource@^6.1.8":
+  version "6.1.8"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-storysource/-/addon-storysource-6.1.8.tgz#40eec1228728907e942ca7978a669db9e867fd02"
+  integrity sha512-ivhIZ64o5cTy0x5E0q/X7L3qa+BG5pJK+PViWMLQwT640YUafVYLtSg+mPwUi5a8WayuseL2JF31sVkPzCC0Zw==
   dependencies:
-    "@storybook/addons" "6.1.6"
-    "@storybook/api" "6.1.6"
-    "@storybook/client-logger" "6.1.6"
-    "@storybook/components" "6.1.6"
-    "@storybook/router" "6.1.6"
-    "@storybook/source-loader" "6.1.6"
-    "@storybook/theming" "6.1.6"
+    "@storybook/addons" "6.1.8"
+    "@storybook/api" "6.1.8"
+    "@storybook/client-logger" "6.1.8"
+    "@storybook/components" "6.1.8"
+    "@storybook/router" "6.1.8"
+    "@storybook/source-loader" "6.1.8"
+    "@storybook/theming" "6.1.8"
     core-js "^3.0.1"
     estraverse "^4.2.0"
     loader-utils "^2.0.0"
@@ -2908,23 +2908,6 @@
   dependencies:
     core-js "^3.6.5"
     find-up "^4.1.0"
-
-"@storybook/source-loader@6.1.6":
-  version "6.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/source-loader/-/source-loader-6.1.6.tgz#a793815b2e33b3518cbb7fe672719f5e75c92fcc"
-  integrity sha512-m9lfO4vH4SFAc2Qj4JZGk1nXWxX/41DiplUsHtBuKOPvTq2a/wADQIrJT9fY89Vj3snA7MKr14OxUFLDVjtF3Q==
-  dependencies:
-    "@storybook/addons" "6.1.6"
-    "@storybook/client-logger" "6.1.6"
-    "@storybook/csf" "0.0.1"
-    core-js "^3.0.1"
-    estraverse "^4.2.0"
-    global "^4.3.2"
-    loader-utils "^2.0.0"
-    lodash "^4.17.15"
-    prettier "~2.0.5"
-    regenerator-runtime "^0.13.7"
-    source-map "^0.7.3"
 
 "@storybook/source-loader@6.1.8":
   version "6.1.8"
