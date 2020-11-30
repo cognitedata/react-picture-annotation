@@ -633,7 +633,10 @@ storiesOf("Default Viewer", module)
           annotationData={annotationData}
           onChange={(data) => setAnnotationData(data)}
           selectedIds={selectedIds}
-          onSelect={(e) => setSelectedIds(e)}
+          onSelect={(e) => {
+            setSelectedIds(e);
+            action("onSelect")(e);
+          }}
           image="https://unsplash.it/1200/600"
         />
       );
@@ -700,7 +703,7 @@ storiesOf("Default Viewer", module)
           annotationData={annotationData}
           onChange={(data) => {
             setAnnotationData(data);
-            action("onSelect")(data);
+            action("onChange")(data);
           }}
           selectedIds={selectedIds}
           onSelect={(e) => {
