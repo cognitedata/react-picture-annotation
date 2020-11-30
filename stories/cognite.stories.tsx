@@ -98,13 +98,13 @@ export const AllowControlledEditing = () => {
     [annotations, setAnnotations]
   );
 
-  const [selectedId, setSelectedId] = useState<string | null>(
-    "406167784064508"
-  );
+  const [selectedIds, setSelectedIds] = useState<string[]>(["406167784064508"]);
 
-  const handleAnnotationSelection = (annotation: CogniteAnnotation) => {
-    if (annotation) {
-      setSelectedId(`${annotation.id}`);
+  const handleAnnotationSelection = (
+    selectedAnnotations: CogniteAnnotation[]
+  ) => {
+    if (selectedAnnotations.length > 0) {
+      setSelectedIds([`${selectedAnnotations[0].id}`]);
     }
   };
 
@@ -116,16 +116,16 @@ export const AllowControlledEditing = () => {
       annotations={annotations}
       editable={true}
       editCallbacks={callbacks}
-      selectedId={selectedId}
+      selectedIds={selectedIds}
       onAnnotationSelected={handleAnnotationSelection}
       renderItemPreview={(anno) => (
         <>
-          <span>{anno.comment}</span>
+          <span>{anno[0].label}</span>
           <Button
             icon="Delete"
             onClick={() =>
               setAnnotations(
-                annotations.filter((el) => `${el.id}` !== `${anno.id}`)
+                annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
               )
             }
           />
@@ -142,9 +142,11 @@ export const SplitContextAndViewer = () => {
     const { zoomIn, zoomOut, reset } = useZoomControls();
     const extract = useExtractFromCanvas();
     const {
-      selectedAnnotation,
-      setSelectedAnnotation,
+      selectedAnnotations,
+      setSelectedAnnotations,
     } = useSelectedAnnotations();
+
+    const [selectedAnnotation] = selectedAnnotations;
 
     return (
       <div style={{ width: 200, background: "white" }}>
@@ -154,7 +156,7 @@ export const SplitContextAndViewer = () => {
         <Button onClick={() => reset!()}>Reset</Button>
 
         {selectedAnnotation && (
-          <Button onClick={() => setSelectedAnnotation(undefined)}>
+          <Button onClick={() => setSelectedAnnotations([])}>
             Unselect Annotation
           </Button>
         )}
@@ -369,7 +371,7 @@ export const BoxAndArrows = () => {
             icon="Delete"
             onClick={() =>
               setAnnotations(
-                annotations.filter((el) => `${el.id}` !== `${anno.id}`)
+                annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
               )
             }
           />
