@@ -698,7 +698,10 @@ storiesOf("Default Viewer", module)
           width={size.width}
           height={size.height}
           annotationData={annotationData}
-          onChange={(data) => setAnnotationData(data)}
+          onChange={(data) => {
+            setAnnotationData(data);
+            action("onSelect")(data);
+          }}
           selectedIds={selectedIds}
           onSelect={(e) => {
             setSelectedIds(e);
