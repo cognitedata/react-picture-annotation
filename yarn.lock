@@ -2337,18 +2337,18 @@
     regenerator-runtime "^0.13.7"
     ts-dedent "^2.0.0"
 
-"@storybook/addon-storysource@^6.1.6":
-  version "6.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/addon-storysource/-/addon-storysource-6.1.6.tgz#34af62a443c0baf3cfb45df0f712f7d0a152cdbb"
-  integrity sha512-RK47hm2n/wgK6mRqlclfxkxJF7O3UXGc0dob0VswQX3wXDCjBmjMyAnNFncuNiq7Xahv6UGDqMVTmM/mJr5BOw==
+"@storybook/addon-storysource@^6.1.9":
+  version "6.1.9"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-storysource/-/addon-storysource-6.1.9.tgz#9f7c50522b4de4bc90508a3882ba473bec82f435"
+  integrity sha512-xG3UAHRFfdn7dvoOjlvIHUNWgMPRLy87qjjHgmdW0jWyvGEtT7k10IRGgnozXp64ETy8dAnIyt3kmRUwXj/pkg==
   dependencies:
-    "@storybook/addons" "6.1.6"
-    "@storybook/api" "6.1.6"
-    "@storybook/client-logger" "6.1.6"
-    "@storybook/components" "6.1.6"
-    "@storybook/router" "6.1.6"
-    "@storybook/source-loader" "6.1.6"
-    "@storybook/theming" "6.1.6"
+    "@storybook/addons" "6.1.9"
+    "@storybook/api" "6.1.9"
+    "@storybook/client-logger" "6.1.9"
+    "@storybook/components" "6.1.9"
+    "@storybook/router" "6.1.9"
+    "@storybook/source-loader" "6.1.9"
+    "@storybook/theming" "6.1.9"
     core-js "^3.0.1"
     estraverse "^4.2.0"
     loader-utils "^2.0.0"
@@ -2710,32 +2710,6 @@
     simplebar-react "^1.0.0-alpha.6"
     ts-dedent "^1.1.0"
 
-"@storybook/components@6.1.6":
-  version "6.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/components/-/components-6.1.6.tgz#a87086603fadbe4a6ebad8fe7ff8cee2284f5c3c"
-  integrity sha512-e1u2LKGJ9AnC+JLIjftL6wr4nP4kYuPvkgGhSMbM076CBhdBdcTe/QXHTYQCHD5X5btxYW2jTaRDWrF3aCIhsA==
-  dependencies:
-    "@popperjs/core" "^2.4.4"
-    "@storybook/client-logger" "6.1.6"
-    "@storybook/csf" "0.0.1"
-    "@storybook/theming" "6.1.6"
-    "@types/overlayscrollbars" "^1.9.0"
-    "@types/react-color" "^3.0.1"
-    "@types/react-syntax-highlighter" "11.0.4"
-    core-js "^3.0.1"
-    fast-deep-equal "^3.1.1"
-    global "^4.3.2"
-    lodash "^4.17.15"
-    markdown-to-jsx "^6.11.4"
-    memoizerific "^1.11.3"
-    overlayscrollbars "^1.10.2"
-    polished "^3.4.4"
-    react-color "^2.17.0"
-    react-popper-tooltip "^3.1.0"
-    react-syntax-highlighter "^13.5.0"
-    react-textarea-autosize "^8.1.1"
-    ts-dedent "^2.0.0"
-
 "@storybook/components@6.1.8":
   version "6.1.8"
   resolved "https://registry.yarnpkg.com/@storybook/components/-/components-6.1.8.tgz#bb4393a19480523583ae1a2629e32dab91ca6e15"
@@ -3034,13 +3008,13 @@
     core-js "^3.6.5"
     find-up "^4.1.0"
 
-"@storybook/source-loader@6.1.6":
-  version "6.1.6"
-  resolved "https://registry.yarnpkg.com/@storybook/source-loader/-/source-loader-6.1.6.tgz#a793815b2e33b3518cbb7fe672719f5e75c92fcc"
-  integrity sha512-m9lfO4vH4SFAc2Qj4JZGk1nXWxX/41DiplUsHtBuKOPvTq2a/wADQIrJT9fY89Vj3snA7MKr14OxUFLDVjtF3Q==
+"@storybook/source-loader@6.1.8":
+  version "6.1.8"
+  resolved "https://registry.yarnpkg.com/@storybook/source-loader/-/source-loader-6.1.8.tgz#1332734f323b328290001cec375ce12c431fbe04"
+  integrity sha512-8Y1UICVw8g3NhuoCe02WngfDD2FKmvBsqZO7j0UqOVSacUhl7cx5RjKPvKQr+LEQf0WLLie+o/BnK+s0YGuvew==
   dependencies:
-    "@storybook/addons" "6.1.6"
-    "@storybook/client-logger" "6.1.6"
+    "@storybook/addons" "6.1.8"
+    "@storybook/client-logger" "6.1.8"
     "@storybook/csf" "0.0.1"
     core-js "^3.0.1"
     estraverse "^4.2.0"
@@ -3051,13 +3025,13 @@
     regenerator-runtime "^0.13.7"
     source-map "^0.7.3"
 
-"@storybook/source-loader@6.1.8":
-  version "6.1.8"
-  resolved "https://registry.yarnpkg.com/@storybook/source-loader/-/source-loader-6.1.8.tgz#1332734f323b328290001cec375ce12c431fbe04"
-  integrity sha512-8Y1UICVw8g3NhuoCe02WngfDD2FKmvBsqZO7j0UqOVSacUhl7cx5RjKPvKQr+LEQf0WLLie+o/BnK+s0YGuvew==
+"@storybook/source-loader@6.1.9":
+  version "6.1.9"
+  resolved "https://registry.yarnpkg.com/@storybook/source-loader/-/source-loader-6.1.9.tgz#10eebf12ecd7baa70e51f368c41b89b4b5084eb1"
+  integrity sha512-2h3TS1O9qJ0xmOOJrWxY9ODEFK0/RLxEmWcXngWAcH1ZrHAuz6UcEatO2bIgykrorf9xKqqk7/AYyE9KxW668A==
   dependencies:
-    "@storybook/addons" "6.1.8"
-    "@storybook/client-logger" "6.1.8"
+    "@storybook/addons" "6.1.9"
+    "@storybook/client-logger" "6.1.9"
     "@storybook/csf" "0.0.1"
     core-js "^3.0.1"
     estraverse "^4.2.0"
