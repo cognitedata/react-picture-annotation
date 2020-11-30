@@ -2131,7 +2131,7 @@
     ts-dedent "^2.0.0"
     util-deprecate "^1.0.2"
 
-"@storybook/addon-actions@6.1.8", "@storybook/addon-actions@^6.1.6":
+"@storybook/addon-actions@6.1.8":
   version "6.1.8"
   resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-6.1.8.tgz#b1a74710daaac8846df539590ff1152d7a18cdb8"
   integrity sha512-G2dhFdJ3xzhmduI3UJDwsJ0hg565Axm7Yux8zzPjqk+o61PPVUtvwdOalYA2XPSn5LN0S9McYBn4uq4SqaxgMw==
@@ -2142,6 +2142,29 @@
     "@storybook/components" "6.1.8"
     "@storybook/core-events" "6.1.8"
     "@storybook/theming" "6.1.8"
+    core-js "^3.0.1"
+    fast-deep-equal "^3.1.1"
+    global "^4.3.2"
+    lodash "^4.17.15"
+    polished "^3.4.4"
+    prop-types "^15.7.2"
+    react-inspector "^5.0.1"
+    regenerator-runtime "^0.13.7"
+    ts-dedent "^2.0.0"
+    util-deprecate "^1.0.2"
+    uuid "^8.0.0"
+
+"@storybook/addon-actions@^6.1.9":
+  version "6.1.9"
+  resolved "https://registry.yarnpkg.com/@storybook/addon-actions/-/addon-actions-6.1.9.tgz#b6d185b8e4e73691acc428b59e4d331195d64a40"
+  integrity sha512-vYqwuaBHrjRbbuyf4WBc5uDhrSejVEEiCabuu4g00R3dN7P5Ne/tbSw9EkYbbrRKxlEhdkk83DU1/J/+mCY5jw==
+  dependencies:
+    "@storybook/addons" "6.1.9"
+    "@storybook/api" "6.1.9"
+    "@storybook/client-api" "6.1.9"
+    "@storybook/components" "6.1.9"
+    "@storybook/core-events" "6.1.9"
+    "@storybook/theming" "6.1.9"
     core-js "^3.0.1"
     fast-deep-equal "^3.1.1"
     global "^4.3.2"
