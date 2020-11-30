@@ -76,9 +76,7 @@ const defaultState: IStageState = {
   originY: 0,
 };
 
-export class ReactPictureAnnotation extends React.Component<
-  IReactPictureAnnotationProps
-> {
+export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotationProps> {
   set selectedId(value: string | null) {
     const { onSelect } = this.props;
     if (this.selectedIdTrueValue !== value) {
@@ -399,7 +397,7 @@ export class ReactPictureAnnotation extends React.Component<
     );
 
     return (
-      <Wrapper>
+      <Wrapper style={{ width, height }}>
         <canvas
           style={{ width, height }}
           className="rp-image"
@@ -1235,10 +1233,7 @@ const StyledArrowBox = styled(ArrowBox)`
 `;
 
 const Wrapper = styled.div`
-  position: absolute;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  position: relative;
   width: 100%;
   height: 100%;
 
