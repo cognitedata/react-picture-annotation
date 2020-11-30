@@ -1,6 +1,6 @@
-import { ReactPictureAnnotation } from 'index';
-import { IAnnotationState } from './AnnotationState';
-import { DefaultAnnotationState } from './DefaultAnnotationState';
+import { ReactPictureAnnotation } from "index";
+import { IAnnotationState } from "./AnnotationState";
+import { DefaultAnnotationState } from "./DefaultAnnotationState";
 
 export default class CreatingAnnotationState implements IAnnotationState {
   private context: ReactPictureAnnotation;
@@ -59,17 +59,19 @@ export default class CreatingAnnotationState implements IAnnotationState {
         data.getAnnotationData().mark.width = Math.abs(width);
         data.getAnnotationData().mark.height = Math.abs(height);
 
-        this.context.selectedId = data.getAnnotationData().id;
+        this.context.selectedIds = [data.getAnnotationData().id];
         if (onAnnotationCreate) {
           onAnnotationCreate(data.getAnnotationData());
         }
       } else {
-        onDelete(this.context.pendingShapeId);
-        this.context.selectedId = null;
+        if (this.context.pendingShapeId) {
+          onDelete(this.context.pendingShapeId);
+        }
+        this.context.selectedIds = [];
       }
     } else {
       this.context.pendingShapeId = null;
-      this.context.selectedId = null;
+      this.context.selectedIds = [];
     }
     setAnnotationState(new DefaultAnnotationState(this.context));
     onShapeChange();

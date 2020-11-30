@@ -1,6 +1,6 @@
-import { ReactPictureAnnotation } from 'index';
-import { IAnnotationState } from './AnnotationState';
-import { DefaultAnnotationState } from './DefaultAnnotationState';
+import { ReactPictureAnnotation } from "index";
+import { IAnnotationState } from "./AnnotationState";
+import { DefaultAnnotationState } from "./DefaultAnnotationState";
 
 export default class DraggingAnnotationState implements IAnnotationState {
   private hasMoved: boolean;
@@ -11,9 +11,10 @@ export default class DraggingAnnotationState implements IAnnotationState {
   }
   public onMouseDown = () => undefined;
   public onMouseMove = (positionX: number, positionY: number) => {
-    const { shapes, selectedId } = this.context;
+    const { shapes, selectedIds } = this.context;
     const currentShape = shapes.find(
-      (el) => el.getAnnotationData().id === selectedId
+      // TODO fix this to not default to first one :thinking
+      (el) => el.getAnnotationData().id === selectedIds[0]
     );
     this.hasMoved = true;
     currentShape!.onDrag(positionX, positionY);
@@ -23,13 +24,14 @@ export default class DraggingAnnotationState implements IAnnotationState {
     const {
       shapes,
       setAnnotationState,
-      selectedId,
+      selectedIds,
       props: { onAnnotationUpdate },
     } = this.context;
     setAnnotationState(new DefaultAnnotationState(this.context));
     if (onAnnotationUpdate && this.hasMoved) {
       const currentShape = shapes.find(
-        (el) => el.getAnnotationData().id === selectedId
+        // TODO fix this to not default to first one :thinking
+        (el) => el.getAnnotationData().id === selectedIds[0]
       );
       onAnnotationUpdate(currentShape!.getAnnotationData());
     }

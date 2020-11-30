@@ -30,7 +30,7 @@ export class DefaultAnnotationState implements IAnnotationState {
   };
   public onMouseUp = () => {
     if (!this.hasMoved && !this.hasSelected && this.hasClicked) {
-      this.context.selectedId = null;
+      this.context.selectedIds = [];
     }
     this.context.onShapeChange();
     this.hasMoved = false;
@@ -63,6 +63,8 @@ export class DefaultAnnotationState implements IAnnotationState {
       return;
     }
 
+    const ids: string[] = [];
+
     for (let i = shapes.length - 1; i >= 0; i--) {
       if (
         shapes[i].checkBoundary(
@@ -72,13 +74,12 @@ export class DefaultAnnotationState implements IAnnotationState {
         ) &&
         !shapes[i].getAnnotationData().disableClick
       ) {
-        if (this.context.selectedId !== shapes[i].getAnnotationData().id) {
+        if (
+          !this.context.selectedIds.includes(shapes[i].getAnnotationData().id)
+        ) {
           this.hasSelected = true;
         }
-        this.context.selectedId = shapes[i].getAnnotationData().id;
-        const [selectedShape] = shapes.splice(i, 1);
-        shapes.push(selectedShape);
-        onShapeChange();
+        ids.push(shapes[i].getAnnotationData().id);
         if (editable) {
           this.context.currentTransformer = new Transformer(
             shapes[i],
@@ -86,11 +87,15 @@ export class DefaultAnnotationState implements IAnnotationState {
             this.context.getOriginalImageSize,
             this.context.calculateShapePositionNoOffset
           );
-          selectedShape.onDragStart(positionX, positionY);
+          shapes[i].onDragStart(positionX, positionY);
           setState(new DraggingAnnotationState(this.context));
         }
-        return;
       }
+    }
+    if (ids.length > 0) {
+      this.context.selectedIds = ids;
+      onShapeChange();
+      return;
     }
     if (editable || creatable) {
       const newShapeId = randomId();
@@ -120,6 +125,7 @@ export class DefaultAnnotationState implements IAnnotationState {
 
   private checkSelectedId = (positionX: number, positionY: number) => {
     const { shapes, onShapeChange } = this.context;
+    const ids: string[] = [];
     for (let i = shapes.length - 1; i >= 0; i--) {
       if (
         shapes[i].checkBoundary(
@@ -130,15 +136,18 @@ export class DefaultAnnotationState implements IAnnotationState {
         )
       ) {
         const { id, disableClick } = shapes[i].getAnnotationData();
-        if (this.context.selectedId !== id && !disableClick) {
-          this.context.selectedId = id;
+        if (!disableClick) {
+          ids.push(id);
           onShapeChange();
         }
-        return;
       }
     }
-    if (this.context.selectedId) {
-      this.context.selectedId = null;
+    if (ids.length > 0) {
+      this.context.selectedIds = ids;
+      return;
+    }
+    if (this.context.selectedIds) {
+      this.context.selectedIds = [];
       onShapeChange();
     }
   };

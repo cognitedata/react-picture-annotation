@@ -37,14 +37,12 @@ export type FileViewerContextObserverPublicProps = {
   /**
    * The current annotation, available via `useSelectedAnnotation()`
    */
-  selectedAnnotation: ProposedCogniteAnnotation | CogniteAnnotation | undefined;
+  selectedAnnotations: (ProposedCogniteAnnotation | CogniteAnnotation)[];
   /**
    * Set the current annotation, available via `useSelectedAnnotation()`
    */
-  setSelectedAnnotation: React.Dispatch<
-    React.SetStateAction<
-      ProposedCogniteAnnotation | CogniteAnnotation | undefined
-    >
+  setSelectedAnnotations: React.Dispatch<
+    React.SetStateAction<(ProposedCogniteAnnotation | CogniteAnnotation)[]>
   >;
   /**
    * Annotations to display, available via `useAnnotations()`
@@ -144,10 +142,10 @@ export const useExtractFromCanvas = () => {
 };
 
 export const useSelectedAnnotation = () => {
-  const { selectedAnnotation, setSelectedAnnotation } = useContext(
+  const { selectedAnnotations, setSelectedAnnotations } = useContext(
     FileViewerContext
   );
-  return { selectedAnnotation, setSelectedAnnotation };
+  return { selectedAnnotations, setSelectedAnnotations };
 };
 export const useViewerQuery = () => {
   const { query, setQuery } = useContext(FileViewerContext);
@@ -181,9 +179,9 @@ const FileViewerProvider = ({
     (CogniteAnnotation | ProposedCogniteAnnotation)[]
   >([]);
 
-  const [selectedAnnotation, setSelectedAnnotation] = useState<
-    ProposedCogniteAnnotation | CogniteAnnotation | undefined
-  >(undefined);
+  const [selectedAnnotations, setSelectedAnnotations] = useState<
+    (ProposedCogniteAnnotation | CogniteAnnotation)[]
+  >([]);
 
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [page, setPage] = useState<number>(1);
@@ -254,10 +252,10 @@ const FileViewerProvider = ({
         setPage,
         totalPages,
         setTotalPages,
-        selectedAnnotation,
+        selectedAnnotations,
         query,
         setQuery,
-        setSelectedAnnotation,
+        setSelectedAnnotations,
       }}
     >
       {children}
