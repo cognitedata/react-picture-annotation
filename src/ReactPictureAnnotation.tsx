@@ -121,6 +121,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     annotationsLoaded: false,
     showInput: false,
     hideArrowPreview: true,
+    isSpacePressed: false,
   };
   private currentAnnotationData: IAnnotation[] = [];
   private selectedIdTrueValues: string[] = [];
@@ -171,6 +172,8 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     this.syncAnnotationData();
     this.syncSelectedId();
+    document.addEventListener("keyup", this.keyListener);
+    document.addEventListener("keydown", this.keyListener);
   };
 
   public componentDidUpdate = async (
@@ -238,6 +241,8 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   };
 
   public componentWillUnmount = () => {
+    document.removeEventListener("keyup", this.keyListener);
+    document.removeEventListener("keydown", this.keyListener);
     if (this.canvasRef.current) {
       this.canvasRef.current.removeEventListener("wheel", this.onWheel);
     }
@@ -452,6 +457,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       );
 
       let hasSelectedItem = false;
+      let xMin = -1;
+      let yMin = -1;
+      let xMax = -1;
+      let yMax = -1;
+      let strokeWidth = -1;
 
       if (this.getOriginalImageSize().width === 1) {
         return;
@@ -489,6 +499,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
         }
 
         if (isSelected) {
+          xMin = xMin === -1 || xMin > x ? x : xMin;
+          yMin = yMin === -1 || yMin > y ? y : yMin;
+          xMax = xMax === -1 || xMax < x + width ? x + width : xMax;
+          yMax = yMax === -1 || yMax < y + height ? y + height : yMax;
+          ({ strokeWidth = 4 } = item.getAnnotationData().mark);
           if (
             !this.currentTransformer ||
             this.currentTransformer.id !== itemId
@@ -507,34 +522,6 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
             this.canvas2D,
             this.calculateShapePosition
           );
-          const { width: containerWidth, height: containerHeight } = this.props;
-
-          const leftOfMiddle = x < containerWidth / 2;
-          const topOfMiddle = y < containerHeight / 2;
-
-          const { strokeWidth = 4 } = item.getAnnotationData().mark;
-          const margin = strokeWidth + 10;
-          const inputPosition = {
-            ...(leftOfMiddle
-              ? { left: x }
-              : { right: containerWidth - (x + width) }),
-            // ...(leftOfMiddle?{paddingLeft: margin}:{paddingRight:margin}),
-            ...(topOfMiddle
-              ? { top: y + height + strokeWidth }
-              : { bottom: -y + containerHeight + strokeWidth }),
-            ...(topOfMiddle
-              ? { paddingTop: margin }
-              : { paddingBottom: margin }),
-            ...(topOfMiddle && {
-              maxHeight: `calc(${this.props.height}px - ${
-                y + height + 2 * margin
-              }px)`,
-            }),
-            ...(!topOfMiddle && { maxHeight: `calc(${y - 2 * margin}px)` }),
-            overflow: "visible",
-            zIndex: 1000,
-          };
-          this.setState({ showInput: true, inputPosition });
         }
       }
       if (!hasSelectedItem) {
@@ -542,6 +529,28 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
           showInput: false,
           inputComment: "",
         });
+      } else {
+        const { width: containerWidth, height: containerHeight } = this.props;
+
+        const leftOfMiddle = xMin < containerWidth / 2;
+        const topOfMiddle = yMin < containerHeight / 2;
+
+        const margin = strokeWidth + 10;
+        const inputPosition = {
+          ...(leftOfMiddle ? { left: xMin } : { right: containerWidth - xMax }),
+          // ...(leftOfMiddle?{paddingLeft: margin}:{paddingRight:margin}),
+          ...(topOfMiddle
+            ? { top: yMax + strokeWidth }
+            : { bottom: -yMin + containerHeight + strokeWidth }),
+          ...(topOfMiddle ? { paddingTop: margin } : { paddingBottom: margin }),
+          ...(topOfMiddle && {
+            maxHeight: `calc(${this.props.height}px - ${yMax + 2 * margin}px)`,
+          }),
+          ...(!topOfMiddle && { maxHeight: `calc(${yMin - 2 * margin}px)` }),
+          overflow: "visible",
+          zIndex: 1000,
+        };
+        this.setState({ showInput: true, inputPosition });
       }
       this.setState({ arrowPreviewPositions: updatedArrowPreviewPositions });
     }
@@ -1004,8 +1013,12 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       offsetX,
       offsetY
     );
-    this.currentAnnotationState.onMouseDown(positionX, positionY);
-    if (!(creatable || editable) || event.shiftKey) {
+    this.currentAnnotationState.onMouseDown(event, positionX, positionY);
+    if (
+      !(creatable || editable) ||
+      event.shiftKey ||
+      this.state.isSpacePressed
+    ) {
       const { originX, originY } = this.scaleState;
       this.startDrag = { x: offsetX, y: offsetY, originX, originY };
     }
@@ -1047,7 +1060,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       clientY
     );
 
-    this.currentAnnotationState.onMouseDown(positionX, positionY);
+    this.currentAnnotationState.onMouseDown(event, positionX, positionY);
     if (!editable) {
       const { touches } = event;
       if (touches.length === 2) {
@@ -1202,6 +1215,14 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     }
 
     return rotation;
+  };
+
+  private keyListener = (e: KeyboardEvent) => {
+    if (e.key === " " || e.keyCode === 32) {
+      this.setState({
+        isSpacePressed: e.type === "keydown",
+      });
+    }
   };
 }
 
