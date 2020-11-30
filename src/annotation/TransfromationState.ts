@@ -1,6 +1,6 @@
-import { ReactPictureAnnotation } from 'index';
-import { IAnnotationState } from './AnnotationState';
-import { DefaultAnnotationState } from './DefaultAnnotationState';
+import { ReactPictureAnnotation } from "index";
+import { IAnnotationState } from "./AnnotationState";
+import { DefaultAnnotationState } from "./DefaultAnnotationState";
 
 export default class TransformationState implements IAnnotationState {
   private context: ReactPictureAnnotation;
@@ -19,13 +19,14 @@ export default class TransformationState implements IAnnotationState {
     const {
       shapes,
       setAnnotationState,
-      selectedId,
+      selectedIds,
       props: { onAnnotationUpdate },
     } = this.context;
     setAnnotationState(new DefaultAnnotationState(this.context));
     if (onAnnotationUpdate) {
       const currentShape = shapes.find(
-        (el) => el.getAnnotationData().id === selectedId
+        // TODO fix this to not default to first one :thinking
+        (el) => el.getAnnotationData().id === selectedIds[0]
       );
       if (currentShape) {
         onAnnotationUpdate(currentShape.getAnnotationData());

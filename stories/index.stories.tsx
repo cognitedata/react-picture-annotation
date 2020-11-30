@@ -1,17 +1,17 @@
-import { storiesOf } from '@storybook/react';
-import React, { useEffect, useState } from 'react';
-import { action } from '@storybook/addon-actions';
-import styled from 'styled-components';
-import { ReactPictureAnnotation } from '../src';
-import { IAnnotation } from '../src/Annotation';
-import { IShapeData } from '../src/Shape';
+import { storiesOf } from "@storybook/react";
+import React, { useEffect, useState } from "react";
+import { action } from "@storybook/addon-actions";
+import styled from "styled-components";
+import { ReactPictureAnnotation } from "../src";
+import { IAnnotation } from "../src/Annotation";
+import { IShapeData } from "../src/Shape";
 
 const defaultAnnotations = [
   {
-    id: 'a',
-    comment: 'Hello World',
+    id: "a",
+    comment: "Hello World",
     mark: {
-      type: 'RECT',
+      type: "RECT",
       width: 161,
       height: 165,
       x: 0.1,
@@ -19,10 +19,10 @@ const defaultAnnotations = [
     },
   },
   {
-    id: 'b',
-    comment: 'Hello World',
+    id: "b",
+    comment: "Hello World",
     mark: {
-      type: 'RECT',
+      type: "RECT",
       width: 161,
       height: 165,
       x: 0,
@@ -30,10 +30,10 @@ const defaultAnnotations = [
     },
   },
   {
-    id: 'test',
-    comment: 'percentages',
+    id: "test",
+    comment: "percentages",
     mark: {
-      type: 'RECT',
+      type: "RECT",
       width: 0.2,
       height: 0.2,
       x: 0.5,
@@ -41,10 +41,10 @@ const defaultAnnotations = [
     },
   },
   {
-    id: 'test2',
-    comment: 'percentages 2 ',
+    id: "test2",
+    comment: "percentages 2 ",
     mark: {
-      type: 'RECT',
+      type: "RECT",
       width: 0.5,
       height: 0.1,
       x: 0.9,
@@ -53,10 +53,10 @@ const defaultAnnotations = [
   },
 
   {
-    id: 'test2--a',
-    comment: 'percentages 2 ',
+    id: "test2--a",
+    comment: "percentages 2 ",
     mark: {
-      type: 'RECT',
+      type: "RECT",
       width: 0.5,
       height: 0.1,
       x: 0.25,
@@ -64,10 +64,10 @@ const defaultAnnotations = [
     },
   },
   {
-    id: 'test2--b',
-    comment: 'percentages 2 ',
+    id: "test2--b",
+    comment: "percentages 2 ",
     mark: {
-      type: 'RECT',
+      type: "RECT",
       width: 0.5,
       height: 0.1,
       x: 0.75,
@@ -76,8 +76,8 @@ const defaultAnnotations = [
   },
 ];
 
-storiesOf('Default Viewer', module)
-  .add('No Edit', () => {
+storiesOf("Default Viewer", module)
+  .add("No Edit", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -87,7 +87,7 @@ storiesOf('Default Viewer', module)
       IAnnotation<IShapeData>[]
     >(defaultAnnotations);
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
     const onResize = () => {
       setSize({
@@ -97,9 +97,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
     return (
@@ -109,17 +109,17 @@ storiesOf('Default Viewer', module)
           height={size.height}
           annotationData={annotationData}
           onChange={(data) => setAnnotationData(data)}
-          selectedId={selectedId}
+          selectedIds={selectedIds}
           onSelect={(e) => {
-            setSelectedId(e);
-            action('onSelect')(e);
+            setSelectedIds(e);
+            action("onSelect")(e);
           }}
           image="https://unsplash.it/1200/600"
         />
       </Wrapper>
     );
   })
-  .add('PDF', () => {
+  .add("PDF", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -129,7 +129,7 @@ storiesOf('Default Viewer', module)
       IAnnotation<IShapeData>[]
     >(defaultAnnotations);
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
     const [page, setPage] = useState<number>(1);
 
     const onResize = () => {
@@ -140,9 +140,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
     const [total, setTotal] = useState<number>(1);
@@ -157,10 +157,10 @@ storiesOf('Default Viewer', module)
           height={size.height}
           annotationData={annotationData}
           onChange={(data) => setAnnotationData(data)}
-          selectedId={selectedId}
+          selectedIds={selectedIds}
           onSelect={(e) => {
-            setSelectedId(e);
-            action('onSelect')(e);
+            setSelectedIds(e);
+            action("onSelect")(e);
           }}
           onPDFLoaded={({ pages }) => {
             setTotal(pages);
@@ -169,10 +169,10 @@ storiesOf('Default Viewer', module)
         />
         <div
           style={{
-            position: 'absolute',
+            position: "absolute",
             bottom: 12,
-            left: '50%',
-            right: '50%',
+            left: "50%",
+            right: "50%",
           }}
         >
           <button onClick={() => setPage(page - 1)} disabled={page === 1}>
@@ -185,7 +185,7 @@ storiesOf('Default Viewer', module)
       </Wrapper>
     );
   })
-  .add('Hoverable', () => {
+  .add("Hoverable", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -195,10 +195,10 @@ storiesOf('Default Viewer', module)
       IAnnotation<IShapeData>[]
     >([
       {
-        id: 'a',
-        comment: 'Hello World',
+        id: "a",
+        comment: "Hello World",
         mark: {
-          type: 'RECT',
+          type: "RECT",
           width: 161,
           height: 165,
           x: 229,
@@ -207,7 +207,7 @@ storiesOf('Default Viewer', module)
       },
     ]);
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
     const onResize = () => {
       setSize({
@@ -217,9 +217,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
     return (
@@ -228,32 +228,32 @@ storiesOf('Default Viewer', module)
         height={size.height}
         annotationData={annotationData}
         onChange={(data) => setAnnotationData(data)}
-        selectedId={selectedId}
+        selectedIds={selectedIds}
         onSelect={(e) => {
-          setSelectedId(e);
-          action('onSelect')(e);
+          setSelectedIds(e);
+          action("onSelect")(e);
         }}
         hoverable={true}
         image="https://unsplash.it/1200/600"
       />
     );
   })
-  .add('Refresh', () => {
+  .add("Refresh", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
     });
 
-    const [image, setImage] = useState('https://picsum.photos/id/1/200/300');
+    const [image, setImage] = useState("https://picsum.photos/id/1/200/300");
 
     const [annotationData, setAnnotationData] = useState<
       IAnnotation<IShapeData>[]
     >([
       {
-        id: 'a',
-        comment: 'Hello World',
+        id: "a",
+        comment: "Hello World",
         mark: {
-          type: 'RECT',
+          type: "RECT",
           width: 161,
           height: 165,
           x: 229,
@@ -262,7 +262,7 @@ storiesOf('Default Viewer', module)
       },
     ]);
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
     const onResize = () => {
       setSize({
@@ -272,9 +272,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
     return (
@@ -295,10 +295,10 @@ storiesOf('Default Viewer', module)
           height={size.height}
           annotationData={annotationData}
           onChange={(data) => setAnnotationData(data)}
-          selectedId={selectedId}
+          selectedIds={selectedIds}
           onSelect={(e) => {
-            setSelectedId(e);
-            action('onSelect')(e);
+            setSelectedIds(e);
+            action("onSelect")(e);
           }}
           hoverable={true}
           image={image}
@@ -306,7 +306,7 @@ storiesOf('Default Viewer', module)
       </Wrapper>
     );
   })
-  .add('Editable', () => {
+  .add("Editable", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -316,7 +316,7 @@ storiesOf('Default Viewer', module)
       IAnnotation<IShapeData>[]
     >(defaultAnnotations);
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
     const onResize = () => {
       setSize({
@@ -326,9 +326,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
 
@@ -338,17 +338,17 @@ storiesOf('Default Viewer', module)
         height={size.height}
         annotationData={annotationData}
         onChange={(data) => setAnnotationData(data)}
-        selectedId={selectedId}
+        selectedIds={selectedIds}
         onSelect={(e) => {
-          setSelectedId(e);
-          action('onSelect')(e);
+          setSelectedIds(e);
+          action("onSelect")(e);
         }}
         editable={true}
         image="https://unsplash.it/1200/600"
       />
     );
   })
-  .add('Creatable', () => {
+  .add("Creatable", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -358,7 +358,7 @@ storiesOf('Default Viewer', module)
       IAnnotation<IShapeData>[]
     >(defaultAnnotations);
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
     const onResize = () => {
       setSize({
@@ -368,9 +368,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
 
@@ -380,10 +380,10 @@ storiesOf('Default Viewer', module)
         height={size.height}
         annotationData={annotationData}
         onChange={(data) => setAnnotationData(data)}
-        selectedId={selectedId}
+        selectedIds={selectedIds}
         onSelect={(e) => {
-          setSelectedId(e);
-          action('onSelect')(e);
+          setSelectedIds(e);
+          action("onSelect")(e);
         }}
         creatable={true}
         editable={false}
@@ -391,7 +391,7 @@ storiesOf('Default Viewer', module)
       />
     );
   })
-  .add('Custom Render', () => {
+  .add("Custom Render", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -406,7 +406,7 @@ storiesOf('Default Viewer', module)
           ...el.mark,
           draw: (canvas, x, y, width, height) => {
             canvas.beginPath();
-            canvas.fillStyle = 'green';
+            canvas.fillStyle = "green";
             canvas.arc(
               x + width / 2,
               y + height / 2,
@@ -421,7 +421,7 @@ storiesOf('Default Viewer', module)
       }))
     );
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
     const onResize = () => {
       setSize({
@@ -431,9 +431,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
 
@@ -443,16 +443,16 @@ storiesOf('Default Viewer', module)
         height={size.height}
         annotationData={annotationData}
         onChange={(data) => setAnnotationData(data)}
-        selectedId={selectedId}
+        selectedIds={selectedIds}
         onSelect={(e) => {
-          setSelectedId(e);
-          action('onSelect')(e);
+          setSelectedIds(e);
+          action("onSelect")(e);
         }}
         image="https://unsplash.it/1200/600"
       />
     );
   })
-  .add('No Labels', () => {
+  .add("No Labels", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -462,10 +462,10 @@ storiesOf('Default Viewer', module)
       IAnnotation<IShapeData>[]
     >([
       {
-        id: 'a',
-        comment: 'HA HA HA',
+        id: "a",
+        comment: "HA HA HA",
         mark: {
-          type: 'RECT',
+          type: "RECT",
           width: 161,
           height: 165,
           x: 229,
@@ -474,7 +474,7 @@ storiesOf('Default Viewer', module)
       },
     ]);
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
     const onResize = () => {
       setSize({
@@ -484,9 +484,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
 
@@ -497,10 +497,10 @@ storiesOf('Default Viewer', module)
           height={size.height}
           annotationData={annotationData}
           onChange={(data) => setAnnotationData(data)}
-          selectedId={selectedId}
+          selectedIds={selectedIds}
           onSelect={(e) => {
-            setSelectedId(e);
-            action('onSelect')(e);
+            setSelectedIds(e);
+            action("onSelect")(e);
           }}
           drawLabel={false}
           image="https://unsplash.it/1200/600"
@@ -508,36 +508,36 @@ storiesOf('Default Viewer', module)
       </Wrapper>
     );
   })
-  .add('Colors', () => {
+  .add("Colors", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
     });
     const annotations = [
       {
-        id: 'a',
-        comment: 'HA HA HA',
+        id: "a",
+        comment: "HA HA HA",
         mark: {
-          type: 'RECT',
+          type: "RECT",
           width: 161,
           height: 165,
           x: 229,
           y: 92,
-          strokeColor: 'red',
-          backgroundColor: 'rgba(255,0,0,0.2)',
+          strokeColor: "red",
+          backgroundColor: "rgba(255,0,0,0.2)",
         },
       },
       {
-        id: 'b',
-        comment: 'HA HA HA 2',
+        id: "b",
+        comment: "HA HA HA 2",
         mark: {
-          type: 'RECT',
+          type: "RECT",
           width: 116,
           height: 116,
           x: 429,
           y: 192,
-          strokeColor: 'green',
-          backgroundColor: 'rgba(0,255,0,0.2)',
+          strokeColor: "green",
+          backgroundColor: "rgba(0,255,0,0.2)",
         },
       },
     ];
@@ -546,7 +546,7 @@ storiesOf('Default Viewer', module)
       IAnnotation<IShapeData>[]
     >(annotations);
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
     const onResize = () => {
       setSize({
@@ -556,14 +556,14 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
 
     const changeColor = () => {
-      annotations[0].mark.strokeColor = 'blue';
+      annotations[0].mark.strokeColor = "blue";
       setAnnotationData(annotations);
     };
 
@@ -575,17 +575,17 @@ storiesOf('Default Viewer', module)
           height={size.height}
           annotationData={annotationData}
           onChange={(data) => setAnnotationData(data)}
-          selectedId={selectedId}
+          selectedIds={selectedIds}
           onSelect={(e) => {
-            setSelectedId(e);
-            action('onSelect')(e);
+            setSelectedIds(e);
+            action("onSelect")(e);
           }}
           image="https://unsplash.it/1200/600"
         />
       </Wrapper>
     );
   })
-  .add('Custom Render using scale', () => {
+  .add("Custom Render using scale", () => {
     const AnnotationComponent = () => {
       const [size, setSize] = useState({
         width: window.innerWidth - 16,
@@ -603,14 +603,14 @@ storiesOf('Default Viewer', module)
               const fontSize = 16 * (scale || 0);
               canvas.font = `${fontSize}px verdana`;
 
-              canvas.fillStyle = 'black';
-              canvas.fillText('Scaled text', x, y);
+              canvas.fillStyle = "black";
+              canvas.fillText("Scaled text", x, y);
             },
           },
         }))
       );
 
-      const [selectedId, setSelectedId] = useState<string | null>('a');
+      const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
       const onResize = () => {
         setSize({
@@ -620,9 +620,9 @@ storiesOf('Default Viewer', module)
       };
 
       useEffect(() => {
-        window.addEventListener('resize', onResize);
+        window.addEventListener("resize", onResize);
         return () => {
-          window.removeEventListener('resize', onResize);
+          window.removeEventListener("resize", onResize);
         };
       }, []);
 
@@ -632,8 +632,11 @@ storiesOf('Default Viewer', module)
           height={size.height}
           annotationData={annotationData}
           onChange={(data) => setAnnotationData(data)}
-          selectedId={selectedId}
-          onSelect={(e) => setSelectedId(e)}
+          selectedIds={selectedIds}
+          onSelect={(e) => {
+            setSelectedIds(e);
+            action("onSelect")(e);
+          }}
           image="https://unsplash.it/1200/600"
         />
       );
@@ -641,7 +644,7 @@ storiesOf('Default Viewer', module)
 
     return <AnnotationComponent />;
   })
-  .add('Buttons', () => {
+  .add("Buttons", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -651,10 +654,10 @@ storiesOf('Default Viewer', module)
       IAnnotation<IShapeData>[]
     >([
       {
-        id: 'a',
-        comment: 'HA HA HA',
+        id: "a",
+        comment: "HA HA HA",
         mark: {
-          type: 'RECT',
+          type: "RECT",
           width: 161,
           height: 165,
           x: 229,
@@ -662,10 +665,10 @@ storiesOf('Default Viewer', module)
         },
       },
       {
-        id: 'b',
-        comment: 'HA HA HA 2',
+        id: "b",
+        comment: "HA HA HA 2",
         mark: {
-          type: 'RECT',
+          type: "RECT",
           width: 116,
           height: 116,
           x: 429,
@@ -674,7 +677,7 @@ storiesOf('Default Viewer', module)
       },
     ]);
 
-    const [selectedId, setSelectedId] = useState<string | null>('a');
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
 
     const onResize = () => {
       setSize({
@@ -684,9 +687,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
 
@@ -698,16 +701,19 @@ storiesOf('Default Viewer', module)
           width={size.width}
           height={size.height}
           annotationData={annotationData}
-          onChange={(data) => setAnnotationData(data)}
-          selectedId={selectedId}
+          onChange={(data) => {
+            setAnnotationData(data);
+            action("onChange")(data);
+          }}
+          selectedIds={selectedIds}
           onSelect={(e) => {
-            setSelectedId(e);
-            action('onSelect')(e);
+            setSelectedIds(e);
+            action("onSelect")(e);
           }}
           image="https://unsplash.it/1200/600"
           ref={annotationRef}
         />
-        <div style={{ position: 'absolute', zIndex: 1000 }}>
+        <div style={{ position: "absolute", zIndex: 1000 }}>
           <button
             onClick={() => {
               if (annotationRef.current) {
@@ -739,7 +745,7 @@ storiesOf('Default Viewer', module)
       </Wrapper>
     );
   })
-  .add('Extract From Canvas', () => {
+  .add("Extract From Canvas", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -759,9 +765,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
 
@@ -776,12 +782,12 @@ storiesOf('Default Viewer', module)
           onChange={(data) => setAnnotationData(data)}
           creatable={true}
           onSelect={(e) => {
-            action('onSelect')(e);
+            action("onSelect")(e);
           }}
           image="https://unsplash.it/1200/600"
           ref={annotationRef}
         />
-        <div style={{ position: 'absolute', zIndex: 1000 }}>
+        <div style={{ position: "absolute", zIndex: 1000 }}>
           <button
             onClick={() => {
               if (annotationRef.current) {
@@ -796,12 +802,12 @@ storiesOf('Default Viewer', module)
           >
             Get Image
           </button>
-          <img src={src} style={{ width: 100, height: 'auto' }} />
+          <img src={src} style={{ width: 100, height: "auto" }} />
         </div>
       </Wrapper>
     );
   })
-  .add('Download', () => {
+  .add("Download", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
       height: window.innerHeight - 16,
@@ -819,17 +825,17 @@ storiesOf('Default Viewer', module)
                 ...el.mark,
                 draw: (ctx, x, y, _, _2, scale) => {
                   const fontsize = scale * 28;
-                  const fontface = 'verdana';
+                  const fontface = "verdana";
                   const text = `Hello! - ${i}`;
 
-                  ctx.font = fontsize + 'px ' + fontface;
+                  ctx.font = fontsize + "px " + fontface;
                   const textWidth = ctx.measureText(text).width + 8;
 
-                  ctx.textAlign = 'left';
-                  ctx.textBaseline = 'top';
-                  ctx.fillStyle = 'red';
+                  ctx.textAlign = "left";
+                  ctx.textBaseline = "top";
+                  ctx.fillStyle = "red";
                   ctx.fillRect(x, y, textWidth, fontsize + 4);
-                  ctx.fillStyle = 'white';
+                  ctx.fillStyle = "white";
                   ctx.fillText(text, x + 4, y + 2);
                 },
               },
@@ -837,10 +843,10 @@ storiesOf('Default Viewer', module)
         )
         .concat([
           {
-            id: 'additional',
-            comment: 'Hello World2',
+            id: "additional",
+            comment: "Hello World2",
             mark: {
-              type: 'RECT',
+              type: "RECT",
               width: 0.2,
               height: 0.3,
               x: 0.1,
@@ -850,7 +856,7 @@ storiesOf('Default Viewer', module)
         ])
     );
 
-    const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
     const onResize = () => {
       setSize({
@@ -860,9 +866,9 @@ storiesOf('Default Viewer', module)
     };
 
     useEffect(() => {
-      window.addEventListener('resize', onResize);
+      window.addEventListener("resize", onResize);
       return () => {
-        window.removeEventListener('resize', onResize);
+        window.removeEventListener("resize", onResize);
       };
     }, []);
 
@@ -875,19 +881,19 @@ storiesOf('Default Viewer', module)
           height={size.height}
           annotationData={annotationData}
           onChange={(data) => setAnnotationData(data)}
-          selectedId={selectedId}
+          selectedIds={selectedIds}
           onSelect={(e) => {
-            setSelectedId(e);
-            action('onSelect')(e);
+            setSelectedIds(e);
+            action("onSelect")(e);
           }}
           pdf="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
           ref={annotationRef}
         />
-        <div style={{ position: 'absolute', zIndex: 1000 }}>
+        <div style={{ position: "absolute", zIndex: 1000 }}>
           <button
             onClick={() => {
               if (annotationRef.current) {
-                annotationRef.current.downloadFile('sample.pdf');
+                annotationRef.current.downloadFile("sample.pdf");
               }
             }}
           >

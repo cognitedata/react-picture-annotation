@@ -17,7 +17,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2
 import ArrowBox from "./ArrowBox";
 
 export type RenderItemPreviewFunction = (
-  annotation: IAnnotation,
+  annotations: IAnnotation[],
   height: React.CSSProperties["maxHeight"]
 ) => React.ReactElement | undefined;
 
@@ -40,9 +40,9 @@ export type ExtractFromCanvasFunction = (
 
 interface IReactPictureAnnotationProps {
   annotationData?: IAnnotation[];
-  selectedId?: string | null;
+  selectedIds?: string[];
   onChange?: (annotationData: IAnnotation[]) => void;
-  onSelect: (id: string | null) => void;
+  onSelect: (ids: string[]) => void;
   width: number;
   height: number;
   usePercentage?: boolean;
@@ -77,24 +77,30 @@ const defaultState: IStageState = {
 };
 
 export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotationProps> {
-  set selectedId(value: string | null) {
+  set selectedIds(value: string[]) {
     const { onSelect } = this.props;
-    if (this.selectedIdTrueValue !== value) {
+    if (this.selectedIdTrueValues !== value) {
       onSelect(value);
     }
-    this.selectedIdTrueValue = value;
+    this.selectedIdTrueValues = value;
   }
 
-  get selectedId() {
-    return this.selectedIdTrueValue;
+  get selectedIds() {
+    return this.selectedIdTrueValues;
   }
 
-  get selectedItem() {
+  get selectedItems() {
     if (!this.props.annotationData) {
-      return;
+      return [];
     }
-    return this.props.annotationData.find(
-      (el) => el.id === this.selectedIdTrueValue
+    if (this.selectedIdTrueValues === null) {
+      return [];
+    }
+    if (this.selectedIdTrueValues.length === 0) {
+      return [];
+    }
+    return this.props.annotationData.filter((el) =>
+      this.selectedIdTrueValues!.some((it) => it === el.id)
     );
   }
   public static defaultProps = {
@@ -115,9 +121,10 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     annotationsLoaded: false,
     showInput: false,
     hideArrowPreview: true,
+    isSpacePressed: false,
   };
   private currentAnnotationData: IAnnotation[] = [];
-  private selectedIdTrueValue: string | null = null;
+  private selectedIdTrueValues: string[] = [];
   public canvasRef = React.createRef<HTMLCanvasElement>();
   private canvas2D?: CanvasRenderingContext2D | null;
   private imageCanvasRef = React.createRef<HTMLCanvasElement>();
@@ -165,6 +172,8 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     this.syncAnnotationData();
     this.syncSelectedId();
+    document.addEventListener("keyup", this.keyListener);
+    document.addEventListener("keydown", this.keyListener);
   };
 
   public componentDidUpdate = async (
@@ -232,6 +241,8 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   };
 
   public componentWillUnmount = () => {
+    document.removeEventListener("keyup", this.keyListener);
+    document.removeEventListener("keydown", this.keyListener);
     if (this.canvasRef.current) {
       this.canvasRef.current.removeEventListener("wheel", this.onWheel);
     }
@@ -343,11 +354,13 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       width,
       height,
       annotationData,
-      renderItemPreview = (annotation) => (
+      renderItemPreview = (annotations) => (
         <DefaultInputSection
-          annotation={annotation}
-          onChange={this.onInputCommentChange}
-          onDelete={this.onDelete}
+          annotation={annotations[0]}
+          onChange={(comment) =>
+            this.onInputCommentChange(annotations[0].id, comment)
+          }
+          onDelete={() => this.onDelete(annotations[0].id)}
         />
       ),
       renderArrowPreview,
@@ -381,20 +394,22 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       });
     };
 
-    const showPreview = (selectedItem: any) => (
-      <div
-        className="rp-selected-input"
-        style={inputPosition}
-        onMouseEnter={() => {
-          this.selectedId = this.selectedItem!.id;
-          if (!this.props.hoverable) {
-            this.currentAnnotationState.onMouseUp();
-          }
-        }}
-      >
-        {renderItemPreview(selectedItem, inputPosition.maxHeight)}
-      </div>
-    );
+    const showPreview = () => {
+      return (
+        <div
+          className="rp-selected-input"
+          style={inputPosition}
+          onMouseEnter={() => {
+            this.selectedIds = (this.selectedItems || []).map((el) => el.id);
+            if (!this.props.hoverable) {
+              this.currentAnnotationState.onMouseUp();
+            }
+          }}
+        >
+          {renderItemPreview(this.selectedItems, inputPosition.maxHeight)}
+        </div>
+      );
+    };
 
     return (
       <Wrapper style={{ width, height }}>
@@ -419,7 +434,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
           onTouchEnd={this.onTouchEnd}
           onTouchMove={this.onTouchMove}
         />
-        {this.selectedItem && showInput && showPreview(this.selectedItem)}
+        {this.selectedItems.length !== 0 && showInput && showPreview()}
         {renderArrowPreview &&
           annotationData &&
           !hideArrowPreview &&
@@ -442,6 +457,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       );
 
       let hasSelectedItem = false;
+      let xMin = -1;
+      let yMin = -1;
+      let xMax = -1;
+      let yMax = -1;
+      let strokeWidth = -1;
 
       if (this.getOriginalImageSize().width === 1) {
         return;
@@ -452,7 +472,9 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       for (const item of this.shapes) {
         const annotation = item.getAnnotationData();
         const itemId = annotation.id;
-        const isSelected = itemId === this.selectedId;
+        const isSelected = this.selectedIds
+          ? this.selectedIds.includes(itemId)
+          : false;
         const { scale } = this.scaleState;
         const { x, y, height, width } = item.paint(
           this.canvas2D,
@@ -477,6 +499,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
         }
 
         if (isSelected) {
+          xMin = xMin === -1 || xMin > x ? x : xMin;
+          yMin = yMin === -1 || yMin > y ? y : yMin;
+          xMax = xMax === -1 || xMax < x + width ? x + width : xMax;
+          yMax = yMax === -1 || yMax < y + height ? y + height : yMax;
+          ({ strokeWidth = 4 } = item.getAnnotationData().mark);
           if (
             !this.currentTransformer ||
             this.currentTransformer.id !== itemId
@@ -495,34 +522,6 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
             this.canvas2D,
             this.calculateShapePosition
           );
-          const { width: containerWidth, height: containerHeight } = this.props;
-
-          const leftOfMiddle = x < containerWidth / 2;
-          const topOfMiddle = y < containerHeight / 2;
-
-          const { strokeWidth = 4 } = item.getAnnotationData().mark;
-          const margin = strokeWidth + 10;
-          const inputPosition = {
-            ...(leftOfMiddle
-              ? { left: x }
-              : { right: containerWidth - (x + width) }),
-            // ...(leftOfMiddle?{paddingLeft: margin}:{paddingRight:margin}),
-            ...(topOfMiddle
-              ? { top: y + height + strokeWidth }
-              : { bottom: -y + containerHeight + strokeWidth }),
-            ...(topOfMiddle
-              ? { paddingTop: margin }
-              : { paddingBottom: margin }),
-            ...(topOfMiddle && {
-              maxHeight: `calc(${this.props.height}px - ${
-                y + height + 2 * margin
-              }px)`,
-            }),
-            ...(!topOfMiddle && { maxHeight: `calc(${y - 2 * margin}px)` }),
-            overflow: "visible",
-            zIndex: 1000,
-          };
-          this.setState({ showInput: true, inputPosition });
         }
       }
       if (!hasSelectedItem) {
@@ -530,6 +529,28 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
           showInput: false,
           inputComment: "",
         });
+      } else {
+        const { width: containerWidth, height: containerHeight } = this.props;
+
+        const leftOfMiddle = xMin < containerWidth / 2;
+        const topOfMiddle = yMin < containerHeight / 2;
+
+        const margin = strokeWidth + 10;
+        const inputPosition = {
+          ...(leftOfMiddle ? { left: xMin } : { right: containerWidth - xMax }),
+          // ...(leftOfMiddle?{paddingLeft: margin}:{paddingRight:margin}),
+          ...(topOfMiddle
+            ? { top: yMax + strokeWidth }
+            : { bottom: -yMin + containerHeight + strokeWidth }),
+          ...(topOfMiddle ? { paddingTop: margin } : { paddingBottom: margin }),
+          ...(topOfMiddle && {
+            maxHeight: `calc(${this.props.height}px - ${yMax + 2 * margin}px)`,
+          }),
+          ...(!topOfMiddle && { maxHeight: `calc(${yMin - 2 * margin}px)` }),
+          overflow: "visible",
+          zIndex: 1000,
+        };
+        this.setState({ showInput: true, inputPosition });
       }
       this.setState({ arrowPreviewPositions: updatedArrowPreviewPositions });
     }
@@ -639,7 +660,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     this.props.onLoading(false);
   };
 
-  public onDelete = (id = this.selectedId) => {
+  public onDelete = (id: string) => {
     const deleteTarget = this.shapes.findIndex(
       (shape) => shape.getAnnotationData().id === id
     );
@@ -647,7 +668,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       this.shapes.splice(deleteTarget, 1);
       this.onShapeChange();
     }
-    this.selectedId = null;
+    this.selectedIds = this.selectedIds.filter((el) => el !== id);
     this.onShapeChange();
   };
 
@@ -862,13 +883,8 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
             )
         );
         this.shapes = nextShapes;
-        if (
-          !nextShapes.find(
-            (el) => el.getAnnotationData().id === this.selectedId
-          )
-        ) {
-          this.selectedId = null;
-        }
+        const ids = nextShapes.map((item) => item.getAnnotationData().id);
+        this.selectedIds = this.selectedIds.filter((el) => ids.includes(el));
         this.onShapeChange();
       };
 
@@ -896,10 +912,10 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   };
 
   private syncSelectedId = () => {
-    const { selectedId } = this.props;
+    const { selectedIds } = this.props;
 
-    if (selectedId && selectedId !== this.selectedId) {
-      this.selectedId = selectedId;
+    if (selectedIds && selectedIds !== this.selectedIds) {
+      this.selectedIds = selectedIds;
       this.onShapeChange();
     }
   };
@@ -919,9 +935,9 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     }
   };
 
-  private onInputCommentChange = (comment: string) => {
+  private onInputCommentChange = (id: string, comment: string) => {
     const selectedShapeIndex = this.shapes.findIndex(
-      (item) => item.getAnnotationData().id === this.selectedId
+      (item) => item.getAnnotationData().id === id
     );
     this.shapes[selectedShapeIndex].getAnnotationData().comment = comment;
     this.onShapeChange();
@@ -997,8 +1013,12 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       offsetX,
       offsetY
     );
-    this.currentAnnotationState.onMouseDown(positionX, positionY);
-    if (!(creatable || editable) || event.shiftKey) {
+    this.currentAnnotationState.onMouseDown(event, positionX, positionY);
+    if (
+      !(creatable || editable) ||
+      event.shiftKey ||
+      this.state.isSpacePressed
+    ) {
       const { originX, originY } = this.scaleState;
       this.startDrag = { x: offsetX, y: offsetY, originX, originY };
     }
@@ -1040,7 +1060,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       clientY
     );
 
-    this.currentAnnotationState.onMouseDown(positionX, positionY);
+    this.currentAnnotationState.onMouseDown(event, positionX, positionY);
     if (!editable) {
       const { touches } = event;
       if (touches.length === 2) {
@@ -1195,6 +1215,14 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     }
 
     return rotation;
+  };
+
+  private keyListener = (e: KeyboardEvent) => {
+    if (e.key === " " || e.keyCode === 32) {
+      this.setState({
+        isSpacePressed: e.type === "keydown",
+      });
+    }
   };
 }
 
