@@ -22,6 +22,9 @@ export interface IShapeBase {
   backgroundColor?: string;
   strokeWidth?: number;
   strokeColor?: string;
+  /**
+   * Custom draw function, return true if the default boxes should still be drawn. By default it will NOT draw the default boxes if a custom `draw` is passed.
+   */
   draw?: (
     canvas2D: CanvasRenderingContext2D,
     x: number,
@@ -30,7 +33,7 @@ export interface IShapeBase {
     height: number,
     scale: number,
     isDownload: boolean
-  ) => void;
+  ) => boolean | void;
 }
 
 export interface IShapeAdjustBase extends Partial<IShapeBase> {}
@@ -151,17 +154,20 @@ export class RectShape implements IShape {
     const { mark } = this.annotationData;
     const { x, y, width, height } = calculateTruePosition(mark);
     canvas2D.save();
+    let shouldDraw = true;
     if (this.annotationData.mark.draw) {
-      this.annotationData.mark.draw(
-        canvas2D,
-        x,
-        y,
-        width,
-        height,
-        scale,
-        isDownload
-      );
-    } else {
+      shouldDraw =
+        this.annotationData.mark.draw(
+          canvas2D,
+          x,
+          y,
+          width,
+          height,
+          scale,
+          isDownload
+        ) || false;
+    }
+    if (shouldDraw) {
       const padding = 5;
       canvas2D.shadowBlur = 10;
       canvas2D.shadowColor = mark.shadowColor || shapeStyle.shapeShadowStyle;
