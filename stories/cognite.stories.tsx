@@ -16,7 +16,7 @@ import {
 import { CustomizableCogniteAnnotation } from "./Cognite/FileViewerUtils";
 import { Button } from "@cognite/cogs.js";
 import {
-  useSelectedAnnotation,
+  useSelectedAnnotations,
   useExtractFromCanvas,
 } from "../src/Cognite/FileViewerContext";
 import {
@@ -144,7 +144,7 @@ export const SplitContextAndViewer = () => {
     const {
       selectedAnnotation,
       setSelectedAnnotation,
-    } = useSelectedAnnotation();
+    } = useSelectedAnnotations();
 
     return (
       <div style={{ width: 200, background: "white" }}>

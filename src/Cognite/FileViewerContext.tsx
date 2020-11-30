@@ -35,11 +35,11 @@ export type FileViewerContextObserverPublicProps = {
    */
   file?: FileInfo;
   /**
-   * The current annotation, available via `useSelectedAnnotation()`
+   * The current annotation, available via `useSelectedAnnotations()`
    */
   selectedAnnotations: (ProposedCogniteAnnotation | CogniteAnnotation)[];
   /**
-   * Set the current annotation, available via `useSelectedAnnotation()`
+   * Set the current annotation, available via `useSelectedAnnotations()`
    */
   setSelectedAnnotations: React.Dispatch<
     React.SetStateAction<(ProposedCogniteAnnotation | CogniteAnnotation)[]>
@@ -141,7 +141,7 @@ export const useExtractFromCanvas = () => {
   return extractFromCanvas;
 };
 
-export const useSelectedAnnotation = () => {
+export const useSelectedAnnotations = () => {
   const { selectedAnnotations, setSelectedAnnotations } = useContext(
     FileViewerContext
   );
