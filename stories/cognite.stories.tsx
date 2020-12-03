@@ -379,7 +379,7 @@ export const BoxAndArrows = () => {
               icon="Delete"
               onClick={() =>
                 setAnnotations(
-                  annotations.filter((el) => `${el.id}` !== `${anno.id}`)
+                  annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
                 )
               }
             />
