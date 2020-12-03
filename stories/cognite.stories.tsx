@@ -24,6 +24,7 @@ import {
   useZoomControls,
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components"; // TODO move into separate file
+import { Splitter } from "./Splitter";
 
 export const AllowCustomization = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
@@ -336,46 +337,54 @@ export const BoxAndArrows = () => {
   );
 
   return (
-    <CogniteFileViewer
-      sdk={imgSdk}
-      file={imgFile}
-      editable={boolean("Editable", true)}
-      creatable={false}
-      hideLabel={true}
-      pagination={false}
-      editCallbacks={callbacks}
-      disableAutoFetch={true}
-      annotations={annotations}
-      onAnnotationSelected={action("onAnnotationSelected")}
-      arrowPreviewOptions={{
-        baseOffset: {
-          x: -40,
-          y: -40,
-        },
-      }}
-      renderArrowPreview={(annotation: any) => {
-        if (annotation.id === "352749521886257")
-          return (
-            <BoxWrapper>
-              <PreviewBox>13</PreviewBox>
-              <PreviewBox color="cyan">22</PreviewBox>
-            </BoxWrapper>
-          );
-        return undefined;
-      }}
-      renderItemPreview={(anno) => (
-        <>
-          <Button
-            icon="Delete"
-            onClick={() =>
-              setAnnotations(
-                annotations.filter((el) => `${el.id}` !== `${anno.id}`)
-              )
-            }
-          />
-        </>
-      )}
-    />
+    <Splitter
+      primaryMinSize={30}
+      secondaryInitialSize={70}
+      percentage={true}
+      height="calc(100% - 57px)"
+    >
+      <div style={{ width: "100%" }}> test</div>
+      <CogniteFileViewer
+        sdk={imgSdk}
+        file={imgFile}
+        editable={boolean("Editable", true)}
+        creatable={false}
+        hideLabel={true}
+        pagination={false}
+        editCallbacks={callbacks}
+        disableAutoFetch={true}
+        annotations={annotations}
+        onAnnotationSelected={action("onAnnotationSelected")}
+        arrowPreviewOptions={{
+          baseOffset: {
+            x: -40,
+            y: -40,
+          },
+        }}
+        renderArrowPreview={(annotation: any) => {
+          if (annotation.id === "352749521886257")
+            return (
+              <BoxWrapper>
+                <PreviewBox>13</PreviewBox>
+                <PreviewBox color="cyan">22</PreviewBox>
+              </BoxWrapper>
+            );
+          return undefined;
+        }}
+        renderItemPreview={(anno) => (
+          <>
+            <Button
+              icon="Delete"
+              onClick={() =>
+                setAnnotations(
+                  annotations.filter((el) => `${el.id}` !== `${anno.id}`)
+                )
+              }
+            />
+          </>
+        )}
+      />
+    </Splitter>
   );
 };
 export const Playground = () => {
