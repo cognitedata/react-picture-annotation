@@ -444,6 +444,7 @@ export const Playground = () => {
         hoverable={boolean("Hoverable", false)}
         pagination={select("Pagination", ["small", "normal", false], "normal")}
         renderArrowPreview={renderArrowPreview}
+        onAnnotationSelected={action("onAnnotationSelected")}
         renderItemPreview={() => (
           <div
             style={{

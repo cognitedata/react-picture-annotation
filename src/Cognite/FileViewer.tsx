@@ -306,6 +306,7 @@ export const FileViewer = ({
       }
     }
     if (
+      selectedAnnotations.length !== ids.length ||
       !selectedAnnotations
         .map((el) => `${el.id}`)
         .every((item) => ids.includes(item))
