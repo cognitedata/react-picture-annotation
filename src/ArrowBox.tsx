@@ -65,14 +65,18 @@ export default class ArrowBox extends React.Component<ArrowBoxProps> {
     const img = new Image();
     // this makes image ghost invisible
     event.dataTransfer.setDragImage(img, 0, 0);
-    this.setState({ dragged: true });
+    this.setState({
+      dragged: true,
+      offsetX: this.state.offsetX + event.nativeEvent.offsetX,
+      offsetY: this.state.offsetY + event.nativeEvent.offsetY,
+    });
   };
 
   private onDrag = (event: React.DragEvent<HTMLDivElement>): void => {
     if (this.state.dragged) {
       this.setState({
-        offsetX: event.nativeEvent.x - this.state.x,
-        offsetY: event.nativeEvent.y - this.state.y,
+        offsetX: this.state.offsetX + event.nativeEvent.offsetX,
+        offsetY: this.state.offsetY + event.nativeEvent.offsetY,
       });
     }
   };
@@ -80,8 +84,8 @@ export default class ArrowBox extends React.Component<ArrowBoxProps> {
   private onDragEnd = (event: React.DragEvent<HTMLDivElement>): void => {
     this.archerContainerRef?.current?.refreshScreen();
     if (this.state.dragged) {
-      const offsetX = event.nativeEvent.x - this.state.x;
-      const offsetY = event.nativeEvent.y - this.state.y;
+      const offsetX = this.state.offsetX + event.nativeEvent.offsetX;
+      const offsetY = this.state.offsetY + event.nativeEvent.offsetY;
       this.setState({
         dragged: false,
         offsetX,
