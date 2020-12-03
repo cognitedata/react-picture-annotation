@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
-import {
-  ReactPictureAnnotation,
-  RenderItemPreviewFunction,
-  IAnnotation,
-  IRectShapeData,
-} from "..";
+import { ReactPictureAnnotation, IAnnotation, IRectShapeData } from "..";
 import { Button, Colors, Pagination, Dropdown, Menu } from "@cognite/cogs.js";
 import styled from "styled-components";
 import {
@@ -27,6 +22,11 @@ import {
   TextBox,
   ArrowPreviewOptions,
 } from "./FileViewerUtils";
+
+type RenderItemPreviewFunction = (
+  annotations: (ProposedCogniteAnnotation | CogniteAnnotation)[],
+  height: React.CSSProperties["maxHeight"]
+) => React.ReactElement | undefined;
 
 export type ViewerEditCallbacks = {
   onUpdate: <T extends ProposedCogniteAnnotation | CogniteAnnotation>(
@@ -59,7 +59,7 @@ export type ViewerProps = {
   /**
    * Used when an annotation needs to be selected on start
    */
-  selectedId?: string | null;
+  selectedIds?: string[];
   /**
    * Used when `disableAutoFetch` is true to supply `annotations` to display
    */
@@ -92,7 +92,7 @@ export type ViewerProps = {
    * Callback for when something is selected
    */
   onAnnotationSelected?: (
-    annotation: CogniteAnnotation | ProposedCogniteAnnotation | undefined
+    annotation: (CogniteAnnotation | ProposedCogniteAnnotation)[]
   ) => void;
   /**
    * Should pagination be shown, and what size? One page files will have no pagination displayed regardless of settings!
@@ -132,7 +132,7 @@ export const FileViewer = ({
   renderItemPreview = () => <></>,
   creatable,
   editable,
-  selectedId,
+  selectedIds,
   pagination = "normal",
   hideControls = false,
   loader,
@@ -152,8 +152,8 @@ export const FileViewer = ({
     setPage,
     sdk,
     file,
-    selectedAnnotation,
-    setSelectedAnnotation,
+    selectedAnnotations,
+    setSelectedAnnotations,
     setDownload,
     setExtractFromCanvas,
     setReset,
@@ -185,11 +185,11 @@ export const FileViewer = ({
       annotations.map((el) =>
         renderAnnotation(
           el,
-          selectedAnnotation ? isSameResource(el, selectedAnnotation) : false,
+          selectedAnnotations.some((item) => isSameResource(el, item)),
           !!allowCustomAnnotations
         )
       ),
-    [annotations, selectedAnnotation]
+    [annotations, selectedAnnotations]
   );
 
   /**
@@ -298,16 +298,27 @@ export const FileViewer = ({
     };
   }, []);
 
-  const onAnnotationSelect = (id: string | null) => {
-    if (id === null) {
-      setSelectedAnnotation(undefined);
+  const onAnnotationSelect = (ids: string[]) => {
+    if (ids.length === 0) {
+      setSelectedAnnotations([]);
+      if (onAnnotationSelected) {
+        onAnnotationSelected([]);
+      }
     }
-    const annotation = annotations.find((el) => `${el.id}` === `${id}`);
-    if (annotation) {
-      setSelectedAnnotation(annotation);
+    if (
+      !selectedAnnotations
+        .map((el) => `${el.id}`)
+        .every((item) => ids.includes(item))
+    ) {
+      const newlySelectedAnnotations = annotations.filter((el) =>
+        ids.includes(`${el.id}`)
+      );
+      if (newlySelectedAnnotations.length > 0) {
+        setSelectedAnnotations(newlySelectedAnnotations);
 
-      if (onAnnotationSelected && id !== selectedId) {
-        onAnnotationSelected(annotation);
+        if (onAnnotationSelected) {
+          onAnnotationSelected(newlySelectedAnnotations);
+        }
       }
     }
   };
@@ -386,7 +397,7 @@ export const FileViewer = ({
         pendingAnnotation,
       ]);
       setAnnotations(annotations.concat([createdAnnotation]));
-      setSelectedAnnotation(createdAnnotation);
+      setSelectedAnnotations([createdAnnotation]);
     }
   };
 
@@ -414,7 +425,7 @@ export const FileViewer = ({
       )}
       <ReactPictureAnnotation
         ref={annotatorRef}
-        selectedId={selectedId}
+        selectedIds={selectedIds}
         drawLabel={!hideLabel}
         hoverable={hoverable}
         editable={editable}
@@ -443,7 +454,13 @@ export const FileViewer = ({
         height={height}
         page={page}
         onLoading={(isLoading) => setLoading(isLoading)}
-        renderItemPreview={renderItemPreview}
+        renderItemPreview={(items, maxHeight) => {
+          const ids = items.map((el) => el.id);
+          const currentAnnotations = annotations.filter((el) =>
+            ids.includes(`${el.id}`)
+          );
+          return renderItemPreview(currentAnnotations, maxHeight);
+        }}
         renderArrowPreview={renderArrowPreview}
         arrowPreviewOptions={arrowPreviewOptions}
         onPDFLoaded={async ({ pages }) => {
