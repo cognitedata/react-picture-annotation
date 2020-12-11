@@ -412,7 +412,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     };
 
     return (
-      <Wrapper style={{ width, height }}>
+      <Wrapper>
         <canvas
           style={{ width, height }}
           className="rp-image"
