@@ -884,7 +884,12 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
         );
         this.shapes = nextShapes;
         const ids = nextShapes.map((item) => item.getAnnotationData().id);
-        this.selectedIds = this.selectedIds.filter((el) => ids.includes(el));
+        const availableSelectedIds = this.selectedIds.filter((el) =>
+          ids.includes(el)
+        );
+        if (availableSelectedIds.length !== this.selectedIds.length) {
+          this.selectedIds = availableSelectedIds;
+        }
         this.onShapeChange();
       };
 
