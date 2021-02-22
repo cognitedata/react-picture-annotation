@@ -2,6 +2,7 @@ import { storiesOf } from "@storybook/react";
 import React, { useEffect, useState } from "react";
 import { action } from "@storybook/addon-actions";
 import styled from "styled-components";
+import { number } from "@storybook/addon-knobs";
 import { ReactPictureAnnotation } from "../src";
 import { IAnnotation } from "../src/Annotation";
 import { IShapeData } from "../src/Shape";
@@ -115,6 +116,16 @@ storiesOf("Default Viewer", module)
             action("onSelect")(e);
           }}
           image="https://unsplash.it/1200/600"
+          mouseWheelScaleModifier={number(
+            "Mouse Wheel zoom scale modifier",
+            0.001,
+            {
+              range: true,
+              min: 0.00001,
+              max: 0.01,
+              step: 0.00001,
+            }
+          )}
         />
       </Wrapper>
     );
