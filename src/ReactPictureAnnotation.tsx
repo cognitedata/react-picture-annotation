@@ -1020,7 +1020,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       offsetX,
       offsetY
     );
-    this.currentAnnotationState.onMouseDown(event, positionX, positionY);
+
     if (
       !(creatable || editable) ||
       event.shiftKey ||
@@ -1029,6 +1029,8 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       const { originX, originY } = this.scaleState;
       this.startDrag = { x: offsetX, y: offsetY, originX, originY };
     }
+
+    this.currentAnnotationState.onMouseDown(event, positionX, positionY);
   };
 
   private onMouseMove: MouseEventHandler<HTMLCanvasElement> = (event) => {
@@ -1055,6 +1057,12 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
   private onMouseUp: MouseEventHandler<HTMLCanvasElement> = () => {
     this.currentAnnotationState.onMouseUp();
+    this.startDrag = undefined;
+    this.setState({ hideArrowPreview: false });
+  };
+
+  public forceMouseUp = () => {
+    this.currentAnnotationState.onMouseLeave();
     this.startDrag = undefined;
     this.setState({ hideArrowPreview: false });
   };

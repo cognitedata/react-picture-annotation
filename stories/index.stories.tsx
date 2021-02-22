@@ -130,6 +130,48 @@ storiesOf("Default Viewer", module)
       </Wrapper>
     );
   })
+  .add("Force mouse up", () => {
+    const [size, setSize] = useState({
+      width: window.innerWidth - 16,
+      height: window.innerHeight - 16,
+    });
+    const containerRef = React.createRef<ReactPictureAnnotation>();
+
+    const [annotationData, setAnnotationData] = useState<
+      IAnnotation<IShapeData>[]
+    >(defaultAnnotations);
+
+    const onResize = () => {
+      setSize({
+        width: window.innerWidth - 16,
+        height: window.innerHeight - 16,
+      });
+    };
+
+    useEffect(() => {
+      window.addEventListener("resize", onResize);
+      return () => {
+        window.removeEventListener("resize", onResize);
+      };
+    }, []);
+    return (
+      <Wrapper>
+        <ReactPictureAnnotation
+          ref={containerRef}
+          renderItemPreview={() => <div />}
+          width={size.width}
+          height={size.height}
+          annotationData={annotationData}
+          onChange={(data) => setAnnotationData(data)}
+          onSelect={(e) => {
+            containerRef.current?.forceMouseUp();
+            action("onSelect")(e);
+          }}
+          image="https://unsplash.it/1200/600"
+        />
+      </Wrapper>
+    );
+  })
   .add("PDF", () => {
     const [size, setSize] = useState({
       width: window.innerWidth - 16,
