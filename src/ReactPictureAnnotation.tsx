@@ -62,6 +62,7 @@ interface IReactPictureAnnotationProps {
   onPDFFailure?: (props: { url: string; error: Error }) => void;
   onLoading: (loading: boolean) => void;
   onReady?: (element: ReactPictureAnnotation) => void;
+  mouseWheelScaleModifier?: number;
 }
 
 interface IStageState {
@@ -109,6 +110,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     drawLabel: true,
     usePercentage: true,
     onLoading: () => true,
+    mouseWheelScaleModifier: 0.01,
   };
 
   public shapes: IShape[] = [];
@@ -1171,6 +1173,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     // }
 
     const { scale: preScale } = this.scaleState;
+    const { mouseWheelScaleModifier = 0.01 } = this.props;
     // this.scaleState.scale -= event.deltaY * 0.005;
     const { offsetX, offsetY, ctrlKey, deltaY, deltaX } = event;
 
@@ -1180,7 +1183,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       } else if (this.scaleState.scale < 0.1) {
         this.scaleState.scale = 0.1;
       } else {
-        this.scaleState.scale -= deltaY * 0.01;
+        this.scaleState.scale -= deltaY * mouseWheelScaleModifier;
         this.scaleState.scale = Math.max(
           Math.min(this.scaleState.scale, 10),
           0.1
