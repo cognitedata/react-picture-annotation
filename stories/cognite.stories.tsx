@@ -152,7 +152,7 @@ export const SplitContextAndViewer = () => {
   const AnotherComponent = () => {
     // This component now has access to all of the utilities and props of the viewer!
     const download = useDownloadPDF();
-    const { zoomIn, zoomOut, zoomOnPoint, reset } = useZoomControls();
+    const { zoomIn, zoomOut, zoomOnAnnotation, reset } = useZoomControls();
     const extract = useExtractFromCanvas();
     const {
       selectedAnnotations,
@@ -170,7 +170,7 @@ export const SplitContextAndViewer = () => {
         randomAnnotationIndex
       ] as CogniteAnnotation;
       const scale = 0.3;
-      zoomOnPoint!(randomAnnotation, scale);
+      zoomOnAnnotation!(randomAnnotation, scale);
     };
 
     return (
@@ -178,7 +178,9 @@ export const SplitContextAndViewer = () => {
         <Button onClick={() => download!("testing.pdf")}>Download</Button>
         <Button onClick={() => zoomIn!()}>Zoom In</Button>
         <Button onClick={() => zoomOut!()}>Zoom Out</Button>
-        <Button onClick={() => onZoomOnRandomAnnotation()}>Zoom Into</Button>
+        <Button onClick={() => onZoomOnRandomAnnotation()}>
+          Zoom on random annotation
+        </Button>
         <Button onClick={() => reset!()}>Reset</Button>
         {selectedAnnotation && (
           <Button onClick={() => setSelectedAnnotations([])}>

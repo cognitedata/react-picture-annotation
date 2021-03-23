@@ -615,7 +615,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     });
   };
 
-  public zoomOnPoint: ViewerZoomControlledFunction = (
+  public zoomOnAnnotation: ViewerZoomControlledFunction = (
     annotation: CogniteAnnotation,
     scale = 0.5
   ) => {

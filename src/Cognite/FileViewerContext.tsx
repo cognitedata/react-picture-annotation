@@ -76,9 +76,9 @@ export type FileViewerContextObserverPublicProps = {
    */
   zoomOut: ViewerZoomFunction | undefined;
   /**
-   * zoomOnPoint(x,y) zooms the file on a particular point
+   * zoomOnAnnotation(annotation) centers and zooms the file on a particular annotation
    */
-  zoomOnPoint: ViewerZoomControlledFunction | undefined;
+  zoomOnAnnotation: ViewerZoomControlledFunction | undefined;
   /**
    * reset() reset the zoom and position, available via `useZoomControls()`
    */
@@ -106,7 +106,7 @@ type FileViewerContextObserverPrivateProps = {
   setZoomOut: React.Dispatch<
     React.SetStateAction<ViewerZoomFunction | undefined>
   >;
-  setZoomOnPoint: React.Dispatch<
+  setzoomOnAnnotation: React.Dispatch<
     React.SetStateAction<ViewerZoomFunction | undefined>
   >;
   setReset: React.Dispatch<
@@ -135,8 +135,10 @@ export const usePage = () => {
 };
 
 export const useZoomControls = () => {
-  const { zoomIn, zoomOut, zoomOnPoint, reset } = useContext(FileViewerContext);
-  return { zoomIn, zoomOut, zoomOnPoint, reset };
+  const { zoomIn, zoomOut, zoomOnAnnotation, reset } = useContext(
+    FileViewerContext
+  );
+  return { zoomIn, zoomOut, zoomOnAnnotation, reset };
 };
 
 export const useDownloadPDF = () => {
@@ -206,7 +208,7 @@ const FileViewerProvider = ({
   const [zoomOut, setZoomOut] = useState<ViewerZoomFunction | undefined>(
     undefined
   );
-  const [zoomOnPoint, setZoomOnPoint] = useState<
+  const [zoomOnAnnotation, setzoomOnAnnotation] = useState<
     ViewerZoomFunction | undefined
   >(undefined);
   const [reset, setReset] = useState<ViewerZoomFunction | undefined>(undefined);
@@ -250,13 +252,13 @@ const FileViewerProvider = ({
         download,
         zoomIn,
         zoomOut,
-        zoomOnPoint,
+        zoomOnAnnotation,
         reset,
         extractFromCanvas,
         setDownload,
         setZoomIn,
         setZoomOut,
-        setZoomOnPoint,
+        setzoomOnAnnotation,
         setReset,
         setExtractFromCanvas,
         page,
