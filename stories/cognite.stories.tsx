@@ -327,6 +327,7 @@ const BoxWrapper = styled.div`
   border-radius: 3px;
   overflow: hidden;
   box-sizing: border-box;
+  box-shadow: 0 0 5px ${Colors["greyscale-grey6"].hex()};
 `;
 
 export const BoxAndArrows = () => {

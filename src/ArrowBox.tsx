@@ -95,25 +95,23 @@ export default class ArrowBox extends React.Component<ArrowBoxProps> {
     }
   };
 
-  private archerContainerRef: React.RefObject<
-    ArcherContainer
-  > = React.createRef();
+  private archerContainerRef: React.RefObject<ArcherContainer> = React.createRef();
 
   render() {
     const { position, renderedArrowWithBox, annotation } = this.props;
     const arrowStyle = {
       endShape: {
         circle: {
-          radius: 2,
-          fillColor: "orange",
-          strokeColor: "orange",
-          strokeWidth: 1,
+          radius: 1,
+          fillColor: "black",
+          strokeColor: "black",
+          strokeWidth: 0,
         },
       },
     };
     return (
       <StyledArcherContainer
-        strokeColor="orange"
+        strokeColor="black"
         strokeWidth={1}
         ref={this.archerContainerRef}
       >
