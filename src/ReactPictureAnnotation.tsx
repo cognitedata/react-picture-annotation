@@ -610,6 +610,17 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     });
   };
 
+  public zoomOnPoint: ViewerZoomFunction = () => {
+    this.scaleState.scale = 50;
+    this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
+
+    requestAnimationFrame(() => {
+      this.onShapeChange();
+      this.onImageChange();
+      this.setState({ hideArrowPreview: false });
+    });
+  };
+
   public reset: ViewerZoomFunction = async () => {
     this.props.onLoading(true);
     const nextImageNode =

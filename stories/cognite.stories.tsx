@@ -136,11 +136,24 @@ export const AllowControlledEditing = () => {
   );
 };
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 150px;
+  height: 100%;
+  background: white;
+  padding: 8px;
+  & > * {
+    margin: 8px;
+  }
+`;
+
 export const SplitContextAndViewer = () => {
   const AnotherComponent = () => {
     // This component now has access to all of the utilities and props of the viewer!
     const download = useDownloadPDF();
-    const { zoomIn, zoomOut, reset } = useZoomControls();
+    const { zoomIn, zoomOut, zoomOnPoint, reset } = useZoomControls();
     const extract = useExtractFromCanvas();
     const {
       selectedAnnotations,
@@ -150,12 +163,14 @@ export const SplitContextAndViewer = () => {
     const [selectedAnnotation] = selectedAnnotations;
 
     return (
-      <div style={{ width: 200, background: "white" }}>
-        <Button onClick={() => download!("testing.pdf")}>Download</Button>
-        <Button onClick={() => zoomIn!()}>Zoom In</Button>
-        <Button onClick={() => zoomOut!()}>Zoom Out</Button>
-        <Button onClick={() => reset!()}>Reset</Button>
-
+      <div>
+        <Wrapper>
+          <Button onClick={() => download!("testing.pdf")}>Download</Button>
+          <Button onClick={() => zoomIn!()}>Zoom In</Button>
+          <Button onClick={() => zoomOut!()}>Zoom Out</Button>
+          <Button onClick={() => zoomOnPoint!()}>Zoom Into</Button>
+          <Button onClick={() => reset!()}>Reset</Button>
+        </Wrapper>
         {selectedAnnotation && (
           <Button onClick={() => setSelectedAnnotations([])}>
             Unselect Annotation
