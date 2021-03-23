@@ -158,7 +158,7 @@ export const FileViewer = ({
     setExtractFromCanvas,
     setReset,
     setZoomIn,
-    setzoomOnAnnotation,
+    setZoomOnAnnotation,
     setZoomOut,
     zoomIn,
     zoomOut,
@@ -266,7 +266,7 @@ export const FileViewer = ({
       setExtractFromCanvas(() => annotatorRef.current!.extractFromCanvas);
       setZoomIn(() => annotatorRef.current!.zoomIn);
       setZoomOut(() => annotatorRef.current!.zoomOut);
-      setzoomOnAnnotation(() => annotatorRef.current!.zoomOnAnnotation);
+      setZoomOnAnnotation(() => annotatorRef.current!.zoomOnAnnotation);
       setReset(() => annotatorRef.current!.reset);
     }
   }, [annotatorRef]);

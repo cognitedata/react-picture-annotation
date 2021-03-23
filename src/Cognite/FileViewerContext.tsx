@@ -106,7 +106,7 @@ type FileViewerContextObserverPrivateProps = {
   setZoomOut: React.Dispatch<
     React.SetStateAction<ViewerZoomFunction | undefined>
   >;
-  setzoomOnAnnotation: React.Dispatch<
+  setZoomOnAnnotation: React.Dispatch<
     React.SetStateAction<ViewerZoomFunction | undefined>
   >;
   setReset: React.Dispatch<
@@ -208,7 +208,7 @@ const FileViewerProvider = ({
   const [zoomOut, setZoomOut] = useState<ViewerZoomFunction | undefined>(
     undefined
   );
-  const [zoomOnAnnotation, setzoomOnAnnotation] = useState<
+  const [zoomOnAnnotation, setZoomOnAnnotation] = useState<
     ViewerZoomFunction | undefined
   >(undefined);
   const [reset, setReset] = useState<ViewerZoomFunction | undefined>(undefined);
@@ -258,7 +258,7 @@ const FileViewerProvider = ({
         setDownload,
         setZoomIn,
         setZoomOut,
-        setzoomOnAnnotation,
+        setZoomOnAnnotation,
         setReset,
         setExtractFromCanvas,
         page,
