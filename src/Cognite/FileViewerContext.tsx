@@ -9,6 +9,7 @@ import {
   DownloadFileFunction,
   ExtractFromCanvasFunction,
   ViewerZoomFunction,
+  ViewerZoomControlledFunction,
 } from "../ReactPictureAnnotation";
 
 export type FileViewerContextObserver = FileViewerContextObserverPublicProps &
@@ -77,7 +78,7 @@ export type FileViewerContextObserverPublicProps = {
   /**
    * zoomOnPoint(x,y) zooms the file on a particular point
    */
-  zoomOnPoint: ViewerZoomFunction | undefined;
+  zoomOnPoint: ViewerZoomControlledFunction | undefined;
   /**
    * reset() reset the zoom and position, available via `useZoomControls()`
    */

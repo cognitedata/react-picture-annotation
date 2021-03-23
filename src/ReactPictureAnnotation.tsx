@@ -30,6 +30,7 @@ export type DownloadFileFunction = (
 ) => Promise<PDFDocument | undefined>;
 
 export type ViewerZoomFunction = () => void;
+export type ViewerZoomControlledFunction = (x: number, y: number) => void;
 
 export type ExtractFromCanvasFunction = (
   x: number,
@@ -610,8 +611,10 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     });
   };
 
-  public zoomOnPoint: ViewerZoomFunction = () => {
-    this.scaleState.scale = 50;
+  public zoomOnPoint: ViewerZoomControlledFunction = (x: number, y: number) => {
+    this.scaleState.originX = x;
+    this.scaleState.originY = y;
+    this.scaleState.scale = 0.5;
     this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
 
     requestAnimationFrame(() => {

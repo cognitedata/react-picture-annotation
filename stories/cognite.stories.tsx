@@ -161,6 +161,8 @@ export const SplitContextAndViewer = () => {
     } = useSelectedAnnotations();
 
     const [selectedAnnotation] = selectedAnnotations;
+    const x = -100;
+    const y = -200;
 
     return (
       <div>
@@ -168,7 +170,7 @@ export const SplitContextAndViewer = () => {
           <Button onClick={() => download!("testing.pdf")}>Download</Button>
           <Button onClick={() => zoomIn!()}>Zoom In</Button>
           <Button onClick={() => zoomOut!()}>Zoom Out</Button>
-          <Button onClick={() => zoomOnPoint!()}>Zoom Into</Button>
+          <Button onClick={() => zoomOnPoint!(x, y)}>Zoom Into</Button>
           <Button onClick={() => reset!()}>Reset</Button>
         </Wrapper>
         {selectedAnnotation && (
@@ -199,7 +201,7 @@ export const SplitContextAndViewer = () => {
     <CogniteFileViewer.Provider sdk={pdfSdk}>
       <div style={{ height: "100%", width: "100%", display: "flex" }}>
         <AnotherComponent />
-        <CogniteFileViewer.FileViewer file={pdfFile} editable={true} />
+        <CogniteFileViewer.FileViewer file={pdfFile} editable={false} />
       </div>
     </CogniteFileViewer.Provider>
   );
