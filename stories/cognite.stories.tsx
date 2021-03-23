@@ -18,10 +18,9 @@ import { Button } from "@cognite/cogs.js";
 import {
   useSelectedAnnotations,
   useExtractFromCanvas,
-} from "../src/Cognite/FileViewerContext";
-import {
   useDownloadPDF,
   useZoomControls,
+  useAnnotations,
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components"; // TODO move into separate file
 import { Splitter } from "./Splitter";
@@ -140,7 +139,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 150px;
+  width: 200px;
   height: 100%;
   background: white;
   padding: 8px;
@@ -159,25 +158,34 @@ export const SplitContextAndViewer = () => {
       selectedAnnotations,
       setSelectedAnnotations,
     } = useSelectedAnnotations();
+    const { annotations } = useAnnotations();
 
     const [selectedAnnotation] = selectedAnnotations;
-    const x = -100;
-    const y = -200;
+
+    const onZoomOnRandomAnnotation = () => {
+      const randomAnnotationIndex = Math.floor(
+        Math.random() * annotations.length
+      );
+      const randomAnnotation = annotations[
+        randomAnnotationIndex
+      ] as CogniteAnnotation;
+      const scale = 0.3;
+      zoomOnPoint!(randomAnnotation, scale);
+    };
 
     return (
-      <div>
-        <Wrapper>
-          <Button onClick={() => download!("testing.pdf")}>Download</Button>
-          <Button onClick={() => zoomIn!()}>Zoom In</Button>
-          <Button onClick={() => zoomOut!()}>Zoom Out</Button>
-          <Button onClick={() => zoomOnPoint!(x, y)}>Zoom Into</Button>
-          <Button onClick={() => reset!()}>Reset</Button>
-        </Wrapper>
+      <Wrapper>
+        <Button onClick={() => download!("testing.pdf")}>Download</Button>
+        <Button onClick={() => zoomIn!()}>Zoom In</Button>
+        <Button onClick={() => zoomOut!()}>Zoom Out</Button>
+        <Button onClick={() => onZoomOnRandomAnnotation()}>Zoom Into</Button>
+        <Button onClick={() => reset!()}>Reset</Button>
         {selectedAnnotation && (
           <Button onClick={() => setSelectedAnnotations([])}>
             Unselect Annotation
           </Button>
         )}
+
         {selectedAnnotation &&
           `${selectedAnnotation.type}: ${selectedAnnotation.description}`}
         {selectedAnnotation && (
@@ -194,7 +202,7 @@ export const SplitContextAndViewer = () => {
             )}
           />
         )}
-      </div>
+      </Wrapper>
     );
   };
   return (
