@@ -14,7 +14,7 @@ import {
   CogniteAnnotation,
 } from "@cognite/annotations";
 import { CustomizableCogniteAnnotation } from "./Cognite/FileViewerUtils";
-import { Button } from "@cognite/cogs.js";
+import { Button, Colors } from "@cognite/cogs.js";
 import {
   useSelectedAnnotations,
   useExtractFromCanvas,
@@ -309,24 +309,24 @@ export const CustomizedAnnotations = () => {
   );
 };
 
-const PreviewBox = styled.div`
-  padding: 5px;
-  border: 1px solid ${(props) => props.color ?? "orange"};
-  border-top: 5px solid ${(props) => props.color ?? "orange"};
+const PreviewBox = styled.div<{ color?: string; invert?: boolean }>`
+  padding: 4px;
+  background-color: ${({ color }) => color ?? "#2D79CF"};
+  color: ${({ invert }) => (invert ? Colors.black.hex() : Colors.white.hex())};
   box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 0.85);
   user-select: none;
-  font-size: 0.8em;
-  line-height: 0.8em;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: bold;
+  font-family: Inter, Verdana, Geneva, Tahoma, sans-serif;
 `;
 
 const BoxWrapper = styled.div`
   display: flex;
   flex-direction: row;
-
-  & > * {
-    margin-right: 2px;
-  }
+  border-radius: 3px;
+  overflow: hidden;
+  box-sizing: border-box;
 `;
 
 export const BoxAndArrows = () => {
@@ -366,17 +366,11 @@ export const BoxAndArrows = () => {
   );
 
   return (
-    <Splitter
-      primaryMinSize={30}
-      secondaryInitialSize={70}
-      percentage={true}
-      height="calc(100% - 57px)"
-    >
-      <div style={{ width: "100%" }}> test</div>
+    <div style={{ width: "100%", height: "100%", backgroundColor: "grey" }}>
       <CogniteFileViewer
         sdk={imgSdk}
         file={imgFile}
-        editable={boolean("Editable", true)}
+        editable={boolean("Editable", false)}
         creatable={false}
         hideLabel={true}
         pagination={false}
@@ -395,7 +389,9 @@ export const BoxAndArrows = () => {
             return (
               <BoxWrapper>
                 <PreviewBox>13</PreviewBox>
-                <PreviewBox color="cyan">22</PreviewBox>
+                <PreviewBox invert={true} color="#fdc000">
+                  22
+                </PreviewBox>
               </BoxWrapper>
             );
           return undefined;
@@ -413,9 +409,103 @@ export const BoxAndArrows = () => {
           </>
         )}
       />
+    </div>
+  );
+};
+
+export const BoxAndArrowsWithSplitter = () => {
+  const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
+  useEffect(() => {
+    (async () => {
+      const rawAnnotations = await listAnnotationsForFile(imgSdk, imgFile);
+      setAnnotations(rawAnnotations);
+    })();
+  }, []);
+  const callbacks: ViewerEditCallbacks = useMemo(
+    () => ({
+      onCreate: (annotation) => {
+        id += 1;
+        setAnnotations(
+          annotations.concat([
+            {
+              ...annotation,
+              id,
+              createdTime: new Date(),
+              lastUpdatedTime: new Date(),
+            } as CogniteAnnotation,
+          ])
+        );
+        return false;
+      },
+      onUpdate: (annotation) => {
+        setAnnotations(
+          annotations
+            .filter((el) => `${el.id}` !== `${annotation.id}`)
+            .concat([annotation as CogniteAnnotation])
+        );
+        return false;
+      },
+    }),
+    [annotations, setAnnotations]
+  );
+
+  return (
+    <Splitter
+      secondaryMinSize={70}
+      secondaryInitialSize={70}
+      percentage={true}
+      height="calc(100% - 57px)"
+    >
+      <div style={{ width: "100%", height: "100%", backgroundColor: "white" }}>
+        {" "}
+        test
+      </div>
+      <div style={{ width: "100%", height: "100%", backgroundColor: "grey" }}>
+        <CogniteFileViewer
+          sdk={imgSdk}
+          file={imgFile}
+          editable={boolean("Editable", false)}
+          creatable={false}
+          hideLabel={true}
+          pagination={false}
+          editCallbacks={callbacks}
+          disableAutoFetch={true}
+          annotations={annotations}
+          onAnnotationSelected={action("onAnnotationSelected")}
+          arrowPreviewOptions={{
+            baseOffset: {
+              x: -40,
+              y: -40,
+            },
+          }}
+          renderArrowPreview={(annotation: any) => {
+            if (annotation.id === "352749521886257")
+              return (
+                <BoxWrapper>
+                  <PreviewBox>13</PreviewBox>
+                  <PreviewBox color="#fdc000">22</PreviewBox>
+                </BoxWrapper>
+              );
+            return undefined;
+          }}
+          renderItemPreview={(anno) => (
+            <>
+              <Button
+                icon="Delete"
+                onClick={() =>
+                  setAnnotations(
+                    annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
+                  )
+                }
+              />
+            </>
+          )}
+        />
+      </div>
     </Splitter>
   );
 };
+
 export const Playground = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
   const [
