@@ -63,6 +63,11 @@ interface IReactPictureAnnotationProps {
   renderItemPreview?: RenderItemPreviewFunction;
   onAnnotationUpdate?: (annotation: IAnnotation) => void;
   onAnnotationCreate?: (annotation: IAnnotation) => void;
+  onArrowBoxMove?: (
+    annotationId: string | number,
+    offsetX?: number,
+    offsetY?: number
+  ) => void;
   onPDFLoaded?: (props: { pages: number }) => void;
   onPDFFailure?: (props: { url: string; error: Error }) => void;
   onLoading: (loading: boolean) => void;
@@ -371,6 +376,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
         />
       ),
       renderArrowPreview,
+      onArrowBoxMove,
       arrowPreviewOptions,
     } = this.props;
     const {
@@ -393,6 +399,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
               position={position}
               arrowPreviewOptions={arrowPreviewOptions}
               renderedArrowWithBox={arrowBox}
+              onArrowBoxMove={onArrowBoxMove}
               updateBoxPosition={this.updateBoxPosition}
             />
           );

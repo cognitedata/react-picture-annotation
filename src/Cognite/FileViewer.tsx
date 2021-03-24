@@ -81,6 +81,10 @@ export type ViewerProps = {
     allowCustomAnnotations: boolean
   ) => IAnnotation<IRectShapeData>;
   /**
+   * Override how an annotation box is drawn on top of the file
+   */
+  renderItemPreview?: RenderItemPreviewFunction;
+  /**
    * Renders an always visible small draggable display connected to annotation with an arrow.
    */
   renderArrowPreview?: RenderArrowPreviewFunction;
@@ -89,9 +93,14 @@ export type ViewerProps = {
    */
   arrowPreviewOptions?: ArrowPreviewOptions;
   /**
-   * Override how an annotation box is drawn on top of the file
+   * Callback when an arrow box belonging to an annotation is moved.
+   * Useful to save the new arrow box position so it can be preserved over page refresh.
    */
-  renderItemPreview?: RenderItemPreviewFunction;
+  onArrowBoxMove?: (arrowBox: {
+    annotationId: string | number;
+    offsetX?: number;
+    offsetY?: number;
+  }) => void;
   /**
    * Callback for when something is selected
    */
@@ -125,6 +134,7 @@ export type ViewerProps = {
 };
 
 export const FileViewer = ({
+  annotations: annotationsFromProps,
   allowCustomAnnotations = false,
   file: fileFromProps,
   hideLabel = true,
@@ -143,8 +153,8 @@ export const FileViewer = ({
   hideDownload = false,
   hideSearch = false,
   onAnnotationSelected,
+  onArrowBoxMove,
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
-  annotations: annotationsFromProps,
   renderArrowPreview,
   arrowPreviewOptions,
 }: ViewerProps) => {
@@ -331,6 +341,16 @@ export const FileViewer = ({
     }
   };
 
+  const onArrowBoxMoved = (
+    annotationId: string | number,
+    offsetX?: number,
+    offsetY?: number
+  ) => {
+    if (onArrowBoxMove) {
+      onArrowBoxMove({ annotationId, offsetX, offsetY });
+    }
+  };
+
   const isImage: boolean = useMemo(() => {
     if (file) {
       return isPreviewableImage(file);
@@ -471,6 +491,7 @@ export const FileViewer = ({
         }}
         renderArrowPreview={renderArrowPreview}
         arrowPreviewOptions={arrowPreviewOptions}
+        onArrowBoxMove={onArrowBoxMoved}
         onPDFLoaded={async ({ pages }) => {
           setLoading(false);
           setTotalPages(pages);

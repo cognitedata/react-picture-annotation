@@ -11,6 +11,11 @@ interface ArrowBoxProps extends PointProps {
   renderedArrowWithBox: any;
   updateBoxPosition: any;
   arrowPreviewOptions?: ArrowPreviewOptions;
+  onArrowBoxMove?: (
+    annotationId: any,
+    offsetX?: number,
+    offsetY?: number
+  ) => void;
 }
 
 const SourcePoint = styled.div.attrs((props: PointProps) => ({
@@ -52,6 +57,7 @@ export default function ArrowBox(props: ArrowBoxProps): JSX.Element {
     renderedArrowWithBox,
     updateBoxPosition,
     arrowPreviewOptions,
+    onArrowBoxMove,
   } = props;
 
   const archerContainerRef: React.RefObject<ArcherContainer> = React.createRef();
@@ -119,6 +125,9 @@ export default function ArrowBox(props: ArrowBoxProps): JSX.Element {
       setOffsetX(newOffsetX);
       setOffsetY(newOffsetY);
       updateBoxPosition(annotation.id, newOffsetX, newOffsetY);
+      if (onArrowBoxMove) {
+        onArrowBoxMove(annotation.id, newOffsetX, newOffsetY);
+      }
     }
   };
 

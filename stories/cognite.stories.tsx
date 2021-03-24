@@ -379,6 +379,7 @@ export const BoxAndArrows = () => {
         disableAutoFetch={true}
         annotations={annotations}
         onAnnotationSelected={action("onAnnotationSelected")}
+        onArrowBoxMove={action("onArrowBoxMove")}
         arrowPreviewOptions={{
           baseOffset: {
             x: -40,
