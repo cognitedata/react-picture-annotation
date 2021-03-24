@@ -139,7 +139,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 200px;
+  width: 250px;
   height: 100%;
   background: white;
   padding: 8px;
@@ -332,101 +332,97 @@ const BoxWrapper = styled.div`
 
 export const BoxAndArrows = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
+  const [arrowBox, setArrowBox] = useState({
+    annotationId: undefined,
+    offsetX: undefined,
+    offsetY: undefined,
+  } as any);
   useEffect(() => {
     (async () => {
       const rawAnnotations = await listAnnotationsForFile(imgSdk, imgFile);
       setAnnotations(rawAnnotations);
     })();
   }, []);
-  const callbacks: ViewerEditCallbacks = useMemo(
-    () => ({
-      onCreate: (annotation) => {
-        id += 1;
-        setAnnotations(
-          annotations.concat([
-            {
-              ...annotation,
-              id,
-              createdTime: new Date(),
-              lastUpdatedTime: new Date(),
-            } as CogniteAnnotation,
-          ])
-        );
-        return false;
-      },
-      onUpdate: (annotation) => {
-        setAnnotations(
-          annotations
-            .filter((el) => `${el.id}` !== `${annotation.id}`)
-            .concat([annotation as CogniteAnnotation])
-        );
-        return false;
-      },
-    }),
-    [annotations, setAnnotations]
-  );
+
+  /**
+   * Annotations numbered 1 to 3 will have their own custom offsets.
+   * Annotation numbered 4 will have the base offset.
+   */
+  const arrowPreviewOptions = {
+    baseOffset: {
+      x: -40,
+      y: -40,
+    },
+    customOffset: {
+      "2742838378943997": { x: -100, y: -100 },
+      "5284005858465797": { x: -200 },
+      "7508866173707239": { y: -20 },
+    },
+  };
+
+  /**
+   * We take 4 annotations out of all available, and generate arrow boxes for them.
+   */
+  const renderArrowPreview = (annotation: any) => {
+    const annotationsToDisplay = [
+      "2742838378943997",
+      "5284005858465797",
+      "7508866173707239",
+      "352749521886257",
+    ];
+    const annotationIndex = annotationsToDisplay.findIndex(
+      (annotationId: string) => annotationId === annotation.id
+    );
+    if (annotationsToDisplay.includes(annotation.id))
+      return (
+        <BoxWrapper>
+          <PreviewBox>{annotationIndex + 1}</PreviewBox>
+          <PreviewBox invert={true} color="#fdc000">
+            {annotation.id.substring(0, 2)}
+          </PreviewBox>
+        </BoxWrapper>
+      );
+    return undefined;
+  };
+
+  /**
+   * When the arrow box is moved,
+   */
+  const onArrowBoxMove = (movedArrowBox: {
+    annotationId: string | number;
+    offsetX?: number;
+    offsetY?: number;
+  }) => {
+    setArrowBox(movedArrowBox);
+  };
 
   return (
-    <div style={{ width: "100%", height: "100%", backgroundColor: "grey" }}>
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        backgroundColor: "grey",
+      }}
+    >
+      <Wrapper>
+        <strong>Moved arrow box</strong>
+        <p>ID: {arrowBox.annotationId}</p>
+        <p>offsetX: {arrowBox.offsetX}</p>
+        <p>offsetY: {arrowBox.offsetY}</p>
+      </Wrapper>
       <CogniteFileViewer
         sdk={imgSdk}
         file={imgFile}
-        editable={boolean("Editable", false)}
+        editable={false}
         creatable={false}
         hideLabel={true}
         pagination={false}
-        editCallbacks={callbacks}
         disableAutoFetch={true}
         annotations={annotations}
-        onAnnotationSelected={action("onAnnotationSelected")}
-        onArrowBoxMove={action("onArrowBoxMove")}
-        arrowPreviewOptions={{
-          baseOffset: {
-            x: -40,
-            y: -40,
-          },
-          customOffset: {
-            "2742838378943997": { x: -100, y: -100 },
-            "5284005858465797": { x: -200 },
-            "7508866173707239": { y: -20 },
-          },
-        }}
-        renderArrowPreview={(annotation: any) => {
-          const annotationsToDisplay = [
-            "2742838378943997",
-            "5284005858465797",
-            "7508866173707239",
-            "352749521886257",
-          ];
-          const annotationIndex = annotationsToDisplay.findIndex(
-            (annotationId: string) => annotationId === annotation.id
-          );
-          if (annotationsToDisplay.includes(annotation.id))
-            return (
-              <BoxWrapper>
-                <PreviewBox>{annotationIndex + 1}</PreviewBox>
-                <PreviewBox invert={true} color="#fdc000">
-                  {annotation.id.substring(0, 2)}
-                </PreviewBox>
-              </BoxWrapper>
-            );
-          return undefined;
-        }}
-        renderItemPreview={(anno: any) => (
-          <>
-            <Button
-              icon="Delete"
-              onClick={() =>
-                setAnnotations(
-                  annotations.filter(
-                    (annotation: any) =>
-                      String(annotation.id) !== String(anno[0]?.id)
-                  )
-                )
-              }
-            />
-          </>
-        )}
+        onArrowBoxMove={onArrowBoxMove}
+        arrowPreviewOptions={arrowPreviewOptions}
+        renderArrowPreview={renderArrowPreview}
       />
     </div>
   );
