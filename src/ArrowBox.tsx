@@ -126,7 +126,11 @@ export default function ArrowBox(props: ArrowBoxProps): JSX.Element {
       setOffsetY(newOffsetY);
       updateBoxPosition(annotation.id, newOffsetX, newOffsetY);
       if (onArrowBoxMove) {
-        onArrowBoxMove(annotation.id, newOffsetX, newOffsetY);
+        onArrowBoxMove(
+          annotation.id,
+          newOffsetX + baseOffsetX,
+          newOffsetY + baseOffsetY
+        );
       }
     }
   };
