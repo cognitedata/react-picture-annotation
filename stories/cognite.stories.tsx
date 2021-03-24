@@ -22,8 +22,7 @@ import {
   useZoomControls,
   useAnnotations,
 } from "../src/Cognite/FileViewerContext";
-import styled from "styled-components"; // TODO move into separate file
-import { Splitter } from "./Splitter";
+import styled from "styled-components";
 
 export const AllowCustomization = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
