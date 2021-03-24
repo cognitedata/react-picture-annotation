@@ -386,7 +386,7 @@ export const BoxAndArrows = () => {
   };
 
   /**
-   * When the arrow box is moved,
+   * When the arrow box is moved, we save its returned data to state so we can display the data returned on the sidebar on the left.
    */
   const onArrowBoxMove = (movedArrowBox: {
     annotationId: string | number;
