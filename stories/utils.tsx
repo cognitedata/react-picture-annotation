@@ -3,6 +3,10 @@ import { CogniteClient } from "@cognite/sdk";
 import { response, threeAnnotationsResponse, orcResults } from "./resources";
 import { FileViewerContextObserverPublicProps } from "../src";
 import randomId from "../src/utils/randomId";
+// @ts-ignore
+import pdfFileUrl from "./img/pnid.pdf";
+// @ts-ignore
+import imgFileUrl from "./img/pnid.jpg";
 
 export const pdfFile = {
   id: 1,
@@ -35,7 +39,7 @@ export const imgSdkThreeAnnotations = ({
   post: async () => ({ data: { items: [{ annotations: orcResults }] } }),
   files: {
     retrieve: async () => [imgFile],
-    getDownloadUrls: async () => [{ downloadUrl: "//unsplash.it/800/400" }],
+    getDownloadUrls: async () => [{ downloadUrl: imgFileUrl }],
   },
 } as unknown) as CogniteClient;
 
@@ -50,7 +54,7 @@ export const imgSdk = ({
   post: async () => ({ data: { items: [{ annotations: orcResults }] } }),
   files: {
     retrieve: async () => [imgFile],
-    getDownloadUrls: async () => [{ downloadUrl: "//unsplash.it/800/400" }],
+    getDownloadUrls: async () => [{ downloadUrl: imgFileUrl }],
   },
 } as unknown) as CogniteClient;
 
@@ -67,8 +71,7 @@ export const pdfSdk = ({
     retrieve: async () => [pdfFile],
     getDownloadUrls: async () => [
       {
-        downloadUrl:
-          "https://cors-anywhere.herokuapp.com/http://www.africau.edu/images/default/sample.pdf",
+        downloadUrl: pdfFileUrl,
       },
     ],
   },

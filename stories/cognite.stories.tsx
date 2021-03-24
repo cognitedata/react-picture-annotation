@@ -18,10 +18,9 @@ import { Button } from "@cognite/cogs.js";
 import {
   useSelectedAnnotations,
   useExtractFromCanvas,
-} from "../src/Cognite/FileViewerContext";
-import {
   useDownloadPDF,
   useZoomControls,
+  useAnnotations,
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components"; // TODO move into separate file
 import { Splitter } from "./Splitter";
@@ -136,31 +135,59 @@ export const AllowControlledEditing = () => {
   );
 };
 
+const Wrapper = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  width: 200px;
+  height: 100%;
+  background: white;
+  padding: 8px;
+  & > * {
+    margin: 8px;
+  }
+`;
+
 export const SplitContextAndViewer = () => {
   const AnotherComponent = () => {
     // This component now has access to all of the utilities and props of the viewer!
     const download = useDownloadPDF();
-    const { zoomIn, zoomOut, reset } = useZoomControls();
+    const { zoomIn, zoomOut, zoomOnAnnotation, reset } = useZoomControls();
     const extract = useExtractFromCanvas();
     const {
       selectedAnnotations,
       setSelectedAnnotations,
     } = useSelectedAnnotations();
+    const { annotations } = useAnnotations();
 
     const [selectedAnnotation] = selectedAnnotations;
 
+    const onZoomOnRandomAnnotation = () => {
+      const randomAnnotationIndex = Math.floor(
+        Math.random() * annotations.length
+      );
+      const randomAnnotation = annotations[
+        randomAnnotationIndex
+      ] as CogniteAnnotation;
+      const scale = 0.3;
+      zoomOnAnnotation!(randomAnnotation, scale);
+    };
+
     return (
-      <div style={{ width: 200, background: "white" }}>
+      <Wrapper>
         <Button onClick={() => download!("testing.pdf")}>Download</Button>
         <Button onClick={() => zoomIn!()}>Zoom In</Button>
         <Button onClick={() => zoomOut!()}>Zoom Out</Button>
+        <Button onClick={() => onZoomOnRandomAnnotation()}>
+          Zoom on random annotation
+        </Button>
         <Button onClick={() => reset!()}>Reset</Button>
-
         {selectedAnnotation && (
           <Button onClick={() => setSelectedAnnotations([])}>
             Unselect Annotation
           </Button>
         )}
+
         {selectedAnnotation &&
           `${selectedAnnotation.type}: ${selectedAnnotation.description}`}
         {selectedAnnotation && (
@@ -177,14 +204,14 @@ export const SplitContextAndViewer = () => {
             )}
           />
         )}
-      </div>
+      </Wrapper>
     );
   };
   return (
     <CogniteFileViewer.Provider sdk={pdfSdk}>
       <div style={{ height: "100%", width: "100%", display: "flex" }}>
         <AnotherComponent />
-        <CogniteFileViewer.FileViewer file={pdfFile} editable={true} />
+        <CogniteFileViewer.FileViewer file={pdfFile} editable={false} />
       </div>
     </CogniteFileViewer.Provider>
   );

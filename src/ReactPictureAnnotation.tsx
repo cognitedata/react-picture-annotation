@@ -15,6 +15,7 @@ import { PDFPageProxy, PDFDocumentProxy } from "pdfjs-dist/types/display/api";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
 import ArrowBox from "./ArrowBox";
+import { CogniteAnnotation } from "@cognite/annotations";
 
 export type RenderItemPreviewFunction = (
   annotations: IAnnotation[],
@@ -30,6 +31,10 @@ export type DownloadFileFunction = (
 ) => Promise<PDFDocument | undefined>;
 
 export type ViewerZoomFunction = () => void;
+export type ViewerZoomControlledFunction = (
+  annotation: CogniteAnnotation,
+  scale?: number
+) => void;
 
 export type ExtractFromCanvasFunction = (
   x: number,
@@ -610,6 +615,31 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     });
   };
 
+  public zoomOnAnnotation: ViewerZoomControlledFunction = (
+    annotation: CogniteAnnotation,
+    scale = 0.5
+  ) => {
+    const { xMin, xMax, yMin, yMax } = annotation.box;
+    const { width: canvasWidth, height: canvasHeight } = this.props;
+    const { width: imageWidth, height: imageHeight } =
+      this.currentImageElement || document.createElement("img");
+    const xCenter = (xMin + xMax) / 2;
+    const yCenter = (yMin + yMax) / 2;
+    const x = -1 * (scale * imageWidth * xCenter) + canvasWidth / 2;
+    const y = -1 * (scale * imageHeight * yCenter) + canvasHeight / 2;
+
+    this.scaleState.originX = x;
+    this.scaleState.originY = y;
+    this.scaleState.scale = scale;
+    this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
+
+    requestAnimationFrame(() => {
+      this.onShapeChange();
+      this.onImageChange();
+      this.setState({ hideArrowPreview: false });
+    });
+  };
+
   public reset: ViewerZoomFunction = async () => {
     this.props.onLoading(true);
     const nextImageNode =
@@ -625,7 +655,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
         if (imageNodeRatio < canvasNodeRatio) {
           const scale = canvasWidth / width;
           this.scaleState = {
-            originX: 0,
+            originX: (canvasWidth - scale * width) / 2,
             originY: (canvasHeight - scale * height) / 2,
             scale,
           };
@@ -633,7 +663,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
           const scale = canvasHeight / height;
           this.scaleState = {
             originX: (canvasWidth - scale * width) / 2,
-            originY: 0,
+            originY: (canvasHeight - scale * height) / 2,
             scale,
           };
         }

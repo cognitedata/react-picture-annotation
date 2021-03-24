@@ -9,6 +9,7 @@ import {
   DownloadFileFunction,
   ExtractFromCanvasFunction,
   ViewerZoomFunction,
+  ViewerZoomControlledFunction,
 } from "../ReactPictureAnnotation";
 
 export type FileViewerContextObserver = FileViewerContextObserverPublicProps &
@@ -75,6 +76,10 @@ export type FileViewerContextObserverPublicProps = {
    */
   zoomOut: ViewerZoomFunction | undefined;
   /**
+   * zoomOnAnnotation(annotation) centers and zooms the file on a particular annotation
+   */
+  zoomOnAnnotation: ViewerZoomControlledFunction | undefined;
+  /**
    * reset() reset the zoom and position, available via `useZoomControls()`
    */
   reset: ViewerZoomFunction | undefined;
@@ -99,6 +104,9 @@ type FileViewerContextObserverPrivateProps = {
     React.SetStateAction<ViewerZoomFunction | undefined>
   >;
   setZoomOut: React.Dispatch<
+    React.SetStateAction<ViewerZoomFunction | undefined>
+  >;
+  setZoomOnAnnotation: React.Dispatch<
     React.SetStateAction<ViewerZoomFunction | undefined>
   >;
   setReset: React.Dispatch<
@@ -127,8 +135,10 @@ export const usePage = () => {
 };
 
 export const useZoomControls = () => {
-  const { zoomIn, zoomOut, reset } = useContext(FileViewerContext);
-  return { zoomIn, zoomOut, reset };
+  const { zoomIn, zoomOut, zoomOnAnnotation, reset } = useContext(
+    FileViewerContext
+  );
+  return { zoomIn, zoomOut, zoomOnAnnotation, reset };
 };
 
 export const useDownloadPDF = () => {
@@ -198,6 +208,9 @@ const FileViewerProvider = ({
   const [zoomOut, setZoomOut] = useState<ViewerZoomFunction | undefined>(
     undefined
   );
+  const [zoomOnAnnotation, setZoomOnAnnotation] = useState<
+    ViewerZoomFunction | undefined
+  >(undefined);
   const [reset, setReset] = useState<ViewerZoomFunction | undefined>(undefined);
   const [extractFromCanvas, setExtractFromCanvas] = useState<
     ExtractFromCanvasFunction | undefined
@@ -239,11 +252,13 @@ const FileViewerProvider = ({
         download,
         zoomIn,
         zoomOut,
+        zoomOnAnnotation,
         reset,
         extractFromCanvas,
         setDownload,
         setZoomIn,
         setZoomOut,
+        setZoomOnAnnotation,
         setReset,
         setExtractFromCanvas,
         page,
