@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import { ArcherContainer, ArcherElement } from "react-archer";
 import { ArrowPreviewOptions } from "./Cognite/FileViewerUtils";
@@ -50,103 +50,135 @@ const StyledArcherContainer = styled(ArcherContainer)`
   position: absolute !important;
 `;
 
-export default class ArrowBox extends React.Component<ArrowBoxProps> {
-  public state = {
-    dragged: false,
-    x: this.props.position.x,
-    y: this.props.position.y,
-    offsetX: this.props.position.offsetX ?? 0,
-    offsetY: this.props.position.offsetY ?? 0,
-    baseOffsetX: this.props.arrowPreviewOptions?.baseOffset?.x ?? -20,
-    baseOffsetY: this.props.arrowPreviewOptions?.baseOffset?.y ?? -40,
+export default function ArrowBox(props: ArrowBoxProps): JSX.Element {
+  const {
+    annotation,
+    position,
+    renderedArrowWithBox,
+    updateBoxPosition,
+    arrowPreviewOptions,
+  } = props;
+
+  const archerContainerRef: React.RefObject<ArcherContainer> = React.createRef();
+
+  const x = position?.x ?? 0;
+  const y = position?.y ?? 0;
+  const defaultBaseOffset = {
+    x: -40,
+    y: -40,
   };
 
-  private onDragStart = (event: React.DragEvent<HTMLDivElement>): void => {
+  const [dragged, setDragged] = useState<boolean>(false);
+  const [baseOffsetX, setBaseOffsetX] = useState(0);
+  const [baseOffsetY, setBaseOffsetY] = useState(0);
+  const [offsetX, setOffsetX] = useState(0);
+  const [offsetY, setOffsetY] = useState(0);
+  const [dragStartPoint, setDragStartPoint] = useState({ x: 0, y: 0 });
+
+  const init = (): void => {
+    const baseX = arrowPreviewOptions?.baseOffset?.x;
+    const baseY = arrowPreviewOptions?.baseOffset?.y;
+    const customX = arrowPreviewOptions?.customOffset?.[annotation.id]?.x;
+    const customY = arrowPreviewOptions?.customOffset?.[annotation.id]?.y;
+    const finalBaseOffsetX = customX ?? baseX ?? defaultBaseOffset.x;
+    const finalBaseOffsetY = customY ?? baseY ?? defaultBaseOffset.y;
+    setBaseOffsetX(finalBaseOffsetX);
+    setBaseOffsetY(finalBaseOffsetY);
+    setOffsetX(position?.offsetX ?? 0);
+    setOffsetY(position?.offsetY ?? 0);
+  };
+
+  const onDragStart = (event: React.DragEvent<HTMLDivElement>): void => {
     const img = new Image();
-    // this makes image ghost invisible
-    event.dataTransfer.setDragImage(img, 0, 0);
-    this.setState({
-      dragged: true,
-      offsetX: this.state.offsetX + event.nativeEvent.offsetX,
-      offsetY: this.state.offsetY + event.nativeEvent.offsetY,
+    event.dataTransfer.setDragImage(img, 0, 0); // this makes image ghost invisible
+    setDragged(true);
+    setDragStartPoint({
+      x: event.nativeEvent.offsetX,
+      y: event.nativeEvent.offsetY,
     });
   };
 
-  private onDrag = (event: React.DragEvent<HTMLDivElement>): void => {
-    if (this.state.dragged) {
-      this.setState({
-        offsetX: this.state.offsetX + event.nativeEvent.offsetX,
-        offsetY: this.state.offsetY + event.nativeEvent.offsetY,
-      });
+  const onDrag = (event: React.DragEvent<HTMLDivElement>): void => {
+    if (dragged) {
+      const dragCurrentPoint = {
+        x: event.nativeEvent.offsetX,
+        y: event.nativeEvent.offsetY,
+      };
+      const newOffsetX = offsetX + (dragCurrentPoint.x - dragStartPoint.x);
+      const newOffsetY = offsetY + (dragCurrentPoint.y - dragStartPoint.y);
+      setOffsetX(newOffsetX);
+      setOffsetY(newOffsetY);
     }
   };
 
-  private onDragEnd = (event: React.DragEvent<HTMLDivElement>): void => {
-    this.archerContainerRef?.current?.refreshScreen();
-    if (this.state.dragged) {
-      const offsetX = this.state.offsetX + event.nativeEvent.offsetX;
-      const offsetY = this.state.offsetY + event.nativeEvent.offsetY;
-      this.setState({
-        dragged: false,
-        offsetX,
-        offsetY,
-      });
-      this.props.updateBoxPosition(this.props.annotation.id, offsetX, offsetY);
+  const onDragEnd = (event: React.DragEvent<HTMLDivElement>): void => {
+    archerContainerRef?.current?.refreshScreen();
+    if (dragged) {
+      const dragEndPoint = {
+        x: event.nativeEvent.offsetX,
+        y: event.nativeEvent.offsetY,
+      };
+      const newOffsetX = offsetX + (dragEndPoint.x - dragStartPoint.x);
+      const newOffsetY = offsetY + (dragEndPoint.y - dragStartPoint.y);
+      setDragged(false);
+      setOffsetX(newOffsetX);
+      setOffsetY(newOffsetY);
+      updateBoxPosition(annotation.id, newOffsetX, newOffsetY);
     }
   };
 
-  private archerContainerRef: React.RefObject<ArcherContainer> = React.createRef();
+  useEffect(() => {
+    init();
+  }, []);
 
-  render() {
-    const { position, renderedArrowWithBox, annotation } = this.props;
-    const arrowStyle = {
-      endShape: {
-        circle: {
-          radius: 1,
-          fillColor: "black",
-          strokeColor: "black",
-          strokeWidth: 0,
-        },
+  const arrowStyle = {
+    endShape: {
+      circle: {
+        radius: 1,
+        fillColor: "black",
+        strokeColor: "black",
+        strokeWidth: 0,
       },
-    };
-    return (
-      <StyledArcherContainer
-        strokeColor="black"
-        strokeWidth={1}
-        ref={this.archerContainerRef}
+    },
+  };
+
+  return (
+    <StyledArcherContainer
+      strokeColor="black"
+      strokeWidth={1}
+      ref={archerContainerRef}
+    >
+      <ArcherElement
+        id={`${annotation.id}-source`}
+        relations={[
+          {
+            targetId: `${annotation.id}-target`,
+            targetAnchor: "top",
+            sourceAnchor: "bottom",
+            style: arrowStyle,
+          },
+        ]}
       >
-        <ArcherElement
-          id={`${annotation.id}-source`}
-          relations={[
-            {
-              targetId: `${annotation.id}-target`,
-              targetAnchor: "top",
-              sourceAnchor: "bottom",
-              style: arrowStyle,
-            },
-          ]}
+        <SourcePoint
+          draggable={true}
+          position={{
+            x,
+            y,
+            offsetX: offsetX + baseOffsetX,
+            offsetY: offsetY + baseOffsetY,
+          }}
+          onDragStart={onDragStart}
+          onDrag={onDrag}
+          onDragEnd={onDragEnd}
         >
-          <SourcePoint
-            draggable={true}
-            position={{
-              x: this.state.x,
-              y: this.state.y,
-              offsetX: this.state.offsetX + this.state.baseOffsetX,
-              offsetY: this.state.offsetY + this.state.baseOffsetY,
-            }}
-            onDragStart={this.onDragStart}
-            onDrag={this.onDrag}
-            onDragEnd={this.onDragEnd}
-          >
-            {renderedArrowWithBox}
-          </SourcePoint>
-        </ArcherElement>
-        <ArcherElement id={`${annotation.id}-target`}>
-          <TargetPoint position={position}>
-            <Dummy />
-          </TargetPoint>
-        </ArcherElement>
-      </StyledArcherContainer>
-    );
-  }
+          {renderedArrowWithBox}
+        </SourcePoint>
+      </ArcherElement>
+      <ArcherElement id={`${annotation.id}-target`}>
+        <TargetPoint position={position}>
+          <Dummy />
+        </TargetPoint>
+      </ArcherElement>
+    </StyledArcherContainer>
+  );
 }

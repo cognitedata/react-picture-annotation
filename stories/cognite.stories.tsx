@@ -330,8 +330,6 @@ const BoxWrapper = styled.div`
   box-shadow: 0 0 5px ${Colors["greyscale-grey6"].hex()};
 `;
 
-type OffsetType = { x?: number; y?: number };
-
 export const BoxAndArrows = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
   useEffect(() => {
@@ -388,7 +386,7 @@ export const BoxAndArrows = () => {
           },
           customOffset: {
             "2742838378943997": { x: -100, y: -100 },
-            "5284005858465797": { x: 20 },
+            "5284005858465797": { x: -200 },
             "7508866173707239": { y: -20 },
           },
         }}
@@ -399,12 +397,15 @@ export const BoxAndArrows = () => {
             "7508866173707239",
             "352749521886257",
           ];
+          const annotationIndex = annotationsToDisplay.findIndex(
+            (annotationId: string) => annotationId === annotation.id
+          );
           if (annotationsToDisplay.includes(annotation.id))
             return (
               <BoxWrapper>
-                <PreviewBox>{annotation.id.substring(0, 2)}</PreviewBox>
+                <PreviewBox>{annotationIndex + 1}</PreviewBox>
                 <PreviewBox invert={true} color="#fdc000">
-                  {annotation.id.substring(2, 4)}
+                  {annotation.id.substring(0, 2)}
                 </PreviewBox>
               </BoxWrapper>
             );

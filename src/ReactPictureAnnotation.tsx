@@ -669,9 +669,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
           };
         }
       }
-      this.onImageChange();
-      this.onShapeChange();
-      this.setState({ hideArrowPreview: false });
+      requestAnimationFrame(() => {
+        this.onImageChange();
+        this.onShapeChange();
+        this.setState({ hideArrowPreview: false });
+      });
     };
     if (this.currentImageElement) {
       loadProperDimentions();
