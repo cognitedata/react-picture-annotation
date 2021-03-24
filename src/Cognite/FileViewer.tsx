@@ -28,6 +28,10 @@ type RenderItemPreviewFunction = (
   height: React.CSSProperties["maxHeight"]
 ) => React.ReactElement | undefined;
 
+type RenderArrowPreviewFunction = (
+  annotation: ProposedCogniteAnnotation | CogniteAnnotation
+) => React.ReactElement | undefined;
+
 export type ViewerEditCallbacks = {
   onUpdate: <T extends ProposedCogniteAnnotation | CogniteAnnotation>(
     annotation: T
@@ -79,7 +83,7 @@ export type ViewerProps = {
   /**
    * Renders an always visible small draggable display connected to annotation with an arrow.
    */
-  renderArrowPreview?: RenderItemPreviewFunction;
+  renderArrowPreview?: RenderArrowPreviewFunction;
   /**
    * Options for the arrow preview, if it's defined.
    */
@@ -141,7 +145,7 @@ export const FileViewer = ({
   onAnnotationSelected,
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
   annotations: annotationsFromProps,
-  renderArrowPreview, // TODO
+  renderArrowPreview = () => <></>,
   arrowPreviewOptions,
 }: ViewerProps) => {
   const {

@@ -330,6 +330,8 @@ const BoxWrapper = styled.div`
   box-shadow: 0 0 5px ${Colors["greyscale-grey6"].hex()};
 `;
 
+type OffsetType = { x?: number; y?: number };
+
 export const BoxAndArrows = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
   useEffect(() => {
@@ -384,26 +386,40 @@ export const BoxAndArrows = () => {
             x: -40,
             y: -40,
           },
+          customOffset: {
+            "2742838378943997": { x: -100, y: -100 },
+            "5284005858465797": { x: 20 },
+            "7508866173707239": { y: -20 },
+          },
         }}
         renderArrowPreview={(annotation: any) => {
-          if (annotation.id === "352749521886257")
+          const annotationsToDisplay = [
+            "2742838378943997",
+            "5284005858465797",
+            "7508866173707239",
+            "352749521886257",
+          ];
+          if (annotationsToDisplay.includes(annotation.id))
             return (
               <BoxWrapper>
-                <PreviewBox>13</PreviewBox>
+                <PreviewBox>{annotation.id.substring(0, 2)}</PreviewBox>
                 <PreviewBox invert={true} color="#fdc000">
-                  22
+                  {annotation.id.substring(2, 4)}
                 </PreviewBox>
               </BoxWrapper>
             );
           return undefined;
         }}
-        renderItemPreview={(anno) => (
+        renderItemPreview={(anno: any) => (
           <>
             <Button
               icon="Delete"
               onClick={() =>
                 setAnnotations(
-                  annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
+                  annotations.filter(
+                    (annotation: any) =>
+                      String(annotation.id) !== String(anno[0]?.id)
+                  )
                 )
               }
             />
