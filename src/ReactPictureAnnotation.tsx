@@ -381,13 +381,12 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     } = this.state;
 
     const showArrowPreview = () => {
-      if (!renderArrowPreview) return;
-      return annotationData?.map((annotation: any) => {
+      const arrowBoxes: JSX.Element[] = [];
+      annotationData?.forEach((annotation: any) => {
         const position: any = arrowPreviewPositions[annotation.id];
         const arrowBox = renderArrowPreview(annotation);
         if (position && position.x !== 0 && position.y !== 0 && arrowBox) {
-          return (
-            // @ts-ignore
+          arrowBoxes.push(
             <StyledArrowBox
               key={`arrow-box-${annotation.id}`}
               annotation={annotation}
@@ -398,8 +397,8 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
             />
           );
         }
-        return undefined;
       });
+      return arrowBoxes;
     };
 
     const showPreview = () => {

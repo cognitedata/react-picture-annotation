@@ -6,12 +6,7 @@ import { ArrowPreviewOptions } from "./Cognite/FileViewerUtils";
 interface PointProps {
   position: any;
 }
-interface ArrowBoxEvents {
-  onDragStart: React.DragEvent;
-  onDrag: React.DragEvent;
-  onDragEnd: React.DragEvent;
-}
-interface ArrowBoxProps extends PointProps, ArrowBoxEvents {
+interface ArrowBoxProps extends PointProps {
   annotation: any;
   renderedArrowWithBox: any;
   updateBoxPosition: any;

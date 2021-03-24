@@ -145,7 +145,7 @@ export const FileViewer = ({
   onAnnotationSelected,
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
   annotations: annotationsFromProps,
-  renderArrowPreview = () => <></>,
+  renderArrowPreview,
   arrowPreviewOptions,
 }: ViewerProps) => {
   const {
