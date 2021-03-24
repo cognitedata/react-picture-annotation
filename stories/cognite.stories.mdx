@@ -126,6 +126,10 @@ The `draw()` function allows you to define a canvas and draw any shape you like.
 
 ## Box and arrows
 
+<Canvas>
+  <Story story={BoxAndArrows} />
+</Canvas>
+
 You can add an additional info box to every annotation, connected to it with an arrow.
 
 ### Customizing the box
@@ -165,10 +169,6 @@ You can drag all of the boxes around, but their positions will reset once the co
 
 It is a callback that allows you to access the `offsetX` and `offsetY` for the dragged arrow box, identified by the `annotationId` field. 
 You can store that value somewhere, and then pass it back to the `arrowPreviewOptions.customOffset[annotationId]` if you want to recreate it!
-
-<Canvas>
-  <Story story={BoxAndArrows} />
-</Canvas>
 
 ## Playground
 
