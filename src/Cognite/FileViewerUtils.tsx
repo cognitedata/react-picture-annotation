@@ -35,6 +35,12 @@ export type ArrowPreviewOptions = {
     x?: number;
     y?: number;
   };
+  customOffset?: {
+    [annotationId: string]: {
+      x?: number;
+      y?: number;
+    };
+  };
 };
 
 /**

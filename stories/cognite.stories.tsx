@@ -14,7 +14,7 @@ import {
   CogniteAnnotation,
 } from "@cognite/annotations";
 import { CustomizableCogniteAnnotation } from "./Cognite/FileViewerUtils";
-import { Button } from "@cognite/cogs.js";
+import { Button, Colors } from "@cognite/cogs.js";
 import {
   useSelectedAnnotations,
   useExtractFromCanvas,
@@ -22,8 +22,7 @@ import {
   useZoomControls,
   useAnnotations,
 } from "../src/Cognite/FileViewerContext";
-import styled from "styled-components"; // TODO move into separate file
-import { Splitter } from "./Splitter";
+import styled from "styled-components";
 
 export const AllowCustomization = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
@@ -139,7 +138,7 @@ const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 200px;
+  width: 250px;
   height: 100%;
   background: white;
   padding: 8px;
@@ -309,113 +308,125 @@ export const CustomizedAnnotations = () => {
   );
 };
 
-const PreviewBox = styled.div`
-  padding: 5px;
-  border: 1px solid ${(props) => props.color ?? "orange"};
-  border-top: 5px solid ${(props) => props.color ?? "orange"};
+const PreviewBox = styled.div<{ color?: string; invert?: boolean }>`
+  padding: 4px;
+  background-color: ${({ color }) => color ?? "#2D79CF"};
+  color: ${({ invert }) => (invert ? Colors.black.hex() : Colors.white.hex())};
   box-sizing: border-box;
-  background-color: rgba(255, 255, 255, 0.85);
   user-select: none;
-  font-size: 0.8em;
-  line-height: 0.8em;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: bold;
+  font-family: Inter, Verdana, Geneva, Tahoma, sans-serif;
 `;
 
 const BoxWrapper = styled.div`
   display: flex;
   flex-direction: row;
-
-  & > * {
-    margin-right: 2px;
-  }
+  border-radius: 3px;
+  overflow: hidden;
+  box-sizing: border-box;
+  box-shadow: 0 0 5px ${Colors["greyscale-grey6"].hex()};
 `;
 
 export const BoxAndArrows = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
+  const [arrowBox, setArrowBox] = useState({
+    annotationId: undefined,
+    offsetX: undefined,
+    offsetY: undefined,
+  } as any);
   useEffect(() => {
     (async () => {
       const rawAnnotations = await listAnnotationsForFile(imgSdk, imgFile);
       setAnnotations(rawAnnotations);
     })();
   }, []);
-  const callbacks: ViewerEditCallbacks = useMemo(
-    () => ({
-      onCreate: (annotation) => {
-        id += 1;
-        setAnnotations(
-          annotations.concat([
-            {
-              ...annotation,
-              id,
-              createdTime: new Date(),
-              lastUpdatedTime: new Date(),
-            } as CogniteAnnotation,
-          ])
-        );
-        return false;
-      },
-      onUpdate: (annotation) => {
-        setAnnotations(
-          annotations
-            .filter((el) => `${el.id}` !== `${annotation.id}`)
-            .concat([annotation as CogniteAnnotation])
-        );
-        return false;
-      },
-    }),
-    [annotations, setAnnotations]
-  );
+
+  /**
+   * Annotations numbered 1 to 3 will have their own custom offsets.
+   * Annotation numbered 4 will have the base offset.
+   */
+  const arrowPreviewOptions = {
+    baseOffset: {
+      x: -40,
+      y: -40,
+    },
+    customOffset: {
+      "2742838378943997": { x: -100, y: -100 },
+      "5284005858465797": { x: -200 },
+      "7508866173707239": { y: -20 },
+    },
+  };
+
+  /**
+   * We take 4 annotations out of all available, and generate arrow boxes for them.
+   */
+  const renderArrowPreview = (annotation: any) => {
+    const annotationsToDisplay = [
+      "2742838378943997",
+      "5284005858465797",
+      "7508866173707239",
+      "352749521886257",
+    ];
+    const annotationIndex = annotationsToDisplay.findIndex(
+      (annotationId: string) => annotationId === annotation.id
+    );
+    if (annotationsToDisplay.includes(annotation.id))
+      return (
+        <BoxWrapper>
+          <PreviewBox>{annotationIndex + 1}</PreviewBox>
+          <PreviewBox invert={true} color="#fdc000">
+            {annotation.id.substring(0, 2)}
+          </PreviewBox>
+        </BoxWrapper>
+      );
+    return undefined;
+  };
+
+  /**
+   * When the arrow box is moved, we save its returned data to state so we can display the data returned on the sidebar on the left.
+   */
+  const onArrowBoxMove = (movedArrowBox: {
+    annotationId: string | number;
+    offsetX?: number;
+    offsetY?: number;
+  }) => {
+    setArrowBox(movedArrowBox);
+  };
 
   return (
-    <Splitter
-      primaryMinSize={30}
-      secondaryInitialSize={70}
-      percentage={true}
-      height="calc(100% - 57px)"
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        backgroundColor: "grey",
+      }}
     >
-      <div style={{ width: "100%" }}> test</div>
+      <Wrapper>
+        <strong>Moved arrow box</strong>
+        <p>ID: {arrowBox.annotationId}</p>
+        <p>offsetX: {arrowBox.offsetX}</p>
+        <p>offsetY: {arrowBox.offsetY}</p>
+      </Wrapper>
       <CogniteFileViewer
         sdk={imgSdk}
         file={imgFile}
-        editable={boolean("Editable", true)}
+        editable={false}
         creatable={false}
         hideLabel={true}
         pagination={false}
-        editCallbacks={callbacks}
         disableAutoFetch={true}
         annotations={annotations}
-        onAnnotationSelected={action("onAnnotationSelected")}
-        arrowPreviewOptions={{
-          baseOffset: {
-            x: -40,
-            y: -40,
-          },
-        }}
-        renderArrowPreview={(annotation: any) => {
-          if (annotation.id === "352749521886257")
-            return (
-              <BoxWrapper>
-                <PreviewBox>13</PreviewBox>
-                <PreviewBox color="cyan">22</PreviewBox>
-              </BoxWrapper>
-            );
-          return undefined;
-        }}
-        renderItemPreview={(anno) => (
-          <>
-            <Button
-              icon="Delete"
-              onClick={() =>
-                setAnnotations(
-                  annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
-                )
-              }
-            />
-          </>
-        )}
+        onArrowBoxMove={onArrowBoxMove}
+        arrowPreviewOptions={arrowPreviewOptions}
+        renderArrowPreview={renderArrowPreview}
       />
-    </Splitter>
+    </div>
   );
 };
+
 export const Playground = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
   const [

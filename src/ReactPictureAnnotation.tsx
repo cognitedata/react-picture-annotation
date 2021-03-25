@@ -63,6 +63,11 @@ interface IReactPictureAnnotationProps {
   renderItemPreview?: RenderItemPreviewFunction;
   onAnnotationUpdate?: (annotation: IAnnotation) => void;
   onAnnotationCreate?: (annotation: IAnnotation) => void;
+  onArrowBoxMove?: (
+    annotationId: string | number,
+    offsetX?: number,
+    offsetY?: number
+  ) => void;
   onPDFLoaded?: (props: { pages: number }) => void;
   onPDFFailure?: (props: { url: string; error: Error }) => void;
   onLoading: (loading: boolean) => void;
@@ -371,6 +376,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
         />
       ),
       renderArrowPreview,
+      onArrowBoxMove,
       arrowPreviewOptions,
     } = this.props;
     const {
@@ -381,24 +387,25 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     } = this.state;
 
     const showArrowPreview = () => {
-      // @ts-ignore
-      return annotationData?.map((annotation: any) => {
+      const arrowBoxes: JSX.Element[] = [];
+      annotationData?.forEach((annotation: any) => {
         const position: any = arrowPreviewPositions[annotation.id];
         const arrowBox = renderArrowPreview(annotation);
         if (position && position.x !== 0 && position.y !== 0 && arrowBox) {
-          return (
-            // @ts-ignore
+          arrowBoxes.push(
             <StyledArrowBox
               key={`arrow-box-${annotation.id}`}
               annotation={annotation}
               position={position}
               arrowPreviewOptions={arrowPreviewOptions}
               renderedArrowWithBox={arrowBox}
+              onArrowBoxMove={onArrowBoxMove}
               updateBoxPosition={this.updateBoxPosition}
             />
           );
         }
       });
+      return arrowBoxes;
     };
 
     const showPreview = () => {
@@ -668,9 +675,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
           };
         }
       }
-      this.onImageChange();
-      this.onShapeChange();
-      this.setState({ hideArrowPreview: false });
+      requestAnimationFrame(() => {
+        this.onImageChange();
+        this.onShapeChange();
+        this.setState({ hideArrowPreview: false });
+      });
     };
     if (this.currentImageElement) {
       loadProperDimentions();

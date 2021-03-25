@@ -126,9 +126,18 @@ The `draw()` function allows you to define a canvas and draw any shape you like.
 
 ## Box and arrows
 
-You can add an additional info box to every annotation, connected to it with an arrow. To do so, use a `renderArrowPreview` prop and pass a component in it which will appear in a box connected to the annotation.
+<Canvas>
+  <Story story={BoxAndArrows} />
+</Canvas>
 
+You can add an additional info box to every annotation, connected to it with an arrow.
+
+### Customizing the box
+
+To add an arrow box to the annotation, pass a `renderArrowPreview` field to the CogniteFileViewer. This component will get connected to the annotation with an arrow. You can style it however you want!
 There is one info box per annotation, therefore you can pass `undefined` if you do not wish for the box to appear for a particular annotation.
+
+### Offset of the arrow boxes
 
 If you want to customize arrow boxes in other fields than the connected component, you can pass an optional `arrowPreviewOptions` prop:
 
@@ -137,13 +146,29 @@ If you want to customize arrow boxes in other fields than the connected componen
     baseOffset?: { 
       x?: number, 
       y?: number 
+    },
+    customOffset?: {
+      [annotationId]: {
+        x?: number.
+        y?: number
+      }
     }
   }
 ```
 
-<Canvas>
-  <Story story={BoxAndArrows} />
-</Canvas>
+- `baseOffset` field creates an offset for all of the rendered boxes. The reference point is the top left corner of an annotation. If it's not provided, the offset defaults to [-40, -40]
+- `customOffset` customizes the offset for the particular boxes, identified by the ID of annotation they are connected to. It overwrites the `baseOffset` value
+
+### Saving the position of the dragged box
+
+You can drag all of the boxes around, but their positions will reset once the component rerenders. If you want to get the position where the arrow box was dragged to, you have to use `onArrowBoxMove` method:
+
+```
+  onArrowBoxMove = ({ annotationId: string|number, offsetX?: number, offsetY?: number }) => void
+```
+
+It is a callback that allows you to access the `offsetX` and `offsetY` for the dragged arrow box, identified by the `annotationId` field. 
+You can store that value somewhere, and then pass it back to the `arrowPreviewOptions.customOffset[annotationId]` if you want to recreate it!
 
 ## Playground
 
