@@ -22,6 +22,7 @@ import {
   useZoomControls,
   useAnnotations,
 } from "../src/Cognite/FileViewerContext";
+import PaintLayer from "../src/PaintLayer";
 import styled from "styled-components";
 
 export const AllowCustomization = () => {
@@ -425,6 +426,10 @@ export const BoxAndArrows = () => {
       />
     </div>
   );
+};
+
+export const AllowCustomDrawing = () => {
+  return <PaintLayer />;
 };
 
 export const Playground = () => {
