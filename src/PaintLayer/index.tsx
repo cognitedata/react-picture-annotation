@@ -1,7 +1,8 @@
 import React, { useState, useRef } from "react";
 import CanvasDraw from "react-canvas-draw";
+import { Button } from "@cognite/cogs.js";
 import ColorPicker from "./ColorPicker";
-import { Bar, Wrapper } from "./components";
+import { Bar, BrushRadiusGroup, BrushRadius, Wrapper } from "./components";
 import { RGBColor } from "./types";
 
 const DEFAULT = {
@@ -9,9 +10,11 @@ const DEFAULT = {
     r: 255,
     g: 0,
     b: 0,
-    a: 0.3,
+    a: 0.1,
   },
   RADIUS: 20,
+  RADIUS_MIN: 2,
+  RADIUS_MAX: 20,
 };
 
 const toRGB = (userColor: RGBColor) => {
@@ -23,14 +26,20 @@ type Props = {
   height: number;
 };
 export default function PaintLayer(props: Props): JSX.Element {
-  const { width, height } = props;
+  const { width = "90%", height = "90%" } = props;
   const [brushColor, setBrushColor] = useState<RGBColor>(DEFAULT.COLOR);
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
-  const canvasRef = useRef(null);
+  const canvasRef = useRef<CanvasDraw>(null);
 
   const onBrushRadiusChange = (event: any) => {
     const radius = event.target.value;
     setBrushRadius(radius);
+  };
+  const onUndoClick = () => {
+    if (canvasRef?.current) canvasRef.current.undo();
+  };
+  const onClearClick = () => {
+    if (canvasRef?.current) canvasRef.current.clear();
   };
 
   return (
@@ -45,7 +54,18 @@ export default function PaintLayer(props: Props): JSX.Element {
       />
       <Bar>
         <ColorPicker brushColor={brushColor} setBrushColor={setBrushColor} />
-        <input min="2" max="50" type="range" onChange={onBrushRadiusChange} />
+        <BrushRadiusGroup>
+          <BrushRadius radius={DEFAULT.RADIUS_MIN} color={toRGB(brushColor)} />
+          <input
+            min={DEFAULT.RADIUS_MIN}
+            max={DEFAULT.RADIUS_MAX}
+            type="range"
+            onChange={onBrushRadiusChange}
+          />
+          <BrushRadius radius={DEFAULT.RADIUS_MAX} color={toRGB(brushColor)} />
+        </BrushRadiusGroup>
+        <Button icon="ArrowDownRight" onClick={onUndoClick} />
+        <Button icon="Trash" onClick={onClearClick} />
       </Bar>
     </Wrapper>
   );

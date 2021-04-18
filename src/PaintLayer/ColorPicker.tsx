@@ -1,17 +1,14 @@
 import React, { useState } from "react";
 import { SketchPicker } from "react-color";
-import {
-  ColorSwatch,
-  ColorPreview,
-  ColorPickPopover,
-  ColorPickCover,
-} from "./components";
+import { Popover, ArrowContainer } from "react-tiny-popover";
+import { ColorSwatch, ColorPreview } from "./components";
 import { RGBColor } from "./types";
 
 type Props = {
   brushColor: RGBColor;
   setBrushColor: (newColor: RGBColor) => void;
 };
+
 export default function ColorPicker(props: Props) {
   const { brushColor, setBrushColor } = props;
   const [showColorPicker, setShowColorPicker] = useState(false);
@@ -21,16 +18,27 @@ export default function ColorPicker(props: Props) {
     setBrushColor(color.rgb);
 
   return (
-    <div style={{ position: "relative" }}>
+    <Popover
+      isOpen={showColorPicker}
+      onClickOutside={() => setShowColorPicker(false)}
+      positions={["top", "right", "bottom", "left"]}
+      containerStyle={{ zIndex: "101" }}
+      content={({ position, childRect, popoverRect }) => (
+        <ArrowContainer
+          position={position}
+          childRect={childRect}
+          popoverRect={popoverRect}
+          arrowColor={"white"}
+          arrowSize={10}
+          style={{ zIndex: 101 }}
+        >
+          <SketchPicker color={brushColor} onChange={onBrushColorChange} />
+        </ArrowContainer>
+      )}
+    >
       <ColorSwatch onClick={onColorPickerClick}>
         <ColorPreview userColor={brushColor} />
       </ColorSwatch>
-      {showColorPicker ? (
-        <ColorPickPopover>
-          <ColorPickCover onClick={() => setShowColorPicker(false)} />
-          <SketchPicker color={brushColor} onChange={onBrushColorChange} />
-        </ColorPickPopover>
-      ) : null}
-    </div>
+    </Popover>
   );
 }

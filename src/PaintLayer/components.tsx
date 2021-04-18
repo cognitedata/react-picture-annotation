@@ -3,21 +3,48 @@ import { Colors } from "@cognite/cogs.js";
 import { RGBColor } from "./types";
 
 export const Wrapper = styled.div`
-  width: 100vw;
-  height: 100vh;
+  position: relative;
+  width: 100%;
+  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 `;
 
 export const Bar = styled.div`
+  position: absolute;
   display: flex;
-  width: auto;
-  height: 64px;
-  border-radius: 4px;
-  background-color: ${Colors["greyscale-grey1"].hex()};
-  padding: 4px;
+  align-items: center;
+  justify-content: space-between;
+  bottom: 16px;
+  left: 16px;
   margin: 0;
+  padding: 8px 4px;
+  width: auto;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: ${Colors["greyscale-grey2"].hex()};
+  z-index: 100;
+  & > * {
+    margin: 0 4px;
+  }
+`;
+
+export const BrushRadiusGroup = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  & > * {
+    margin: 0 4px;
+  }
+`;
+
+export const BrushRadius = styled.div`
+  width: ${(props: any) => props.radius * 2}px;
+  height: ${(props: any) => props.radius * 2}px;
+  border-radius: ${(props: any) => props.radius * 2}px;
+  background-color: ${(props: any) => props.color};
 `;
 
 export const ColorSwatch = styled.div`
@@ -25,7 +52,9 @@ export const ColorSwatch = styled.div`
   background: #fff;
   border-radius: 1px;
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-  display: inline-block;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   cursor: pointer;
 `;
 
