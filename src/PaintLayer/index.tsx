@@ -4,7 +4,7 @@ import { Button } from "@cognite/cogs.js";
 import LZString from "lz-string";
 import { Bar, BrushRadiusGroup, BrushRadius, Wrapper } from "./components";
 import ColorPicker from "./ColorPicker";
-import { RGBColor } from "./types";
+import { toRGB, RGBColor } from "../utils/RGB";
 
 const DEFAULT = {
   COLOR: {
@@ -16,10 +16,6 @@ const DEFAULT = {
   RADIUS: 20,
   RADIUS_MIN: 2,
   RADIUS_MAX: 20,
-};
-
-const toRGB = (userColor: RGBColor) => {
-  return `rgba(${userColor.r},${userColor.g},${userColor.b},${userColor.a})`;
 };
 
 type Props = {

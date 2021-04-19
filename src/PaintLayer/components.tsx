@@ -1,6 +1,6 @@
 import styled from "styled-components";
 import { Colors } from "@cognite/cogs.js";
-import { RGBColor } from "./types";
+import { RGBColor } from "../utils/RGB";
 
 export const Wrapper = styled.div`
   position: absolute;
