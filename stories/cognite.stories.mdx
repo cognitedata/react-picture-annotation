@@ -173,7 +173,12 @@ You can store that value somewhere, and then pass it back to the `arrowPreviewOp
 
 ## Custom drawing on a dedicated paint layer
 
-You can toggle the `drawable` flag and be allowed to draw on top of the shown file.
+Since 1.14, there is a possibility of showing a dedicated paint layer which allows you to paint over the displayed file.
+To be able to use this, pass the `hideDraw={false}` flag to the CogniteFileViewer component. This will display an `Edit` button alongside other tooling buttons (between Search and Download).
+Clicking the button will show a dedicated drawing bar and will display a painting layer on top of the file. You can change the color, opacity and thickness of the brush, as well as undo all of the drawn lines and clear everything.
+
+A data object containing all the information about the paint layer will be generated with every stroke and compressed using the `lz-string` library. You can access that data by using the `onDraw()` callback.
+This data is not saved with the file - any kind of saving the paint layer contents is intended to be use externally and not with the particular file, so you can have several overlays for a single file.
 
 <Canvas>
   <Story story={AllowCustomDrawing} />

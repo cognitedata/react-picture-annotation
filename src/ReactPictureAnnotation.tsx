@@ -59,8 +59,8 @@ interface IReactPictureAnnotationProps {
   creatable?: boolean;
   hoverable?: boolean;
   drawable: boolean;
-  drawData: string;
-  onPaintLayerDraw: (drawData: string) => void;
+  drawData?: string;
+  onPaintLayerDraw?: (drawData: string) => void;
   drawLabel: boolean;
   arrowPreviewOptions?: ArrowPreviewOptions;
   renderArrowPreview?: any; // TODO type
@@ -432,12 +432,14 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     return (
       <Wrapper>
-        {this.props.drawable && (
-          <PaintLayer
-            drawData={this.props.drawData}
-            onPaintLayerDraw={this.props.onPaintLayerDraw}
-          />
-        )}
+        {this.props.drawable &&
+          this.props.drawData &&
+          this.props.onPaintLayerDraw && (
+            <PaintLayer
+              drawData={this.props.drawData}
+              onPaintLayerDraw={this.props.onPaintLayerDraw}
+            />
+          )}
         <canvas
           style={{ width, height }}
           className="rp-image"

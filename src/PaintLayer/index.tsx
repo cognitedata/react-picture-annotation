@@ -41,17 +41,24 @@ export default function PaintLayer(props: Props): JSX.Element {
       canvasRef.current.loadSaveData(drawDataDecompressed);
     }
   };
+
   const onBrushRadiusChange = (event: any) => {
     const radius = event.target.value;
     setBrushRadius(radius);
   };
   const onUndoClick = () => {
-    if (canvasRef?.current) canvasRef.current.undo();
+    if (canvasRef?.current) {
+      canvasRef.current.undo();
+      onSaveClick();
+    }
   };
   const onClearClick = () => {
-    if (canvasRef?.current) canvasRef.current.clear();
+    if (canvasRef?.current) {
+      canvasRef.current.clear();
+      onSaveClick();
+    }
   };
-  const onDraw = () => {
+  const onSaveClick = () => {
     if (canvasRef?.current) {
       const newDrawData = canvasRef.current.getSaveData();
       const newDrawDataCompressed = LZString.compress(newDrawData);
@@ -72,7 +79,6 @@ export default function PaintLayer(props: Props): JSX.Element {
         brushRadius={brushRadius}
         canvasHeight={width}
         canvasWidth={height}
-        onChange={onDraw}
         style={{ background: "transparent" }}
       />
       <Bar>
@@ -89,6 +95,7 @@ export default function PaintLayer(props: Props): JSX.Element {
         </BrushRadiusGroup>
         <Button icon="ArrowBack" onClick={onUndoClick} />
         <Button icon="Trash" onClick={onClearClick} />
+        <Button icon="FloppyDisk" onClick={onSaveClick} />
       </Bar>
     </Wrapper>
   );

@@ -132,6 +132,12 @@ export type ViewerProps = {
    */
   hideDraw?: boolean;
   /**
+   * Callback for every stroke on the paint layer.
+   * Allows you to get the drawing data from outside to be able to save it externally.
+   * The returned data is compressed using the lz-string library.
+   */
+  onDraw?: (compressedDrawData: string) => void;
+  /**
    * What to display while loading. Note this is NOT displayed when `file` is not set.
    */
   loader?: React.ReactNode;
@@ -159,6 +165,7 @@ export const FileViewer = ({
   hideDraw = true,
   onAnnotationSelected,
   onArrowBoxMove,
+  onDraw,
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
   renderArrowPreview,
   arrowPreviewOptions,
@@ -358,6 +365,12 @@ export const FileViewer = ({
     }
   };
 
+  const onDrawStroke = (compressedDrawData: string) => {
+    if (onDraw) {
+      onDraw(compressedDrawData);
+    }
+  };
+
   const isImage: boolean = useMemo(() => {
     if (file) {
       return isPreviewableImage(file);
@@ -468,6 +481,7 @@ export const FileViewer = ({
         drawData={drawData}
         onPaintLayerDraw={(newDrawData: string) => {
           setDrawData(newDrawData);
+          onDrawStroke(newDrawData);
         }}
         annotationData={annotationData}
         onChange={(e) => {
@@ -504,8 +518,6 @@ export const FileViewer = ({
         renderArrowPreview={renderArrowPreview}
         arrowPreviewOptions={arrowPreviewOptions}
         onArrowBoxMove={onArrowBoxMoved}
-        // onDrawStart={onDrawStart}
-        // onDrawFinish={onDrawFinish}
         onPDFLoaded={async ({ pages }) => {
           setLoading(false);
           setTotalPages(pages);

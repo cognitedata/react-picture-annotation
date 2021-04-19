@@ -22,7 +22,7 @@ import {
   useZoomControls,
   useAnnotations,
 } from "../src/Cognite/FileViewerContext";
-import PaintLayer from "../src/PaintLayer";
+import LZString from "lz-string";
 import styled from "styled-components";
 
 export const AllowCustomization = () => {
@@ -135,11 +135,18 @@ export const AllowControlledEditing = () => {
   );
 };
 
-const Wrapper = styled.div`
+const StoryWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: grey;
+`;
+const SidebarHelper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 250px;
+  overflow: auto;
+  width: 350px;
   height: 100%;
   background: white;
   padding: 8px;
@@ -174,7 +181,7 @@ export const SplitContextAndViewer = () => {
     };
 
     return (
-      <Wrapper>
+      <SidebarHelper>
         <Button onClick={() => download!("testing.pdf")}>Download</Button>
         <Button onClick={() => zoomIn!()}>Zoom In</Button>
         <Button onClick={() => zoomOut!()}>Zoom Out</Button>
@@ -204,7 +211,7 @@ export const SplitContextAndViewer = () => {
             )}
           />
         )}
-      </Wrapper>
+      </SidebarHelper>
     );
   };
   return (
@@ -397,20 +404,13 @@ export const BoxAndArrows = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "grey",
-      }}
-    >
-      <Wrapper>
+    <StoryWrapper>
+      <SidebarHelper>
         <strong>Moved arrow box</strong>
         <p>ID: {arrowBox.annotationId}</p>
         <p>offsetX: {arrowBox.offsetX}</p>
         <p>offsetY: {arrowBox.offsetY}</p>
-      </Wrapper>
+      </SidebarHelper>
       <CogniteFileViewer
         sdk={imgSdk}
         file={imgFile}
@@ -424,22 +424,35 @@ export const BoxAndArrows = () => {
         arrowPreviewOptions={arrowPreviewOptions}
         renderArrowPreview={renderArrowPreview}
       />
-    </div>
+    </StoryWrapper>
   );
 };
 
 export const AllowCustomDrawing = () => {
+  const [drawData, setDrawData] = useState<string>("");
+
+  const onDraw = (compressedDrawData: string) => {
+    if (compressedDrawData && compressedDrawData.length > 0) {
+      const drawDataDecompressed = String(
+        LZString.decompress(compressedDrawData)
+      );
+      setDrawData(drawDataDecompressed);
+    }
+  };
+
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "grey",
-      }}
-    >
-      <CogniteFileViewer sdk={imgSdk} file={imgFile} hideDraw={false} />
-    </div>
+    <StoryWrapper>
+      <SidebarHelper>
+        <strong>Decompressed paint layer data</strong>
+        <p>{drawData}</p>
+      </SidebarHelper>
+      <CogniteFileViewer
+        sdk={imgSdk}
+        file={imgFile}
+        hideDraw={false}
+        onDraw={onDraw}
+      />
+    </StoryWrapper>
   );
 };
 
