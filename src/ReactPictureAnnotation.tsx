@@ -432,14 +432,12 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     return (
       <Wrapper>
-        {this.props.drawable &&
-          this.props.drawData &&
-          this.props.onPaintLayerDraw && (
-            <PaintLayer
-              drawData={this.props.drawData}
-              onPaintLayerDraw={this.props.onPaintLayerDraw}
-            />
-          )}
+        {this.props.drawable && (
+          <PaintLayer
+            drawData={this.props.drawData}
+            onPaintLayerDraw={this.props.onPaintLayerDraw}
+          />
+        )}
         <canvas
           style={{ width, height }}
           className="rp-image"

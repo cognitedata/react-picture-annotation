@@ -25,8 +25,8 @@ const toRGB = (userColor: RGBColor) => {
 type Props = {
   width?: number;
   height?: number;
-  drawData: string;
-  onPaintLayerDraw: (drawData: string) => void;
+  drawData?: string;
+  onPaintLayerDraw?: (drawData: string) => void;
 };
 
 export default function PaintLayer(props: Props): JSX.Element {
@@ -49,17 +49,15 @@ export default function PaintLayer(props: Props): JSX.Element {
   const onUndoClick = () => {
     if (canvasRef?.current) {
       canvasRef.current.undo();
-      onSaveClick();
     }
   };
   const onClearClick = () => {
     if (canvasRef?.current) {
       canvasRef.current.clear();
-      onSaveClick();
     }
   };
   const onSaveClick = () => {
-    if (canvasRef?.current) {
+    if (canvasRef?.current && onPaintLayerDraw) {
       const newDrawData = canvasRef.current.getSaveData();
       const newDrawDataCompressed = LZString.compress(newDrawData);
       onPaintLayerDraw(newDrawDataCompressed);
@@ -95,7 +93,7 @@ export default function PaintLayer(props: Props): JSX.Element {
         </BrushRadiusGroup>
         <Button icon="ArrowBack" onClick={onUndoClick} />
         <Button icon="Trash" onClick={onClearClick} />
-        <Button icon="FloppyDisk" onClick={onSaveClick} />
+        {onPaintLayerDraw && <Button icon="FloppyDisk" onClick={onSaveClick} />}
       </Bar>
     </Wrapper>
   );
