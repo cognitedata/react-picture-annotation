@@ -429,7 +429,18 @@ export const BoxAndArrows = () => {
 };
 
 export const AllowCustomDrawing = () => {
-  return <PaintLayer />;
+  return (
+    <div
+      style={{
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        backgroundColor: "grey",
+      }}
+    >
+      <CogniteFileViewer sdk={imgSdk} file={imgFile} hideDraw={false} />
+    </div>
+  );
 };
 
 export const Playground = () => {

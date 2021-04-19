@@ -1,8 +1,8 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import CanvasDraw from "react-canvas-draw";
 import { Button } from "@cognite/cogs.js";
-import ColorPicker from "./ColorPicker";
 import { Bar, BrushRadiusGroup, BrushRadius, Wrapper } from "./components";
+import ColorPicker from "./ColorPicker";
 import { RGBColor } from "./types";
 
 const DEFAULT = {
@@ -22,15 +22,23 @@ const toRGB = (userColor: RGBColor) => {
 };
 
 type Props = {
-  width: number;
-  height: number;
+  width?: number;
+  height?: number;
+  drawData: string;
+  onPaintLayerDraw: (drawData: string) => void;
 };
+
 export default function PaintLayer(props: Props): JSX.Element {
-  const { width = "90%", height = "90%" } = props;
+  const { width = "90%", height = "90%", drawData, onPaintLayerDraw } = props;
   const [brushColor, setBrushColor] = useState<RGBColor>(DEFAULT.COLOR);
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
   const canvasRef = useRef<CanvasDraw>(null);
 
+  const enableDrawing = () => {
+    if (canvasRef?.current && drawData && drawData.length > 0) {
+      canvasRef.current.loadSaveData(drawData);
+    }
+  };
   const onBrushRadiusChange = (event: any) => {
     const radius = event.target.value;
     setBrushRadius(radius);
@@ -41,6 +49,16 @@ export default function PaintLayer(props: Props): JSX.Element {
   const onClearClick = () => {
     if (canvasRef?.current) canvasRef.current.clear();
   };
+  const onDraw = () => {
+    if (canvasRef?.current) {
+      const newDrawData = canvasRef.current.getSaveData();
+      onPaintLayerDraw(newDrawData);
+    }
+  };
+
+  useEffect(() => {
+    enableDrawing();
+  }, []);
 
   return (
     <Wrapper>
@@ -51,6 +69,8 @@ export default function PaintLayer(props: Props): JSX.Element {
         brushRadius={brushRadius}
         canvasHeight={width}
         canvasWidth={height}
+        onChange={onDraw}
+        style={{ background: "transparent" }}
       />
       <Bar>
         <ColorPicker brushColor={brushColor} setBrushColor={setBrushColor} />
@@ -64,7 +84,7 @@ export default function PaintLayer(props: Props): JSX.Element {
           />
           <BrushRadius radius={DEFAULT.RADIUS_MAX} color={toRGB(brushColor)} />
         </BrushRadiusGroup>
-        <Button icon="ArrowDownRight" onClick={onUndoClick} />
+        <Button icon="ArrowBack" onClick={onUndoClick} />
         <Button icon="Trash" onClick={onClearClick} />
       </Bar>
     </Wrapper>

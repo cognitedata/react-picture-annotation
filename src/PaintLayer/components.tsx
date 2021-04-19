@@ -3,7 +3,9 @@ import { Colors } from "@cognite/cogs.js";
 import { RGBColor } from "./types";
 
 export const Wrapper = styled.div`
-  position: relative;
+  position: absolute;
+  top: 0; // TODO
+  left: 0;
   width: 100%;
   height: 100%;
   display: flex;
@@ -40,11 +42,15 @@ export const BrushRadiusGroup = styled.div`
   }
 `;
 
+type BrushRadiusProps = {
+  radius: number;
+  color: string;
+};
 export const BrushRadius = styled.div`
-  width: ${(props: any) => props.radius * 2}px;
-  height: ${(props: any) => props.radius * 2}px;
-  border-radius: ${(props: any) => props.radius * 2}px;
-  background-color: ${(props: any) => props.color};
+  width: ${(props: BrushRadiusProps) => props.radius * 2}px;
+  height: ${(props: BrushRadiusProps) => props.radius * 2}px;
+  border-radius: ${(props: BrushRadiusProps) => props.radius * 2}px;
+  background-color: ${(props: BrushRadiusProps) => props.color};
 `;
 
 export const ColorSwatch = styled.div`
