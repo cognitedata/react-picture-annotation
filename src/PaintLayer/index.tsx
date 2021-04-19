@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import CanvasDraw from "react-canvas-draw";
 import { Button } from "@cognite/cogs.js";
+import LZString from "lz-string";
 import { Bar, BrushRadiusGroup, BrushRadius, Wrapper } from "./components";
 import ColorPicker from "./ColorPicker";
 import { RGBColor } from "./types";
@@ -36,7 +37,8 @@ export default function PaintLayer(props: Props): JSX.Element {
 
   const enableDrawing = () => {
     if (canvasRef?.current && drawData && drawData.length > 0) {
-      canvasRef.current.loadSaveData(drawData);
+      const drawDataDecompressed = String(LZString.decompress(drawData));
+      canvasRef.current.loadSaveData(drawDataDecompressed);
     }
   };
   const onBrushRadiusChange = (event: any) => {
@@ -52,7 +54,8 @@ export default function PaintLayer(props: Props): JSX.Element {
   const onDraw = () => {
     if (canvasRef?.current) {
       const newDrawData = canvasRef.current.getSaveData();
-      onPaintLayerDraw(newDrawData);
+      const newDrawDataCompressed = LZString.compress(newDrawData);
+      onPaintLayerDraw(newDrawDataCompressed);
     }
   };
 
