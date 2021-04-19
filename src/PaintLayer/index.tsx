@@ -31,26 +31,22 @@ export default function PaintLayer(props: Props): JSX.Element {
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
   const canvasRef = useRef<CanvasDraw>(null);
 
-  const enableDrawing = () => {
+  const loadPreviousDrawing = () => {
     if (canvasRef?.current && drawData && drawData.length > 0) {
       const drawDataDecompressed = String(LZString.decompress(drawData));
       canvasRef.current.loadSaveData(drawDataDecompressed);
     }
   };
 
-  const onBrushRadiusChange = (event: any) => {
-    const radius = event.target.value;
+  const onBrushRadiusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const radius = Number(event.target.value);
     setBrushRadius(radius);
   };
   const onUndoClick = () => {
-    if (canvasRef?.current) {
-      canvasRef.current.undo();
-    }
+    if (canvasRef?.current) canvasRef.current.undo();
   };
   const onClearClick = () => {
-    if (canvasRef?.current) {
-      canvasRef.current.clear();
-    }
+    if (canvasRef?.current) canvasRef.current.clear();
   };
   const onSaveClick = () => {
     if (canvasRef?.current && onPaintLayerDraw) {
@@ -61,7 +57,7 @@ export default function PaintLayer(props: Props): JSX.Element {
   };
 
   useEffect(() => {
-    enableDrawing();
+    loadPreviousDrawing();
   }, []);
 
   return (
