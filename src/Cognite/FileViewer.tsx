@@ -131,6 +131,10 @@ export type ViewerProps = {
    * What to display while loading. Note this is NOT displayed when `file` is not set.
    */
   loader?: React.ReactNode;
+  /**
+   * Sets the annotation that the file should zoom on
+   */
+  zoomOnAnnotation?: { annotation: CogniteAnnotation; scale?: number };
 };
 
 export const FileViewer = ({
@@ -152,6 +156,7 @@ export const FileViewer = ({
   loader,
   hideDownload = false,
   hideSearch = false,
+  zoomOnAnnotation,
   onAnnotationSelected,
   onArrowBoxMove,
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
@@ -172,11 +177,9 @@ export const FileViewer = ({
     setExtractFromCanvas,
     setReset,
     setZoomIn,
-    setZoomOnAnnotation,
     setZoomOut,
     zoomIn,
     zoomOut,
-    // zoomOnAnnotation,
     reset,
     totalPages,
     setTotalPages,
@@ -280,7 +283,6 @@ export const FileViewer = ({
       setExtractFromCanvas(() => annotatorRef.current!.extractFromCanvas);
       setZoomIn(() => annotatorRef.current!.zoomIn);
       setZoomOut(() => annotatorRef.current!.zoomOut);
-      setZoomOnAnnotation(() => annotatorRef.current!.zoomOnAnnotation);
       setReset(() => annotatorRef.current!.reset);
     }
   }, [annotatorRef]);
@@ -496,6 +498,7 @@ export const FileViewer = ({
           setLoading(false);
           setTotalPages(pages);
         }}
+        zoomOnAnnotation={zoomOnAnnotation}
       />
       {totalPages > 1 && pagination && (
         <DocumentPagination
