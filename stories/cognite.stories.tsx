@@ -20,7 +20,6 @@ import {
   useExtractFromCanvas,
   useDownloadPDF,
   useZoomControls,
-  useAnnotations,
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components";
 
