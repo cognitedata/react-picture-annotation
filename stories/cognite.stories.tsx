@@ -20,7 +20,6 @@ import {
   useExtractFromCanvas,
   useDownloadPDF,
   useZoomControls,
-  useAnnotations,
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components";
 
@@ -147,39 +146,81 @@ const Wrapper = styled.div`
   }
 `;
 
+export const ZoomOnSelectedAnnotation = () => {
+  const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
+  const [zoomedAnnotation, setZoomedAnnotation] = useState<CogniteAnnotation>();
+  const scale = 0.3;
+
+  useEffect(() => {
+    (async () => {
+      const annotationsFromCdf = await listAnnotationsForFile(pdfSdk, pdfFile);
+      setAnnotations(
+        annotationsFromCdf.concat([
+          {
+            id: 123,
+            label: "David",
+            createdTime: new Date(),
+            lastUpdatedTime: new Date(),
+            type: "tmp_annotation",
+            status: "unhandled",
+            box: { xMin: 0.1, xMax: 0.2, yMin: 0.1, yMax: 0.2 },
+            version: 5,
+            page: 1,
+            source: "tmp",
+          },
+        ])
+      );
+    })();
+  }, []);
+
+  const onZoomOnRandomAnnotation = () => {
+    const randomAnnotationIndex = Math.floor(
+      Math.random() * annotations.length
+    );
+    const randomAnnotation = annotations[
+      randomAnnotationIndex
+    ] as CogniteAnnotation;
+    setZoomedAnnotation(randomAnnotation);
+  };
+
+  return (
+    <div style={{ height: "100%", width: "100%", display: "flex" }}>
+      <Wrapper>
+        <Button onClick={() => onZoomOnRandomAnnotation()}>
+          Zoom on random annotation
+        </Button>
+      </Wrapper>
+      <CogniteFileViewer
+        sdk={pdfSdk}
+        file={pdfFile}
+        disableAutoFetch={true}
+        annotations={annotations}
+        zoomOnAnnotation={
+          zoomedAnnotation && { annotation: zoomedAnnotation, scale }
+        }
+      />
+    </div>
+  );
+};
+
 export const SplitContextAndViewer = () => {
   const AnotherComponent = () => {
     // This component now has access to all of the utilities and props of the viewer!
     const download = useDownloadPDF();
-    const { zoomIn, zoomOut, zoomOnAnnotation, reset } = useZoomControls();
+    const { zoomIn, zoomOut, reset } = useZoomControls();
     const extract = useExtractFromCanvas();
     const {
       selectedAnnotations,
       setSelectedAnnotations,
     } = useSelectedAnnotations();
-    const { annotations } = useAnnotations();
 
     const [selectedAnnotation] = selectedAnnotations;
-
-    const onZoomOnRandomAnnotation = () => {
-      const randomAnnotationIndex = Math.floor(
-        Math.random() * annotations.length
-      );
-      const randomAnnotation = annotations[
-        randomAnnotationIndex
-      ] as CogniteAnnotation;
-      const scale = 0.3;
-      zoomOnAnnotation!(randomAnnotation, scale);
-    };
 
     return (
       <Wrapper>
         <Button onClick={() => download!("testing.pdf")}>Download</Button>
         <Button onClick={() => zoomIn!()}>Zoom In</Button>
         <Button onClick={() => zoomOut!()}>Zoom Out</Button>
-        <Button onClick={() => onZoomOnRandomAnnotation()}>
-          Zoom on random annotation
-        </Button>
         <Button onClick={() => reset!()}>Reset</Button>
         {selectedAnnotation && (
           <Button onClick={() => setSelectedAnnotations([])}>
