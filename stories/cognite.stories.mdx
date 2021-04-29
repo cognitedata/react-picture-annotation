@@ -11,11 +11,12 @@ import { CogniteFileViewer } from '../src';
 import {
   AllowCustomization,
   AllowControlledEditing,
+  AllowCustomDrawing,
   SplitContextAndViewer,
   CustomizedAnnotations,
-  AllowCustomDrawing,
-  BoxAndArrows,
-  Playground
+  Playground,
+  ZoomOnSelectedAnnotation,
+  BoxAndArrows
 } from './cognite.stories.tsx';
 
 <Meta
@@ -125,6 +126,12 @@ The `draw()` function allows you to define a canvas and draw any shape you like.
   <Story story={CustomizedAnnotations} />
 </Canvas>
 
+## Programatically zoom on selected annotation
+
+<Canvas>
+  <Story story={ZoomOnSelectedAnnotation} />
+</Canvas>
+
 ## Box and arrows
 
 <Canvas>
@@ -183,7 +190,6 @@ This data is not saved with the file - any kind of saving the paint layer conten
 <Canvas>
   <Story story={AllowCustomDrawing} />
 </Canvas>
-
 
 ## Playground
 

@@ -77,6 +77,7 @@ interface IReactPictureAnnotationProps {
   onLoading: (loading: boolean) => void;
   onReady?: (element: ReactPictureAnnotation) => void;
   mouseWheelScaleModifier?: number;
+  zoomOnAnnotation?: { annotation: any; scale?: number };
 }
 
 interface IStageState {
@@ -204,6 +205,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       page,
       renderArrowPreview,
       annotationData,
+      zoomOnAnnotation,
     } = this.props;
     if (prevProps.width !== width || prevProps.height !== height) {
       this.setCanvasDPI();
@@ -245,6 +247,13 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       if (this.currentImageElement && this._PDF_DOC) {
         this.currentImageElement.src = await this.loadPDFPage();
       }
+    }
+
+    if (zoomOnAnnotation && prevProps.zoomOnAnnotation !== zoomOnAnnotation) {
+      this.onZoomOnAnnotation(
+        zoomOnAnnotation.annotation,
+        zoomOnAnnotation.scale
+      );
     }
 
     this.syncAnnotationData();
@@ -364,6 +373,31 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
         () => this.onShapeChange()
       );
     }
+  };
+
+  public onZoomOnAnnotation: ViewerZoomControlledFunction = (
+    annotation,
+    scale = 0.5
+  ) => {
+    const { xMin, xMax, yMin, yMax } = annotation.box;
+    const { width: canvasWidth, height: canvasHeight } = this.props;
+    const { width: imageWidth, height: imageHeight } =
+      this.currentImageElement || document.createElement("img");
+    const xCenter = (xMin + xMax) / 2;
+    const yCenter = (yMin + yMax) / 2;
+    const x = -1 * (scale * imageWidth * xCenter) + canvasWidth / 2;
+    const y = -1 * (scale * imageHeight * yCenter) + canvasHeight / 2;
+
+    this.scaleState.originX = x;
+    this.scaleState.originY = y;
+    this.scaleState.scale = scale;
+    this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
+
+    requestAnimationFrame(() => {
+      this.onShapeChange();
+      this.onImageChange();
+      this.setState({ hideArrowPreview: false });
+    });
   };
 
   public render() {
@@ -624,31 +658,6 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       );
     }
 
-    this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
-
-    requestAnimationFrame(() => {
-      this.onShapeChange();
-      this.onImageChange();
-      this.setState({ hideArrowPreview: false });
-    });
-  };
-
-  public zoomOnAnnotation: ViewerZoomControlledFunction = (
-    annotation: CogniteAnnotation,
-    scale = 0.5
-  ) => {
-    const { xMin, xMax, yMin, yMax } = annotation.box;
-    const { width: canvasWidth, height: canvasHeight } = this.props;
-    const { width: imageWidth, height: imageHeight } =
-      this.currentImageElement || document.createElement("img");
-    const xCenter = (xMin + xMax) / 2;
-    const yCenter = (yMin + yMax) / 2;
-    const x = -1 * (scale * imageWidth * xCenter) + canvasWidth / 2;
-    const y = -1 * (scale * imageHeight * yCenter) + canvasHeight / 2;
-
-    this.scaleState.originX = x;
-    this.scaleState.originY = y;
-    this.scaleState.scale = scale;
     this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
 
     requestAnimationFrame(() => {
