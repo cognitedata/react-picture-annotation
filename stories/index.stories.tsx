@@ -955,6 +955,71 @@ storiesOf("Default Viewer", module)
         </div>
       </Wrapper>
     );
+  })
+  .add("PDF in Base64", () => {
+    const pdfBase64String =
+      "JVBERi0xLjcKCjEgMCBvYmogICUgZW50cnkgcG9pbnQKPDwKICAvVHlwZSAvQ2F0YWxvZwog" +
+      "IC9QYWdlcyAyIDAgUgo+PgplbmRvYmoKCjIgMCBvYmoKPDwKICAvVHlwZSAvUGFnZXMKICAv" +
+      "TWVkaWFCb3ggWyAwIDAgMjAwIDIwMCBdCiAgL0NvdW50IDEKICAvS2lkcyBbIDMgMCBSIF0K" +
+      "Pj4KZW5kb2JqCgozIDAgb2JqCjw8CiAgL1R5cGUgL1BhZ2UKICAvUGFyZW50IDIgMCBSCiAg" +
+      "L1Jlc291cmNlcyA8PAogICAgL0ZvbnQgPDwKICAgICAgL0YxIDQgMCBSIAogICAgPj4KICA+" +
+      "PgogIC9Db250ZW50cyA1IDAgUgo+PgplbmRvYmoKCjQgMCBvYmoKPDwKICAvVHlwZSAvRm9u" +
+      "dAogIC9TdWJ0eXBlIC9UeXBlMQogIC9CYXNlRm9udCAvVGltZXMtUm9tYW4KPj4KZW5kb2Jq" +
+      "Cgo1IDAgb2JqICAlIHBhZ2UgY29udGVudAo8PAogIC9MZW5ndGggNDQKPj4Kc3RyZWFtCkJU" +
+      "CjcwIDUwIFRECi9GMSAxMiBUZgooSGVsbG8sIHdvcmxkISkgVGoKRVQKZW5kc3RyZWFtCmVu" +
+      "ZG9iagoKeHJlZgowIDYKMDAwMDAwMDAwMCA2NTUzNSBmIAowMDAwMDAwMDEwIDAwMDAwIG4g" +
+      "CjAwMDAwMDAwNzkgMDAwMDAgbiAKMDAwMDAwMDE3MyAwMDAwMCBuIAowMDAwMDAwMzAxIDAw" +
+      "MDAwIG4gCjAwMDAwMDAzODAgMDAwMDAgbiAKdHJhaWxlcgo8PAogIC9TaXplIDYKICAvUm9v" +
+      "dCAxIDAgUgo+PgpzdGFydHhyZWYKNDkyCiUlRU9G";
+
+    const [pdf, setPdf] = useState<string>();
+
+    const [annotationData, setAnnotationData] = useState<
+      IAnnotation<IShapeData>[]
+    >(defaultAnnotations);
+
+    const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
+    const annotationRef = React.createRef<ReactPictureAnnotation>();
+
+    const fromUrl = () => {
+      setPdf(
+        "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
+      );
+    };
+
+    const fromBase64 = () => {
+      setPdf(`data:application/pdf;base64,${pdfBase64String}`);
+    };
+    return (
+      <Wrapper>
+        <button onClick={fromUrl}>Pdf from URL</button>
+        <button onClick={fromBase64}>Pdf from base64</button>
+        <ReactPictureAnnotation
+          ref={annotationRef}
+          hoverable={false}
+          page={1}
+          width={800}
+          height={600}
+          image={undefined}
+          annotationData={annotationData}
+          onChange={(data) => setAnnotationData(data)}
+          selectedIds={selectedIds}
+          onSelect={(e) => {
+            setSelectedIds(e);
+            action("onSelect")(e);
+          }}
+          pdf={pdf}
+        />
+        <div
+          style={{
+            position: "absolute",
+            bottom: 12,
+            left: "50%",
+            right: "50%",
+          }}
+        />
+      </Wrapper>
+    );
   });
 
 const Wrapper = styled.div`

@@ -156,14 +156,17 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   private lastPinchLength?: number;
 
   private _PDF_DOC?: PDFDocumentProxy;
+  private pdfBase64Prefix = "data:application/pdf;base64,";
 
   public componentDidMount = async () => {
     const currentCanvas = this.canvasRef.current;
     const currentImageCanvas = this.imageCanvasRef.current;
     if (this.props.pdf) {
       try {
-        this._PDF_DOC = await pdfjs.getDocument({ url: this.props.pdf })
-          .promise;
+        const getDocParams = this.props.pdf.startsWith(this.pdfBase64Prefix)
+          ? { data: atob(this.props.pdf.replace(this.pdfBase64Prefix, "")) }
+          : { url: this.props.pdf };
+        this._PDF_DOC = await pdfjs.getDocument(getDocParams).promise;
         if (this.props.onPDFLoaded) {
           this.props.onPDFLoaded({ pages: this._PDF_DOC.numPages });
         }
@@ -213,7 +216,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     if (prevProps.pdf !== pdf) {
       if (pdf) {
         try {
-          this._PDF_DOC = await pdfjs.getDocument({ url: pdf }).promise;
+          const getDocParams = pdf.startsWith(this.pdfBase64Prefix)
+            ? { data: atob(pdf.replace(this.pdfBase64Prefix, "")) }
+            : { url: pdf };
+
+          this._PDF_DOC = await pdfjs.getDocument(getDocParams).promise;
           if (this.props.onPDFLoaded) {
             this.props.onPDFLoaded({ pages: this._PDF_DOC.numPages });
           }
