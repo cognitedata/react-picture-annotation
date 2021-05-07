@@ -107,6 +107,11 @@ export type ViewerProps = {
   onAnnotationSelected?: (
     annotation: (CogniteAnnotation | ProposedCogniteAnnotation)[]
   ) => void;
+
+  /**
+   * Callback function to be called when the file is loaded
+   */
+  onFileLoaded?: () => void;
   /**
    * Should pagination be shown, and what size? One page files will have no pagination displayed regardless of settings!
    */
@@ -162,6 +167,7 @@ export const FileViewer = ({
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
   renderArrowPreview,
   arrowPreviewOptions,
+  onFileLoaded,
 }: ViewerProps) => {
   const {
     annotations,
@@ -497,6 +503,10 @@ export const FileViewer = ({
         onPDFLoaded={async ({ pages }) => {
           setLoading(false);
           setTotalPages(pages);
+
+          if (onFileLoaded) {
+            onFileLoaded();
+          }
         }}
         zoomOnAnnotation={zoomOnAnnotation}
       />

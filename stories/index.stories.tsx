@@ -972,22 +972,53 @@ storiesOf("Default Viewer", module)
       "MDAwIG4gCjAwMDAwMDAzODAgMDAwMDAgbiAKdHJhaWxlcgo8PAogIC9TaXplIDYKICAvUm9v" +
       "dCAxIDAgUgo+PgpzdGFydHhyZWYKNDkyCiUlRU9G";
 
+    const customAnnotations = [
+      {
+        id: "a",
+        comment: "HA HA HA",
+        mark: {
+          type: "RECT",
+          width: 161,
+          height: 165,
+          x: 229,
+          y: 92,
+          strokeColor: "red",
+          backgroundColor: "rgba(255,0,0,0.2)",
+        },
+      },
+      {
+        id: "b",
+        comment: "HA HA HA 2",
+        mark: {
+          type: "RECT",
+          width: 116,
+          height: 116,
+          x: 429,
+          y: 192,
+          strokeColor: "green",
+          backgroundColor: "rgba(0,255,0,0.2)",
+        },
+      },
+    ];
+
     const [pdf, setPdf] = useState<string>();
 
     const [annotationData, setAnnotationData] = useState<
       IAnnotation<IShapeData>[]
-    >(defaultAnnotations);
+    >([]);
 
     const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
     const annotationRef = React.createRef<ReactPictureAnnotation>();
 
     const fromUrl = () => {
+      setAnnotationData(defaultAnnotations);
       setPdf(
         "https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf"
       );
     };
 
     const fromBase64 = () => {
+      setAnnotationData(customAnnotations);
       setPdf(`data:application/pdf;base64,${pdfBase64String}`);
     };
     return (
