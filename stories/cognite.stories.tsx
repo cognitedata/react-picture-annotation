@@ -183,6 +183,12 @@ export const ZoomOnSelectedAnnotation = () => {
     setZoomedAnnotation(randomAnnotation);
   };
 
+  const onFileLoaded = () => {
+    setTimeout(() => {
+      onZoomOnRandomAnnotation();
+    }, 200); // wait to finish rendering the annotations
+  };
+
   return (
     <div style={{ height: "100%", width: "100%", display: "flex" }}>
       <Wrapper>
@@ -195,6 +201,7 @@ export const ZoomOnSelectedAnnotation = () => {
         file={pdfFile}
         disableAutoFetch={true}
         annotations={annotations}
+        onFileLoaded={onFileLoaded}
         zoomOnAnnotation={
           zoomedAnnotation && { annotation: zoomedAnnotation, scale }
         }
