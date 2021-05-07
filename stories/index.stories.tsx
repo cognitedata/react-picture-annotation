@@ -1005,7 +1005,7 @@ storiesOf("Default Viewer", module)
 
     const [annotationData, setAnnotationData] = useState<
       IAnnotation<IShapeData>[]
-    >();
+    >([]);
 
     const [selectedIds, setSelectedIds] = useState<string[]>(["a"]);
     const annotationRef = React.createRef<ReactPictureAnnotation>();
