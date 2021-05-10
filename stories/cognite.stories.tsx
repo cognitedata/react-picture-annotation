@@ -199,11 +199,11 @@ export const ZoomOnSelectedAnnotation = () => {
 
   return (
     <div style={{ height: "100%", width: "100%", display: "flex" }}>
-      <Wrapper>
+      <SidebarHelper>
         <Button onClick={() => onZoomOnRandomAnnotation()}>
           Zoom on random annotation
         </Button>
-      </Wrapper>
+      </SidebarHelper>
       <CogniteFileViewer
         sdk={pdfSdk}
         file={pdfFile}
