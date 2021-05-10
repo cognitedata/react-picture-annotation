@@ -22,11 +22,18 @@ type Props = {
   width?: number;
   height?: number;
   drawData?: string;
+  paintLayerEditMode?: boolean;
   onPaintLayerDraw?: (drawData: string) => void;
 };
 
 export default function PaintLayer(props: Props): JSX.Element {
-  const { width = "90%", height = "90%", drawData, onPaintLayerDraw } = props;
+  const {
+    width = "90%",
+    height = "90%",
+    drawData,
+    paintLayerEditMode = false,
+    onPaintLayerDraw,
+  } = props;
   const [brushColor, setBrushColor] = useState<RGBColor>(DEFAULT.COLOR);
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
   const canvasRef = useRef<CanvasDraw>(null);
@@ -69,9 +76,10 @@ export default function PaintLayer(props: Props): JSX.Element {
         brushRadius={brushRadius}
         canvasHeight={width}
         canvasWidth={height}
+        disabled={!paintLayerEditMode}
         style={{ background: "transparent" }}
       />
-      <Bar>
+      <Bar visible={paintLayerEditMode}>
         <ColorPicker brushColor={brushColor} setBrushColor={setBrushColor} />
         <BrushRadiusGroup>
           <BrushRadius radius={DEFAULT.RADIUS_MIN} color={toRGB(brushColor)} />

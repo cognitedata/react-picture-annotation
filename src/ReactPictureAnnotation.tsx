@@ -59,6 +59,7 @@ interface IReactPictureAnnotationProps {
   creatable?: boolean;
   hoverable?: boolean;
   drawable: boolean;
+  paintLayerEditMode: boolean;
   drawData?: string;
   onPaintLayerDraw?: (drawData: string) => void;
   drawLabel: boolean;
@@ -121,8 +122,9 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   }
   public static defaultProps = {
     editable: false,
-    drawable: false,
+    paintLayerEditMode: false,
     creatable: false,
+    drawable: false,
     drawLabel: true,
     usePercentage: true,
     onLoading: () => true,
@@ -412,6 +414,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       width,
       height,
       annotationData,
+      drawable,
       renderItemPreview = (annotations) => (
         <DefaultInputSection
           annotation={annotations[0]}
@@ -473,10 +476,13 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     return (
       <Wrapper>
-        {this.props.drawable && (
+        {drawable && (
           <PaintLayer
+            paintLayerEditMode={this.props.paintLayerEditMode}
             drawData={this.props.drawData}
             onPaintLayerDraw={this.props.onPaintLayerDraw}
+            width={width * 2}
+            height={height * 2}
           />
         )}
         <canvas
@@ -1080,7 +1086,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   };
 
   private onMouseDown: MouseEventHandler<HTMLCanvasElement> = (event) => {
-    const { editable, creatable, drawable } = this.props;
+    const { editable, creatable, paintLayerEditMode } = this.props;
     const { offsetX, offsetY } = event.nativeEvent;
     const { positionX, positionY } = this.calculateMousePosition(
       offsetX,
@@ -1088,7 +1094,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     );
 
     if (
-      !(creatable || editable || drawable) ||
+      !(creatable || editable || paintLayerEditMode) ||
       event.shiftKey ||
       this.state.isSpacePressed
     ) {
@@ -1134,7 +1140,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   };
 
   private onTouchStart: TouchEventHandler<HTMLCanvasElement> = (event) => {
-    const { editable, drawable } = this.props;
+    const { editable, paintLayerEditMode } = this.props;
     const { clientX, clientY } = event.touches[0];
     const { positionX, positionY } = this.calculateMousePosition(
       clientX,
@@ -1142,7 +1148,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     );
 
     this.currentAnnotationState.onMouseDown(event, positionX, positionY);
-    if (!editable && !drawable) {
+    if (!editable && !paintLayerEditMode) {
       const { touches } = event;
       if (touches.length === 2) {
         this.lastPinchLength = getPinchLength(touches);

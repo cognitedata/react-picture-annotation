@@ -61,6 +61,10 @@ export type ViewerProps = {
    */
   hoverable?: boolean;
   /**
+   * Should the drawable Paint Layer render
+   */
+  drawable?: boolean;
+  /**
    * Used when an annotation needs to be selected on start
    */
   selectedIds?: string[];
@@ -158,6 +162,7 @@ export const FileViewer = ({
   file: fileFromProps,
   hideLabel = true,
   hoverable = false,
+  drawable = false,
   editCallbacks = {
     onUpdate: (a) => a,
     onCreate: (a) => a,
@@ -244,7 +249,7 @@ export const FileViewer = ({
   const [loading, setLoading] = useState(true);
   const [textboxes, setTextboxes] = useState<TextBox[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
-  const [drawable, setDrawable] = useState<boolean>(false);
+  const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
   const [drawData, setDrawData] = useState<string>("");
 
   const fileId = file ? file.id : undefined;
@@ -546,6 +551,36 @@ export const FileViewer = ({
           onChange={(newPageNum) => setPage && setPage(newPageNum)}
         />
       )}
+      {paintLayerEditMode && (
+        <Buttons style={{ left: "24px" }}>
+          <div id="controls">
+            <Button
+              onClick={() => {
+                if (zoomIn) {
+                  zoomIn();
+                }
+              }}
+              icon="ZoomIn"
+            />
+            <Button
+              icon="Refresh"
+              onClick={() => {
+                if (reset) {
+                  reset();
+                }
+              }}
+            />
+            <Button
+              icon="ZoomOut"
+              onClick={() => {
+                if (zoomOut) {
+                  zoomOut();
+                }
+              }}
+            />
+          </div>
+        </Buttons>
+      )}
       {!hideControls && (
         <Buttons>
           <div id="controls">
@@ -579,7 +614,14 @@ export const FileViewer = ({
       <ToolingButtons>
         {!hideSearch && textboxes.length !== 0 && <SearchField />}
         {!hideDraw && (
-          <Button icon="Edit" onClick={() => setDrawable(!drawable)} />
+          <Button
+            icon="Edit"
+            onClick={() => setPaintLayerEditMode(!paintLayerEditMode)}
+            style={{
+              boxSizing: "border-box",
+              boxShadow: paintLayerEditMode ? "inset 0 0 5px #000" : "none",
+            }}
+          />
         )}
         {download && !hideDownload && (
           <Dropdown

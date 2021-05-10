@@ -13,9 +13,15 @@ export const Wrapper = styled.div`
   align-items: center;
 `;
 
-export const Bar = styled.div`
+type BarProps = { visible?: boolean };
+export const Bar = styled.div.attrs((props: BarProps) => {
+  const { visible } = props;
+  const style: any = {};
+  if (visible) style.display = "flex";
+  else style.display = "none";
+  return { style };
+})<BarProps>`
   position: absolute;
-  display: flex;
   align-items: center;
   justify-content: space-between;
   bottom: 16px;
