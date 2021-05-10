@@ -15,6 +15,7 @@ import { PDFPageProxy, PDFDocumentProxy } from "pdfjs-dist/types/display/api";
 
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
 import ArrowBox from "./ArrowBox";
+import PaintLayer from "./PaintLayer";
 import { CogniteAnnotation } from "@cognite/annotations";
 
 export type RenderItemPreviewFunction = (
@@ -57,6 +58,9 @@ interface IReactPictureAnnotationProps {
   editable: boolean;
   creatable?: boolean;
   hoverable?: boolean;
+  drawable: boolean;
+  drawData?: string;
+  onPaintLayerDraw?: (drawData: string) => void;
   drawLabel: boolean;
   arrowPreviewOptions?: ArrowPreviewOptions;
   renderArrowPreview?: any; // TODO type
@@ -117,6 +121,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   }
   public static defaultProps = {
     editable: false,
+    drawable: false,
     creatable: false,
     drawLabel: true,
     usePercentage: true,
@@ -468,6 +473,12 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     return (
       <Wrapper>
+        {this.props.drawable && (
+          <PaintLayer
+            drawData={this.props.drawData}
+            onPaintLayerDraw={this.props.onPaintLayerDraw}
+          />
+        )}
         <canvas
           style={{ width, height }}
           className="rp-image"
@@ -1069,7 +1080,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   };
 
   private onMouseDown: MouseEventHandler<HTMLCanvasElement> = (event) => {
-    const { editable, creatable } = this.props;
+    const { editable, creatable, drawable } = this.props;
     const { offsetX, offsetY } = event.nativeEvent;
     const { positionX, positionY } = this.calculateMousePosition(
       offsetX,
@@ -1077,7 +1088,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     );
 
     if (
-      !(creatable || editable) ||
+      !(creatable || editable || drawable) ||
       event.shiftKey ||
       this.state.isSpacePressed
     ) {
@@ -1123,7 +1134,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   };
 
   private onTouchStart: TouchEventHandler<HTMLCanvasElement> = (event) => {
-    const { editable } = this.props;
+    const { editable, drawable } = this.props;
     const { clientX, clientY } = event.touches[0];
     const { positionX, positionY } = this.calculateMousePosition(
       clientX,
@@ -1131,7 +1142,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     );
 
     this.currentAnnotationState.onMouseDown(event, positionX, positionY);
-    if (!editable) {
+    if (!editable && !drawable) {
       const { touches } = event;
       if (touches.length === 2) {
         this.lastPinchLength = getPinchLength(touches);

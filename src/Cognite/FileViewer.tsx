@@ -133,6 +133,16 @@ export type ViewerProps = {
    */
   hideSearch?: boolean;
   /**
+   * Should hide the Draw button
+   */
+  hideDraw?: boolean;
+  /**
+   * Callback for every stroke on the paint layer.
+   * Allows you to get the drawing data from outside to be able to save it externally.
+   * The returned data is compressed using the lz-string library.
+   */
+  onDraw?: (compressedDrawData: string) => void;
+  /**
    * What to display while loading. Note this is NOT displayed when `file` is not set.
    */
   loader?: React.ReactNode;
@@ -161,9 +171,11 @@ export const FileViewer = ({
   loader,
   hideDownload = false,
   hideSearch = false,
+  hideDraw = true,
   zoomOnAnnotation,
   onAnnotationSelected,
   onArrowBoxMove,
+  onDraw,
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
   renderArrowPreview,
   arrowPreviewOptions,
@@ -232,6 +244,8 @@ export const FileViewer = ({
   const [loading, setLoading] = useState(true);
   const [textboxes, setTextboxes] = useState<TextBox[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
+  const [drawable, setDrawable] = useState<boolean>(false);
+  const [drawData, setDrawData] = useState<string>("");
 
   const fileId = file ? file.id : undefined;
 
@@ -359,6 +373,12 @@ export const FileViewer = ({
     }
   };
 
+  const onDrawStroke = (compressedDrawData: string) => {
+    if (onDraw) {
+      onDraw(compressedDrawData);
+    }
+  };
+
   const isImage: boolean = useMemo(() => {
     if (file) {
       return isPreviewableImage(file);
@@ -465,6 +485,12 @@ export const FileViewer = ({
         drawLabel={!hideLabel}
         hoverable={hoverable}
         editable={editable}
+        drawable={drawable}
+        drawData={drawData}
+        onPaintLayerDraw={(newDrawData: string) => {
+          setDrawData(newDrawData);
+          onDrawStroke(newDrawData);
+        }}
         annotationData={annotationData}
         onChange={(e) => {
           // if (textboxesToShow.find(el=>el.id===))
@@ -552,6 +578,9 @@ export const FileViewer = ({
       )}
       <ToolingButtons>
         {!hideSearch && textboxes.length !== 0 && <SearchField />}
+        {!hideDraw && (
+          <Button icon="Edit" onClick={() => setDrawable(!drawable)} />
+        )}
         {download && !hideDownload && (
           <Dropdown
             content={
@@ -607,7 +636,7 @@ const DocumentPagination = styled(Pagination)`
 const Buttons = styled.div`
   display: inline-flex;
   position: absolute;
-  z-index: 2;
+  z-index: 200;
   right: 24px;
   bottom: 24px;
   && #controls {
@@ -628,7 +657,7 @@ const Buttons = styled.div`
 const ToolingButtons = styled.div`
   display: inline-flex;
   position: absolute;
-  z-index: 2;
+  z-index: 200;
   right: 24px;
   top: 24px;
   align-items: stretch;
