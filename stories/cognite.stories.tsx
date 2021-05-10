@@ -497,7 +497,7 @@ export const AllowCustomDrawing = () => {
       <CogniteFileViewer
         sdk={imgSdk}
         file={imgFile}
-        hideDraw={false}
+        drawable={boolean("Drawable", true)}
         onDraw={onDraw}
       />
     </StoryWrapper>

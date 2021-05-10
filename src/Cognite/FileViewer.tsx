@@ -62,7 +62,7 @@ export type ViewerProps = {
    */
   hoverable?: boolean;
   /**
-   * Should the drawable Paint Layer render
+   * Should the drawable Paint Layer render? Also shows the Draw icon on the toolbar
    */
   drawable?: boolean;
   /**
@@ -138,10 +138,6 @@ export type ViewerProps = {
    */
   hideSearch?: boolean;
   /**
-   * Should hide the Draw button
-   */
-  hideDraw?: boolean;
-  /**
    * Callback for every stroke on the paint layer.
    * Allows you to get the drawing data from outside to be able to save it externally.
    * The returned data is compressed using the lz-string library.
@@ -177,7 +173,6 @@ export const FileViewer = ({
   loader,
   hideDownload = false,
   hideSearch = false,
-  hideDraw = true,
   zoomOnAnnotation,
   onAnnotationSelected,
   onArrowBoxMove,
@@ -589,7 +584,7 @@ export const FileViewer = ({
       )}
       <ToolingButtons>
         {!hideSearch && textboxes.length !== 0 && <SearchField />}
-        {!hideDraw && (
+        {drawable && (
           <Button
             icon="Edit"
             onClick={() => setPaintLayerEditMode(!paintLayerEditMode)}

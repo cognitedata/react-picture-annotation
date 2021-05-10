@@ -51,7 +51,7 @@ export default function PaintLayerBar(props: Props) {
         />
         <BrushRadius radius={DEFAULT.RADIUS_MAX} color={toRGB(brushColor)} />
       </BrushRadiusGroup>
-      <Button icon="ArrowBack" onClick={onUndoClick} />
+      <Button icon="RotateLeft" onClick={onUndoClick} />
       <Button icon="Trash" onClick={onClearClick} />
       {onPaintLayerDraw && <Button icon="FloppyDisk" onClick={onSaveClick} />}
     </Bar>

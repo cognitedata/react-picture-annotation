@@ -1159,18 +1159,21 @@
   dependencies:
     lodash "^4.17.20"
 
-"@cognite/cogs.js@^2.4.2":
-  version "2.4.2"
-  resolved "https://registry.yarnpkg.com/@cognite/cogs.js/-/cogs.js-2.4.2.tgz#bc3e3e4fdcb74a7bec85b9bd9bbdc30d63520ded"
-  integrity sha512-uPXapkq9cYiy0Buji30t+m/DKwSOThR1xn3Ey0kE9aJbYXFToUWkCKrpkEzfEAJMakdvQjWv0sbK9rz/fP/C+g==
+"@cognite/cogs.js@^3.13.0":
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/@cognite/cogs.js/-/cogs.js-3.13.0.tgz#cde1feef75f9e5efa91401798f33a320a0fdb700"
+  integrity sha512-huAol1wucRjtA2XDbnX1gVWltu68F/oWpr3wzfoRrE2tPG/v+Mg/pP8NtJbe1mEGAzt86nUGhvxvzYpmr+s27A==
   dependencies:
-    "@tippyjs/react" "4.0.2"
+    "@tippyjs/react" "4.2.3"
+    "@types/react-date-range" "^1.1.2"
     color "^3.1.2"
+    dayjs "^1.9.7"
     focus-visible "^5.1.0"
     rc-collapse "^1.11.8"
     rc-drawer "^4.1.0"
     rc-slider "^9.5.4"
     rc-tabs "^11.6.2"
+    react-date-range "^1.1.3"
     react-modal "^3.11.2"
     react-select "^3.1.0"
     react-table "^7.6.0"
@@ -1847,6 +1850,11 @@
   version "2.5.4"
   resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.5.4.tgz#de25b5da9f727985a3757fd59b5d028aba75841a"
   integrity sha512-ZpKr+WTb8zsajqgDkvCEWgp6d5eJT6Q63Ng2neTbzBO76Lbe91vX/iVIW9dikq+Fs3yEo+ls4cxeXABD2LtcbQ==
+
+"@popperjs/core@^2.8.3":
+  version "2.9.2"
+  resolved "https://registry.yarnpkg.com/@popperjs/core/-/core-2.9.2.tgz#adea7b6953cbb34651766b0548468e743c6a2353"
+  integrity sha512-VZMYa7+fXHdwIq1TDhSXoVmSPEGM/aa+6Aiq3nVVJ9bXr24zScr+NlKFKC3iPljA7ho/GAZr+d2jOf5GIRC30Q==
 
 "@reach/router@^1.2.1", "@reach/router@^1.3.3":
   version "1.3.4"
@@ -3175,13 +3183,12 @@
     "@svgr/plugin-svgo" "^5.5.0"
     rollup-pluginutils "^2.8.2"
 
-"@tippyjs/react@4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@tippyjs/react/-/react-4.0.2.tgz#fadd14f1e36dd4f63f5f241cc78f3a1bb8394250"
-  integrity sha512-iAKTjUmrXqTTJ4HZRDgmvVfUiv9pTzJoDjPLDbmvB6vttkuYvZ/o8NhHa72vMFgHpiMFNoYWtB8OCRR6x5Zs8w==
+"@tippyjs/react@4.2.3":
+  version "4.2.3"
+  resolved "https://registry.yarnpkg.com/@tippyjs/react/-/react-4.2.3.tgz#c2dbe9eb71bd9ffa3974f9ba8e3a4a6fc1538aed"
+  integrity sha512-44vBapqROQI7Q5nDtX1MMAgcAV+3DsIi+m/45CxQ72C5LDNmNDq9h3f04x3NHMrUhWcfgfgjYA2EmeLSH/4eRg==
   dependencies:
-    prop-types "^15.6.2"
-    tippy.js "^6.2.0"
+    tippy.js "^6.3.1"
 
 "@tootallnate/once@1":
   version "1.1.2"
@@ -3449,6 +3456,14 @@
   dependencies:
     "@types/react" "*"
     "@types/reactcss" "*"
+
+"@types/react-date-range@^1.1.2":
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/@types/react-date-range/-/react-date-range-1.1.4.tgz#d595f1d3a427a69920b36e73a3771883f0449b66"
+  integrity sha512-84RAN6zpfjsVds+yZMffe4G1szmCx//mPI9rr+toJhvzTPaZ7zLGsiNdl+Gq2+FdkHdyt/A72tYShJ2xPisHfQ==
+  dependencies:
+    "@types/react" "*"
+    date-fns "^2.16.1"
 
 "@types/react-dom@^17.0.0":
   version "17.0.0"
@@ -6210,10 +6225,20 @@ data-urls@^2.0.0:
     whatwg-mimetype "^2.3.0"
     whatwg-url "^8.0.0"
 
+date-fns@^2.16.1:
+  version "2.21.3"
+  resolved "https://registry.yarnpkg.com/date-fns/-/date-fns-2.21.3.tgz#8f5f6889d7a96bbcc1f0ea50239b397a83357f9b"
+  integrity sha512-HeYdzCaFflc1i4tGbj7JKMjM4cKGYoyxwcIIkHzNgCkX8xXDNJDZXgDDVchIWpN4eQc3lH37WarduXFZJOtxfw==
+
 dateformat@^3.0.0:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/dateformat/-/dateformat-3.0.3.tgz#a6e37499a4d9a9cf85ef5872044d62901c9889ae"
   integrity sha512-jyCETtSl3VMZMWeRo7iY1FL19ges1t55hMo5yaam4Jrsm5EPL89UQkoQRyiI+Yf4k8r2ZpdngkV8hr1lIdjb3Q==
+
+dayjs@^1.9.7:
+  version "1.10.4"
+  resolved "https://registry.yarnpkg.com/dayjs/-/dayjs-1.10.4.tgz#8e544a9b8683f61783f570980a8a80eaf54ab1e2"
+  integrity sha512-RI/Hh4kqRc1UKLOAf/T5zdMMX5DQIlDxwUe3wSyMMnEbGunnpENCdbUgM+dW7kXidZqCttBrmw7BhN4TMddkCw==
 
 debug@2.6.9, debug@^2.2.0, debug@^2.3.3, debug@^2.6.0:
   version "2.6.9"
@@ -12451,7 +12476,7 @@ promzard@^0.3.0:
   dependencies:
     read "1"
 
-prop-types@15.x, prop-types@^15.0.0, prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
+prop-types@15, prop-types@15.x, prop-types@^15.0.0, prop-types@^15.5.10, prop-types@^15.5.6, prop-types@^15.5.8, prop-types@^15.6.0, prop-types@^15.6.1, prop-types@^15.6.2, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -12880,6 +12905,16 @@ react-color@^2.17.0, react-color@^2.19.3:
     reactcss "^1.2.0"
     tinycolor2 "^1.4.1"
 
+react-date-range@^1.1.3:
+  version "1.1.3"
+  resolved "https://registry.yarnpkg.com/react-date-range/-/react-date-range-1.1.3.tgz#8b3bb18066dcac6609b1e8df655c720ffd273d4f"
+  integrity sha512-Q0+80JaEw3O2J50Lf1dcwWfqkzu3SaCZUTgtVEG9kIHy1h1x8XTNrumX08hKz+M//wg7NOymaTzP1RPBYoLpmw==
+  dependencies:
+    classnames "^2.2.6"
+    prop-types "^15.7.2"
+    react-list "^0.8.13"
+    shallow-equal "^1.2.1"
+
 react-dev-utils@^10.0.0:
   version "10.2.1"
   resolved "https://registry.yarnpkg.com/react-dev-utils/-/react-dev-utils-10.2.1.tgz#f6de325ae25fa4d546d09df4bb1befdc6dd19c19"
@@ -13060,6 +13095,13 @@ react-lifecycles-compat@^3.0.0, react-lifecycles-compat@^3.0.4:
   version "3.0.4"
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
+
+react-list@^0.8.13:
+  version "0.8.16"
+  resolved "https://registry.yarnpkg.com/react-list/-/react-list-0.8.16.tgz#3f19b249998de0086787da3789d35b59553ede3a"
+  integrity sha512-LSxfvdwB9Ip+E+8NBtLPW2pcIngzuV0rSoH9nMt9C2lFjZEbnoBY/ib/Zx121jPgFgg3xYkMlMXSzx5gaiP5ig==
+  dependencies:
+    prop-types "15"
 
 react-modal@^3.11.2:
   version "3.11.2"
@@ -14142,7 +14184,7 @@ sha@^3.0.0:
   dependencies:
     graceful-fs "^4.1.2"
 
-shallow-equal@^1.1.0:
+shallow-equal@^1.1.0, shallow-equal@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/shallow-equal/-/shallow-equal-1.2.1.tgz#4c16abfa56043aa20d050324efa68940b0da79da"
   integrity sha512-S4vJDjHHMBaiZuT9NPb616CSmLf618jawtv3sufLl6ivK8WocjAo58cXwbRV1cgqxH0Qbv+iUt6m05eqEa2IRA==
@@ -15122,12 +15164,12 @@ tippy.js@6.2.0:
   dependencies:
     "@popperjs/core" "^2.3.2"
 
-tippy.js@^6.2.0:
-  version "6.2.7"
-  resolved "https://registry.yarnpkg.com/tippy.js/-/tippy.js-6.2.7.tgz#62fb34eda23f7d78151ddca922b62818c1ab9869"
-  integrity sha512-k+kWF9AJz5xLQHBi3K/XlmJiyu+p9gsCyc5qZhxxGaJWIW8SMjw1R+C7saUnP33IM8gUhDA2xX//ejRSwqR0tA==
+tippy.js@^6.3.1:
+  version "6.3.1"
+  resolved "https://registry.yarnpkg.com/tippy.js/-/tippy.js-6.3.1.tgz#3788a007be7015eee0fd589a66b98fb3f8f10181"
+  integrity sha512-JnFncCq+rF1dTURupoJ4yPie5Cof978inW6/4S6kmWV7LL9YOSEVMifED3KdrVPEG+Z/TFH2CDNJcQEfaeuQww==
   dependencies:
-    "@popperjs/core" "^2.4.4"
+    "@popperjs/core" "^2.8.3"
 
 tmp@^0.0.33:
   version "0.0.33"

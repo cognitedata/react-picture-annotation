@@ -1,9 +1,18 @@
 import React, { useEffect, useContext } from "react";
 import CanvasDraw from "react-canvas-draw";
+import styled from "styled-components";
 import LZString from "lz-string";
 import CogniteFileViewerContext from "../Cognite/FileViewerContext";
 import { Wrapper } from "./components";
 import { toRGB } from "../utils/RGB";
+
+const StyledCanvasDraw = styled(CanvasDraw).attrs(
+  ({ paintLayerEditMode }: { paintLayerEditMode: boolean }) => {
+    const style: any = {};
+    if (!paintLayerEditMode) style.pointerEvents = "none";
+    return { style };
+  }
+)<{ paintLayerEditMode: boolean }>``;
 
 type Props = {
   width?: number;
@@ -33,7 +42,7 @@ export default function PaintLayer(props: Props): JSX.Element {
 
   return (
     <Wrapper>
-      <CanvasDraw
+      <StyledCanvasDraw
         ref={paintLayerCanvasRef}
         hideGrid={true}
         brushColor={toRGB(brushColor)}
@@ -41,6 +50,7 @@ export default function PaintLayer(props: Props): JSX.Element {
         canvasHeight={width}
         canvasWidth={height}
         disabled={!paintLayerEditMode}
+        paintLayerEditMode={paintLayerEditMode}
         style={{ background: "transparent" }}
       />
     </Wrapper>
