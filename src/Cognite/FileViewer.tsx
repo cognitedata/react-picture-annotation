@@ -22,6 +22,7 @@ import {
   TextBox,
   ArrowPreviewOptions,
 } from "./FileViewerUtils";
+import PaintLayerBar from "../PaintLayer/PaintLayerBar";
 
 type RenderItemPreviewFunction = (
   annotations: (ProposedCogniteAnnotation | CogniteAnnotation)[],
@@ -208,6 +209,8 @@ export const FileViewer = ({
     setTotalPages,
     download,
     query,
+    paintLayerEditMode,
+    setPaintLayerEditMode,
   } = useContext(CogniteFileViewerContext);
 
   useEffect(() => {
@@ -249,7 +252,6 @@ export const FileViewer = ({
   const [loading, setLoading] = useState(true);
   const [textboxes, setTextboxes] = useState<TextBox[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
-  const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
   const [drawData, setDrawData] = useState<string>("");
 
   const fileId = file ? file.id : undefined;
@@ -492,10 +494,6 @@ export const FileViewer = ({
         editable={editable}
         drawable={drawable}
         drawData={drawData}
-        onPaintLayerDraw={(newDrawData: string) => {
-          setDrawData(newDrawData);
-          onDrawStroke(newDrawData);
-        }}
         annotationData={annotationData}
         onChange={(e) => {
           // if (textboxesToShow.find(el=>el.id===))
@@ -552,34 +550,12 @@ export const FileViewer = ({
         />
       )}
       {paintLayerEditMode && (
-        <Buttons style={{ left: "24px" }}>
-          <div id="controls">
-            <Button
-              onClick={() => {
-                if (zoomIn) {
-                  zoomIn();
-                }
-              }}
-              icon="ZoomIn"
-            />
-            <Button
-              icon="Refresh"
-              onClick={() => {
-                if (reset) {
-                  reset();
-                }
-              }}
-            />
-            <Button
-              icon="ZoomOut"
-              onClick={() => {
-                if (zoomOut) {
-                  zoomOut();
-                }
-              }}
-            />
-          </div>
-        </Buttons>
+        <PaintLayerBar
+          onPaintLayerDraw={(newDrawData: string) => {
+            setDrawData(newDrawData);
+            onDrawStroke(newDrawData);
+          }}
+        />
       )}
       {!hideControls && (
         <Buttons>

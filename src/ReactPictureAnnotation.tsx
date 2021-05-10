@@ -478,9 +478,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       <Wrapper>
         {drawable && (
           <PaintLayer
-            paintLayerEditMode={this.props.paintLayerEditMode}
             drawData={this.props.drawData}
-            onPaintLayerDraw={this.props.onPaintLayerDraw}
             width={width * 2}
             height={height * 2}
           />
