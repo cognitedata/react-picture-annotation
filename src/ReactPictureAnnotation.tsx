@@ -3,6 +3,7 @@ import * as pdfjs from "pdfjs-dist";
 import { PDFDocument, rgb, PDFPage, degrees } from "pdf-lib";
 import parseColor from "parse-color";
 import { isEqual } from "lodash";
+import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
 import { ArrowPreviewOptions } from "./Cognite/FileViewerUtils";
 import { IAnnotation } from "./Annotation";
 import { IAnnotationState } from "./annotation/AnnotationState";
@@ -79,6 +80,7 @@ interface IReactPictureAnnotationProps {
   onReady?: (element: ReactPictureAnnotation) => void;
   mouseWheelScaleModifier?: number;
   zoomOnAnnotation?: { annotation: any; scale?: number };
+  paintLayerCanvasRef?: React.RefObject<CanvasDraw>;
 }
 
 interface IStageState {
@@ -1024,6 +1026,25 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       );
     }
   };
+
+  // private onPaintLayerChange = async () => {
+  //   this.cleanImage();
+  //   if (this.props.paintLayerCanvasRef) {
+  //     const { originX, originY, scale } = this.scaleState;
+  //     const test = this.props.paintLayerCanvasRef?.current.drawImage;
+  //     if (this.currentImageElement) {
+  //       this.imageCanvas2D.drawImage(
+  //         this.currentImageElement,
+  //         originX,
+  //         originY,
+  //         this.currentImageElement.width * scale,
+  //         this.currentImageElement.height * scale
+  //       );
+  //     } else {
+  //       this.reset();
+  //     }
+  //   }
+  // };
 
   private onImageChange = async () => {
     this.cleanImage();

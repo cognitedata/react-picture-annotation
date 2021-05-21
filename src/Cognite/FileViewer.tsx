@@ -206,6 +206,7 @@ export const FileViewer = ({
     query,
     paintLayerEditMode,
     setPaintLayerEditMode,
+    paintLayerCanvasRef,
   } = useContext(CogniteFileViewerContext);
 
   useEffect(() => {
@@ -533,6 +534,7 @@ export const FileViewer = ({
           }
         }}
         zoomOnAnnotation={zoomOnAnnotation}
+        paintLayerCanvasRef={paintLayerCanvasRef}
       />
       {totalPages > 1 && pagination && (
         <DocumentPagination

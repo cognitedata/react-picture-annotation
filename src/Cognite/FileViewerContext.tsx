@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import CanvasDraw from "react-canvas-draw";
+import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
 import { CogniteClient, FileInfo } from "@cognite/sdk";
 import {
   CogniteAnnotation,

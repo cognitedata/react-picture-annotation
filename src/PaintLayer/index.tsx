@@ -1,5 +1,5 @@
 import React, { useEffect, useContext } from "react";
-import CanvasDraw from "react-canvas-draw";
+import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
 import styled from "styled-components";
 import LZString from "lz-string";
 import CogniteFileViewerContext from "../Cognite/FileViewerContext";
