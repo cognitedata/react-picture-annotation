@@ -73,6 +73,7 @@ interface IReactPictureAnnotationProps {
   onLoading: (loading: boolean) => void;
   onReady?: (element: ReactPictureAnnotation) => void;
   mouseWheelScaleModifier?: number;
+  pinchScaleModifier?: number;
   zoomOnAnnotation?: { annotation: any; scale?: number };
 }
 
@@ -121,7 +122,6 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     drawLabel: true,
     usePercentage: true,
     onLoading: () => true,
-    mouseWheelScaleModifier: 0.01,
   };
 
   public shapes: IShape[] = [];
@@ -1188,10 +1188,14 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   };
 
   private handlePinchChange = (touches: React.TouchList) => {
+    const { pinchScaleModifier = 0.001 } = this.props;
     const length = getPinchLength(touches);
     const midpoint = getPinchMidpoint(touches);
+    const zoomDiff =
+      (length - Number(this.lastPinchLength)) * pinchScaleModifier;
+
     let scale = this.lastPinchLength
-      ? (this.scaleState.scale * length) / this.lastPinchLength // sometimes we get a touchchange before a touchstart when pinching
+      ? this.scaleState.scale + zoomDiff
       : this.scaleState.scale;
 
     if (scale > 10) {
@@ -1210,6 +1214,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     this.scaleState.scale = scale;
 
     this.setState({ imageScale: this.scaleState });
+    this.lastPinchLength = length;
 
     requestAnimationFrame(() => {
       this.onShapeChange();
@@ -1236,7 +1241,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     // }
 
     const { scale: preScale } = this.scaleState;
-    const { mouseWheelScaleModifier = 0.01 } = this.props;
+    const { mouseWheelScaleModifier = 0.001 } = this.props;
     // this.scaleState.scale -= event.deltaY * 0.005;
     const { offsetX, offsetY, ctrlKey, deltaY, deltaX } = event;
 

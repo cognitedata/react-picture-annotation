@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 import { action } from "@storybook/addon-actions";
-import { boolean, select } from "@storybook/addon-knobs";
+import { boolean, select, number } from "@storybook/addon-knobs";
 import { CogniteFileViewer, ViewerEditCallbacks } from "../src";
 import {
   imgSdk,
@@ -52,6 +52,12 @@ export const AllowCustomization = () => {
       file={pdfFile}
       disableAutoFetch={true}
       annotations={annotations}
+      pinchScaleModifier={number("Pinch zoom scale modifier", 0.001, {
+        range: true,
+        min: 0.0001,
+        max: 100,
+        step: 0.0001,
+      })}
     />
   );
 };
