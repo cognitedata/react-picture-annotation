@@ -151,6 +151,10 @@ export type ViewerProps = {
    * Sets the annotation that the file should zoom on
    */
   zoomOnAnnotation?: { annotation: CogniteAnnotation; scale?: number };
+  /**
+   * Allows to customize the pinch zoom scale.
+   */
+  pinchScaleModifier?: number;
 };
 
 export const FileViewer = ({
@@ -181,6 +185,7 @@ export const FileViewer = ({
   renderArrowPreview,
   arrowPreviewOptions,
   onFileLoaded,
+  pinchScaleModifier,
 }: ViewerProps) => {
   const {
     annotations,
@@ -535,6 +540,7 @@ export const FileViewer = ({
         }}
         zoomOnAnnotation={zoomOnAnnotation}
         paintLayerCanvasRef={paintLayerCanvasRef}
+        pinchScaleModifier={pinchScaleModifier}
       />
       {totalPages > 1 && pagination && (
         <DocumentPagination
