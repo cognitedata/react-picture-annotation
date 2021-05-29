@@ -3,7 +3,6 @@ import * as pdfjs from "pdfjs-dist";
 import { PDFDocument, rgb, PDFPage, degrees } from "pdf-lib";
 import parseColor from "parse-color";
 import { isEqual } from "lodash";
-import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
 import { ArrowPreviewOptions } from "./Cognite/FileViewerUtils";
 import { IAnnotation } from "./Annotation";
 import { IAnnotationState } from "./annotation/AnnotationState";
@@ -81,7 +80,7 @@ interface IReactPictureAnnotationProps {
   mouseWheelScaleModifier?: number;
   pinchScaleModifier?: number;
   zoomOnAnnotation?: { annotation: any; scale?: number };
-  paintLayerCanvasRef?: React.RefObject<CanvasDraw>;
+  paintLayerCanvasRef?: React.RefObject<any>;
 }
 
 interface IStageState {
@@ -151,6 +150,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   private canvas2D?: CanvasRenderingContext2D | null;
   private imageCanvasRef = React.createRef<HTMLCanvasElement>();
   private imageCanvas2D?: CanvasRenderingContext2D | null;
+  private paintLayerCanvas2D?: CanvasRenderingContext2D | null;
   private currentImageElement?: HTMLImageElement;
   private currentAnnotationState: IAnnotationState = new DefaultAnnotationState(
     this
@@ -170,6 +170,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   public componentDidMount = async () => {
     const currentCanvas = this.canvasRef.current;
     const currentImageCanvas = this.imageCanvasRef.current;
+    const currentPaintLayerCanvas = this.props.paintLayerCanvasRef?.current;
     if (this.props.pdf) {
       try {
         const getDocParams = this.props.pdf.startsWith(this.pdfBase64Prefix)
@@ -189,6 +190,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       this.setCanvasDPI();
 
       this.canvas2D = currentCanvas.getContext("2d");
+      this.paintLayerCanvas2D = currentPaintLayerCanvas?.ctx?.interface;
       this.imageCanvas2D = currentImageCanvas.getContext("2d");
       this.onImageChange();
 
@@ -216,6 +218,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     } = this.props;
     if (prevProps.width !== width || prevProps.height !== height) {
       this.setCanvasDPI();
+      this.onPaintLayerChange();
       this.onShapeChange();
       this.onImageChange();
     }
@@ -406,6 +409,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     requestAnimationFrame(() => {
       this.onShapeChange();
+      this.onPaintLayerChange();
       this.onImageChange();
       this.setState({ hideArrowPreview: false });
     });
@@ -647,6 +651,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     requestAnimationFrame(() => {
       this.onShapeChange();
+      this.onPaintLayerChange();
       this.onImageChange();
       this.setState({ hideArrowPreview: false });
     });
@@ -669,6 +674,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     requestAnimationFrame(() => {
       this.onShapeChange();
+      this.onPaintLayerChange();
       this.onImageChange();
       this.setState({ hideArrowPreview: false });
     });
@@ -704,6 +710,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       }
       requestAnimationFrame(() => {
         this.onImageChange();
+        this.onPaintLayerChange();
         this.onShapeChange();
         this.setState({ hideArrowPreview: false });
       });
@@ -1027,24 +1034,23 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     }
   };
 
-  // private onPaintLayerChange = async () => {
-  //   this.cleanImage();
-  //   if (this.props.paintLayerCanvasRef) {
-  //     const { originX, originY, scale } = this.scaleState;
-  //     const test = this.props.paintLayerCanvasRef?.current.drawImage;
-  //     if (this.currentImageElement) {
-  //       this.imageCanvas2D.drawImage(
-  //         this.currentImageElement,
-  //         originX,
-  //         originY,
-  //         this.currentImageElement.width * scale,
-  //         this.currentImageElement.height * scale
-  //       );
-  //     } else {
-  //       this.reset();
-  //     }
-  //   }
-  // };
+  private onPaintLayerChange = async () => {
+    this.cleanImage();
+    if (this.paintLayerCanvas2D && this.props.paintLayerCanvasRef) {
+      const { originX, originY, scale } = this.scaleState;
+      if (this.currentImageElement) {
+        this.paintLayerCanvas2D.drawImage(
+          this.props.drawData,
+          originX,
+          originY
+          // this.props.drawData.width * scale,
+          // this.currentImageElement.height * scale
+        );
+      } else {
+        this.reset();
+      }
+    }
+  };
 
   private onImageChange = async () => {
     this.cleanImage();
@@ -1135,6 +1141,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
       requestAnimationFrame(() => {
         this.onShapeChange();
+        this.onPaintLayerChange();
         this.onImageChange();
       });
     }
@@ -1201,6 +1208,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
           requestAnimationFrame(() => {
             this.onShapeChange();
+            this.onPaintLayerChange();
             this.onImageChange();
           });
         }
@@ -1248,6 +1256,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     requestAnimationFrame(() => {
       this.onShapeChange();
+      this.onPaintLayerChange();
       this.onImageChange();
     });
   };
@@ -1301,6 +1310,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     requestAnimationFrame(() => {
       this.onShapeChange();
+      this.onPaintLayerChange();
       this.onImageChange();
       this.setState({ hideArrowPreview: false });
     });

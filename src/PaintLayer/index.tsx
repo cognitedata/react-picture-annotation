@@ -50,6 +50,7 @@ export default function PaintLayer(props: Props): JSX.Element {
         canvasHeight={width}
         canvasWidth={height}
         disabled={!paintLayerEditMode}
+        enablePanAndZoom={true}
         paintLayerEditMode={paintLayerEditMode}
         style={{ background: "transparent" }}
       />

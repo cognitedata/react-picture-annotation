@@ -1,5 +1,4 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
-import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
 import { CogniteClient, FileInfo } from "@cognite/sdk";
 import {
   CogniteAnnotation,
@@ -124,7 +123,7 @@ type FileViewerContextObserverPaintLayerProps = {
   /**
    *
    */
-  paintLayerCanvasRef: React.RefObject<CanvasDraw>;
+  paintLayerCanvasRef: React.RefObject<any>;
   /**
    *
    */
@@ -253,7 +252,7 @@ const FileViewerProvider = ({
   const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
   const [brushColor, setBrushColor] = useState<RGBColor>(DEFAULT.COLOR);
-  const paintLayerCanvasRef = useRef<CanvasDraw>(null);
+  const paintLayerCanvasRef = useRef<any>(null);
 
   const fileId = file ? file.id : undefined;
 
