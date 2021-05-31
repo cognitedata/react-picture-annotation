@@ -288,6 +288,7 @@ export const FileViewer = ({
       }
     })();
   }, [sdk, fileId]);
+
   useEffect(() => {
     if (annotatorRef && annotatorRef.current) {
       setDownload(() => annotatorRef.current!.downloadFile);
@@ -487,10 +488,9 @@ export const FileViewer = ({
         onSelect={onAnnotationSelect}
         onAnnotationCreate={onCreateAnnotation}
         onAnnotationUpdate={onUpdateAnnotation}
-        pdf={
-          file && file.mimeType === "application/pdf" ? previewUrl : undefined
-        }
+        pdf={file?.mimeType === "application/pdf" ? previewUrl : undefined}
         image={file && isImage ? previewUrl : undefined}
+        mimeType={file?.mimeType}
         creatable={creatable}
         width={width}
         height={height}

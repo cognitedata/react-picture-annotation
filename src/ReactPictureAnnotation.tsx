@@ -1,6 +1,7 @@
 import React, { MouseEventHandler, TouchEventHandler } from "react";
 import * as pdfjs from "pdfjs-dist";
 import { PDFDocument, rgb, PDFPage, degrees } from "pdf-lib";
+import base64 from "base64-js";
 import parseColor from "parse-color";
 import { isEqual } from "lodash";
 import { ArrowPreviewOptions } from "./Cognite/FileViewerUtils";
@@ -54,6 +55,7 @@ interface IReactPictureAnnotationProps {
   page?: number;
   image?: string;
   pdf?: string;
+  mimeType?: string;
   editable: boolean;
   creatable?: boolean;
   hoverable?: boolean;
@@ -156,7 +158,9 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   private lastPinchLength?: number;
 
   private _PDF_DOC?: PDFDocumentProxy;
+  private isTiff: boolean;
   private pdfBase64Prefix = "data:application/pdf;base64,";
+  private tiffBase64Prefix = "data:image/tiff;base64,";
 
   public componentDidMount = async () => {
     const currentCanvas = this.canvasRef.current;
@@ -205,6 +209,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       annotationData,
       zoomOnAnnotation,
     } = this.props;
+    if (image) {
+      this.isTiff =
+        this.props?.mimeType === "image/tif" ||
+        this.props?.mimeType === "image/tiff";
+    }
     if (prevProps.width !== width || prevProps.height !== height) {
       this.setCanvasDPI();
       this.onShapeChange();
@@ -248,6 +257,9 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       }
       if (this.currentImageElement && this._PDF_DOC) {
         this.currentImageElement.src = await this.loadPDFPage();
+      }
+      if (this.currentImageElement && this.isTiff) {
+        this.currentImageElement.src = await this.loadTiff();
       }
     }
 
@@ -709,7 +721,9 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       });
       nextImageNode.alt = "";
       if (this.props.image) {
-        nextImageNode.src = this.props.image;
+        if (this.isTiff) {
+          nextImageNode.src = await this.loadTiff();
+        } else nextImageNode.src = this.props.image;
       } else if (this._PDF_DOC) {
         nextImageNode.src = await this.loadPDFPage();
       }
@@ -1064,6 +1078,22 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       const data = canvas.toDataURL("image/png", 1);
 
       return data;
+    }
+    return "";
+  };
+
+  private loadTiff = async () => {
+    if (this.isTiff && this.props.image) {
+      const response = await fetch(this.props.image);
+      if (!response.ok) return this.props.image;
+      else {
+        const blob = await response.blob();
+        const blobToBinaryString = await blob.arrayBuffer();
+        const blobToArray = new Uint8Array(blobToBinaryString);
+        const base64Tiff = base64.fromByteArray(blobToArray);
+        const base64TiffSrc = `${this.tiffBase64Prefix}${base64Tiff}`;
+        return base64TiffSrc;
+      }
     }
     return "";
   };
