@@ -16,7 +16,7 @@ import {
   CogniteAnnotation,
 } from "@cognite/annotations";
 import { CustomizableCogniteAnnotation } from "./Cognite/FileViewerUtils";
-import { Button, Colors } from "@cognite/cogs.js";
+import { Button, Colors, Loader } from "@cognite/cogs.js";
 import {
   useSelectedAnnotations,
   useExtractFromCanvas,
@@ -26,7 +26,7 @@ import {
 import styled from "styled-components";
 
 export const ShowTif = () => {
-  return <CogniteFileViewer sdk={tifSdk} file={tifFile} />;
+  return <CogniteFileViewer sdk={tifSdk} file={tifFile} loader={<Loader />} />;
 };
 
 export const AllowCustomization = () => {

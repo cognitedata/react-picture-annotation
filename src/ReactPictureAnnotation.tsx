@@ -2,6 +2,7 @@ import React, { MouseEventHandler, TouchEventHandler } from "react";
 import * as pdfjs from "pdfjs-dist";
 import { PDFDocument, rgb, PDFPage, degrees } from "pdf-lib";
 import base64 from "base64-js";
+import Jimp from "jimp/es";
 import parseColor from "parse-color";
 import { isEqual } from "lodash";
 import { ArrowPreviewOptions } from "./Cognite/FileViewerUtils";
@@ -161,6 +162,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   private isTiff: boolean;
   private pdfBase64Prefix = "data:application/pdf;base64,";
   private tiffBase64Prefix = "data:image/tiff;base64,";
+  private jpegBase64Prefix = `data:${Jimp.MIME_JPEG};base64,`;
 
   public componentDidMount = async () => {
     const currentCanvas = this.canvasRef.current;
@@ -1083,19 +1085,20 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   };
 
   private loadTiff = async () => {
-    if (this.isTiff && this.props.image) {
-      const response = await fetch(this.props.image);
-      if (!response.ok) return this.props.image;
-      else {
-        const blob = await response.blob();
-        const blobToBinaryString = await blob.arrayBuffer();
-        const blobToArray = new Uint8Array(blobToBinaryString);
-        const base64Tiff = base64.fromByteArray(blobToArray);
-        const base64TiffSrc = `${this.tiffBase64Prefix}${base64Tiff}`;
+    try {
+      this.props.onLoading(true);
+      if (this.isTiff && this.props.image) {
+        const tiffOriginal = await Jimp.read(this.props.image);
+        tiffOriginal.quality(1);
+        const jpegBuffer = await tiffOriginal.getBufferAsync(Jimp.MIME_JPEG);
+        const base64Jpeg = base64.fromByteArray(jpegBuffer);
+        const base64TiffSrc = `${this.jpegBase64Prefix}${base64Jpeg}`;
         return base64TiffSrc;
-      }
+      } else return "";
+    } catch (error) {
+      this.props.onLoading(false);
+      return this.props.image ?? "";
     }
-    return "";
   };
 
   private onMouseDown: MouseEventHandler<HTMLCanvasElement> = (event) => {

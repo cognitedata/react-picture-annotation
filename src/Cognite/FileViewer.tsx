@@ -282,9 +282,7 @@ export const FileViewer = ({
     (async () => {
       if (fileId) {
         setPreviewUrl(undefined);
-        setLoading(true);
         setPreviewUrl(await retrieveDownloadUrl(sdk, fileId));
-        setLoading(false);
       }
     })();
   }, [sdk, fileId]);
