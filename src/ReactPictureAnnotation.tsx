@@ -161,7 +161,6 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   private _PDF_DOC?: PDFDocumentProxy;
   private isTiff: boolean;
   private pdfBase64Prefix = "data:application/pdf;base64,";
-  private tiffBase64Prefix = "data:image/tiff;base64,";
   private jpegBase64Prefix = `data:${Jimp.MIME_JPEG};base64,`;
 
   public componentDidMount = async () => {
