@@ -7,6 +7,8 @@ import randomId from "../src/utils/randomId";
 import pdfFileUrl from "./img/pnid.pdf";
 // @ts-ignore
 import imgFileUrl from "./img/pnid.jpg";
+// @ts-ignore
+import tifFileUrl from "./img/pnid.tiff";
 
 export const pdfFile = {
   id: 1,
@@ -24,6 +26,15 @@ export const imgFile = {
   createdTime: new Date(),
   name: "Random File",
   mimeType: "image/png",
+};
+
+export const tifFile = {
+  id: 1,
+  lastUpdatedTime: new Date(),
+  uploaded: false,
+  createdTime: new Date(),
+  name: "Random File",
+  mimeType: "image/tif",
 };
 
 export const imgSdkThreeAnnotations = ({
@@ -74,6 +85,21 @@ export const pdfSdk = ({
         downloadUrl: pdfFileUrl,
       },
     ],
+  },
+} as unknown) as CogniteClient;
+
+export const tifSdk = ({
+  events: {
+    list: (..._: any[]) => ({ autoPagingToArray: async () => response }),
+    update: async (...annotations: any[]) =>
+      annotations.map((el) => el.annotation),
+    create: async (...annotations: any[]) =>
+      annotations.map((el) => ({ ...el, id: randomId() })),
+  },
+  post: async () => ({ data: { items: [{ annotations: orcResults }] } }),
+  files: {
+    retrieve: async () => [tifFile],
+    getDownloadUrls: async () => [{ downloadUrl: tifFileUrl }],
   },
 } as unknown) as CogniteClient;
 

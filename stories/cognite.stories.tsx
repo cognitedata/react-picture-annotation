@@ -8,6 +8,8 @@ import {
   imgSdkThreeAnnotations,
   pdfFile,
   pdfSdk,
+  tifFile,
+  tifSdk,
 } from "./utils";
 import {
   listAnnotationsForFile,
@@ -22,6 +24,10 @@ import {
   useZoomControls,
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components";
+
+export const ShowTif = () => {
+  return <CogniteFileViewer sdk={tifSdk} file={tifFile} />;
+};
 
 export const AllowCustomization = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);

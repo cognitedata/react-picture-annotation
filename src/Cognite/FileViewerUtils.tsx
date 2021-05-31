@@ -150,7 +150,9 @@ export const isSameResource = (
 
 export const isPreviewableImage = (file: FileInfo) => {
   const { mimeType = "" } = file;
-  return ["png", "jpeg", "jpg", "svg"].some((el) => mimeType.includes(el));
+  return ["png", "jpeg", "jpg", "svg", "tiff"].some((el) =>
+    mimeType.includes(el)
+  );
 };
 
 export const retrieveDownloadUrl = async (

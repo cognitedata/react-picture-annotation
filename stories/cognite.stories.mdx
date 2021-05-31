@@ -15,7 +15,8 @@ import {
   CustomizedAnnotations,
   Playground,
   ZoomOnSelectedAnnotation,
-  BoxAndArrows
+  BoxAndArrows,
+  ShowTif
 } from './cognite.stories.tsx';
 
 <Meta
@@ -63,6 +64,12 @@ In both cases, you would set `disableAutoFetch={true}` and supply `annotations` 
 
 <Canvas>
   <Story story={AllowCustomization} />
+</Canvas>
+
+Here we can see the *.TIF file being previewed.
+
+<Canvas>
+  <Story story={ShowTif} />
 </Canvas>
 
 Here is a demo of the more advanced case with editing enabled and display an annotation selected at start.
