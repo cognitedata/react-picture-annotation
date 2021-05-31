@@ -366,7 +366,8 @@ export const FileViewer = ({
 
   const isImage: boolean = useMemo(() => {
     if (file) {
-      return isPreviewableImage(file);
+      const isPreviewable = isPreviewableImage(file);
+      return isPreviewable;
     }
     return false;
   }, [file]);

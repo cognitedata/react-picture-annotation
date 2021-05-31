@@ -8,7 +8,7 @@ import pdfFileUrl from "./img/pnid.pdf";
 // @ts-ignore
 import imgFileUrl from "./img/pnid.jpg";
 // @ts-ignore
-import tifFileUrl from "./img/pnid.tiff";
+import tifFileUrl from "./img/pnid.tif";
 
 export const pdfFile = {
   id: 1,
@@ -20,7 +20,7 @@ export const pdfFile = {
 };
 
 export const imgFile = {
-  id: 1,
+  id: 2,
   lastUpdatedTime: new Date(),
   uploaded: false,
   createdTime: new Date(),
@@ -29,7 +29,7 @@ export const imgFile = {
 };
 
 export const tifFile = {
-  id: 1,
+  id: 3,
   lastUpdatedTime: new Date(),
   uploaded: false,
   createdTime: new Date(),

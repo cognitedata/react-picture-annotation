@@ -150,7 +150,7 @@ export const isSameResource = (
 
 export const isPreviewableImage = (file: FileInfo) => {
   const { mimeType = "" } = file;
-  return ["png", "jpeg", "jpg", "svg", "tiff"].some((el) =>
+  return ["png", "jpeg", "jpg", "svg", "tif", "tiff"].some((el) =>
     mimeType.includes(el)
   );
 };
