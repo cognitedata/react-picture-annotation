@@ -24,7 +24,7 @@ export const SearchField = () => {
           onChange={(e) => setQuery(e.target.value)}
           value={query}
         />
-        <Button
+        <Button aria-label="Clear"
           icon="Close"
           onClick={() => {
             setOpen(false);
@@ -34,7 +34,7 @@ export const SearchField = () => {
       </Wrapper>
     );
   }
-  return <Button icon="Search" onClick={() => setOpen(true)} />;
+  return <Button aria-label="Search" icon="Search" onClick={() => setOpen(true)} />;
 };
 
 const Wrapper = styled.div`

@@ -529,7 +529,7 @@ export const FileViewer = ({
       {!hideControls && (
         <Buttons>
           <div id="controls">
-            <Button
+            <Button aria-label="Zoom in"
               onClick={() => {
                 if (zoomIn) {
                   zoomIn();
@@ -537,7 +537,7 @@ export const FileViewer = ({
               }}
               icon="ZoomIn"
             />
-            <Button
+            <Button aria-label="Refresh"
               icon="Refresh"
               onClick={() => {
                 if (reset) {
@@ -545,7 +545,7 @@ export const FileViewer = ({
                 }
               }}
             />
-            <Button
+            <Button aria-label="Zoom out"
               icon="ZoomOut"
               onClick={() => {
                 if (zoomOut) {
@@ -589,7 +589,7 @@ export const FileViewer = ({
               </Menu>
             }
           >
-            <Button icon="Download" />
+            <Button icon="Download" aria-label="Download" />
           </Dropdown>
         )}
       </ToolingButtons>
