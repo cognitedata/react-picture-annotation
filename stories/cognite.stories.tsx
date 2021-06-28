@@ -22,6 +22,7 @@ import {
   useZoomControls,
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components";
+import { drawingMock } from "./drawingMock";
 
 export const AllowCustomization = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
@@ -483,11 +484,14 @@ export const BoxAndArrows = () => {
 
 export const AllowCustomDrawing = () => {
   const [drawData, setDrawData] = useState<string | undefined>();
+  const mock = JSON.stringify(drawingMock);
+  const onLoadDrawingClick = () => setDrawData(mock);
 
   return (
     <StoryWrapper>
       <SidebarHelper>
         <strong>Paint layer data</strong>
+        <button onClick={onLoadDrawingClick}>Load drawing</button>
         <p>{drawData}</p>
       </SidebarHelper>
       <CogniteFileViewer
