@@ -60,8 +60,6 @@ interface IReactPictureAnnotationProps {
   drawable?: boolean;
   paintLayerEditMode: boolean;
   onPaintLayerDraw?: (drawData: string) => void;
-  drawData: string;
-  setDrawData: (drawData: string) => void;
   drawLabel: boolean;
   arrowPreviewOptions?: ArrowPreviewOptions;
   renderArrowPreview?: any; // TODO type
@@ -151,7 +149,6 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   private canvas2D?: CanvasRenderingContext2D | null;
   private imageCanvasRef = React.createRef<HTMLCanvasElement>();
   private imageCanvas2D?: CanvasRenderingContext2D | null;
-  private paintLayerCanvas2D?: CanvasRenderingContext2D | null;
   private currentImageElement?: HTMLImageElement;
   private currentAnnotationState: IAnnotationState = new DefaultAnnotationState(
     this
@@ -171,7 +168,6 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   public componentDidMount = async () => {
     const currentCanvas = this.canvasRef.current;
     const currentImageCanvas = this.imageCanvasRef.current;
-    const currentPaintLayerCanvas = this.props.paintLayerCanvasRef?.current;
     if (this.props.pdf) {
       try {
         const getDocParams = this.props.pdf.startsWith(this.pdfBase64Prefix)
@@ -191,7 +187,6 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       this.setCanvasDPI();
 
       this.canvas2D = currentCanvas.getContext("2d");
-      this.paintLayerCanvas2D = currentPaintLayerCanvas?.ctx?.interface;
       this.imageCanvas2D = currentImageCanvas.getContext("2d");
       this.onImageChange();
 

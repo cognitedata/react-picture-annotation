@@ -503,8 +503,6 @@ export const FileViewer = ({
         hoverable={hoverable}
         editable={editable}
         drawable={drawable}
-        drawData={drawData}
-        setDrawData={setDrawData}
         annotationData={annotationData}
         onChange={(e) => {
           // if (textboxesToShow.find(el=>el.id===))
