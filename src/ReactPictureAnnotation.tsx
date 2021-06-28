@@ -12,7 +12,6 @@ import { IShape, IShapeBase, RectShape } from "./Shape";
 import Transformer, { ITransformer } from "./Transformer";
 import styled from "styled-components";
 import { PDFPageProxy, PDFDocumentProxy } from "pdfjs-dist/types/display/api";
-
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/2.6.347/pdf.worker.min.js`;
 import ArrowBox from "./ArrowBox";
 import PaintLayer from "./PaintLayer";
@@ -60,8 +59,9 @@ interface IReactPictureAnnotationProps {
   hoverable?: boolean;
   drawable?: boolean;
   paintLayerEditMode: boolean;
-  drawData?: string;
   onPaintLayerDraw?: (drawData: string) => void;
+  drawData: string;
+  setDrawData: (drawData: string) => void;
   drawLabel: boolean;
   arrowPreviewOptions?: ArrowPreviewOptions;
   renderArrowPreview?: any; // TODO type
@@ -83,7 +83,7 @@ interface IReactPictureAnnotationProps {
   paintLayerCanvasRef?: React.RefObject<any>;
 }
 
-interface IStageState {
+export interface IStageState {
   scale: number;
   originX: number;
   originY: number;
@@ -142,6 +142,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     annotationsLoaded: false,
     showInput: false,
     hideArrowPreview: true,
+    hidePaintLayer: true,
     isSpacePressed: false,
   };
   private currentAnnotationData: IAnnotation[] = [];
@@ -199,6 +200,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     this.syncAnnotationData();
     this.syncSelectedId();
+
     document.addEventListener("keyup", this.keyListener);
     document.addEventListener("keydown", this.keyListener);
   };
@@ -218,8 +220,8 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     } = this.props;
     if (prevProps.width !== width || prevProps.height !== height) {
       this.setCanvasDPI();
-      this.onPaintLayerChange();
       this.onShapeChange();
+      this.onPaintLayerChange();
       this.onImageChange();
     }
     if (!isEqual(prevProps.renderArrowPreview, renderArrowPreview)) {
@@ -405,13 +407,17 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
     this.scaleState.originX = x;
     this.scaleState.originY = y;
     this.scaleState.scale = scale;
-    this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
+    this.setState({
+      imageScale: this.scaleState,
+      hideArrowPreview: true,
+      hidePaintLayer: true,
+    });
 
     requestAnimationFrame(() => {
       this.onShapeChange();
       this.onPaintLayerChange();
       this.onImageChange();
-      this.setState({ hideArrowPreview: false });
+      this.setState({ hideArrowPreview: false, hidePaintLayer: false });
     });
   };
 
@@ -439,6 +445,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       inputPosition,
       arrowPreviewPositions,
       hideArrowPreview,
+      hidePaintLayer,
     } = this.state;
 
     const showArrowPreview = () => {
@@ -482,7 +489,12 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     return (
       <Wrapper>
-        {drawable && <PaintLayer drawData={this.props.drawData} />}
+        {drawable && (
+          <PaintLayer
+            scaleState={this.scaleState}
+            hidePaintLayer={hidePaintLayer}
+          />
+        )}
         <canvas
           style={{ width, height }}
           className="rp-image"
@@ -647,13 +659,17 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       );
     }
 
-    this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
+    this.setState({
+      imageScale: this.scaleState,
+      hideArrowPreview: true,
+      hidePaintLayer: true,
+    });
 
     requestAnimationFrame(() => {
       this.onShapeChange();
       this.onPaintLayerChange();
       this.onImageChange();
-      this.setState({ hideArrowPreview: false });
+      this.setState({ hideArrowPreview: false, hidePaintLayer: false });
     });
   };
 
@@ -670,13 +686,17 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       );
     }
 
-    this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
+    this.setState({
+      imageScale: this.scaleState,
+      hideArrowPreview: true,
+      hidePaintLayer: true,
+    });
 
     requestAnimationFrame(() => {
       this.onShapeChange();
       this.onPaintLayerChange();
       this.onImageChange();
-      this.setState({ hideArrowPreview: false });
+      this.setState({ hideArrowPreview: false, hidePaintLayer: false });
     });
   };
 
@@ -686,7 +706,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       this.currentImageElement || document.createElement("img");
     nextImageNode.crossOrigin = "anonymous";
     const loadProperDimentions = () => {
-      this.setState({ hideArrowPreview: true });
+      this.setState({ hideArrowPreview: true, hidePaintLayer: true });
       const { width, height } = nextImageNode;
       const imageNodeRatio = height / width;
       const { width: canvasWidth, height: canvasHeight } = this.props;
@@ -709,10 +729,10 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
         }
       }
       requestAnimationFrame(() => {
-        this.onImageChange();
-        this.onPaintLayerChange();
         this.onShapeChange();
-        this.setState({ hideArrowPreview: false });
+        this.onPaintLayerChange();
+        this.onImageChange();
+        this.setState({ hideArrowPreview: false, hidePaintLayer: false });
       });
     };
     if (this.currentImageElement) {
@@ -1036,20 +1056,6 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
   private onPaintLayerChange = async () => {
     this.cleanImage();
-    if (this.paintLayerCanvas2D && this.props.paintLayerCanvasRef) {
-      const { originX, originY, scale } = this.scaleState;
-      if (this.currentImageElement) {
-        this.paintLayerCanvas2D.drawImage(
-          this.props.drawData,
-          originX,
-          originY
-          // this.props.drawData.width * scale,
-          // this.currentImageElement.height * scale
-        );
-      } else {
-        this.reset();
-      }
-    }
   };
 
   private onImageChange = async () => {
@@ -1137,7 +1143,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       this.scaleState.originY =
         this.startDrag.originY + (offsetY - this.startDrag.y);
 
-      this.setState({ imageScale: this.scaleState, hideArrowPreview: true });
+      this.setState({
+        imageScale: this.scaleState,
+        hideArrowPreview: true,
+        hidePaintLayer: true,
+      });
 
       requestAnimationFrame(() => {
         this.onShapeChange();
@@ -1150,13 +1160,13 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   private onMouseUp: MouseEventHandler<HTMLCanvasElement> = () => {
     this.currentAnnotationState.onMouseUp();
     this.startDrag = undefined;
-    this.setState({ hideArrowPreview: false });
+    this.setState({ hideArrowPreview: false, hidePaintLayer: false });
   };
 
   public forceMouseUp = () => {
     this.currentAnnotationState.onMouseLeave();
     this.startDrag = undefined;
-    this.setState({ hideArrowPreview: false });
+    this.setState({ hideArrowPreview: false, hidePaintLayer: false });
   };
 
   private onTouchStart: TouchEventHandler<HTMLCanvasElement> = (event) => {
@@ -1190,7 +1200,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       clientX,
       clientY
     );
-    this.setState({ hideArrowPreview: true });
+    this.setState({ hideArrowPreview: true, hidePaintLayer: true });
     if (editable) {
       this.currentAnnotationState.onMouseMove(positionX, positionY);
     } else {
@@ -1222,7 +1232,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   private onTouchEnd: TouchEventHandler<HTMLCanvasElement> = () => {
     this.currentAnnotationState.onMouseUp();
     this.startDrag = undefined;
-    this.setState({ hideArrowPreview: false });
+    this.setState({ hideArrowPreview: false, hidePaintLayer: false });
   };
 
   private handlePinchChange = (touches: React.TouchList) => {
@@ -1268,7 +1278,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
   private onWheel = (event: WheelEvent) => {
     event.preventDefault();
     event.stopPropagation();
-    this.setState({ hideArrowPreview: true });
+    this.setState({ hideArrowPreview: true, hidePaintLayer: true });
     // https://stackoverflow.com/a/31133823/9071503
     // const { clientHeight, scrollTop, scrollHeight,ctrlKey } = event;
     // if (clientHeight + scrollTop + event.deltaY > scrollHeight) {
@@ -1312,7 +1322,7 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       this.onShapeChange();
       this.onPaintLayerChange();
       this.onImageChange();
-      this.setState({ hideArrowPreview: false });
+      this.setState({ hideArrowPreview: false, hidePaintLayer: false });
     });
   };
 

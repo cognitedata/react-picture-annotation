@@ -22,7 +22,7 @@ import {
   TextBox,
   ArrowPreviewOptions,
 } from "./FileViewerUtils";
-import PaintLayerBar from "../PaintLayer/PaintLayerBar";
+import { PaintLayerBar } from "../PaintLayer";
 
 type RenderItemPreviewFunction = (
   annotations: (ProposedCogniteAnnotation | CogniteAnnotation)[],
@@ -140,9 +140,8 @@ export type ViewerProps = {
   /**
    * Callback for every stroke on the paint layer.
    * Allows you to get the drawing data from outside to be able to save it externally.
-   * The returned data is compressed using the lz-string library.
    */
-  onDraw?: (compressedDrawData: string) => void;
+  onDrawingSaved?: (drawData: string) => void;
   /**
    * What to display while loading. Note this is NOT displayed when `file` is not set.
    */
@@ -155,6 +154,10 @@ export type ViewerProps = {
    * Allows to customize the pinch zoom scale.
    */
   pinchScaleModifier?: number;
+  /**
+   * Allows you to inject an old drawing to component if you had it saved.
+   */
+  loadedDrawData?: string;
 };
 
 export const FileViewer = ({
@@ -178,9 +181,10 @@ export const FileViewer = ({
   hideDownload = false,
   hideSearch = false,
   zoomOnAnnotation,
+  loadedDrawData,
+  onDrawingSaved,
   onAnnotationSelected,
   onArrowBoxMove,
-  onDraw,
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
   renderArrowPreview,
   arrowPreviewOptions,
@@ -212,7 +216,19 @@ export const FileViewer = ({
     paintLayerEditMode,
     setPaintLayerEditMode,
     paintLayerCanvasRef,
+    drawData,
+    setDrawData,
   } = useContext(CogniteFileViewerContext);
+
+  useEffect(() => {
+    if (loadedDrawData && drawData !== loadedDrawData) {
+      setDrawData(loadedDrawData);
+    }
+  }, [loadedDrawData]);
+
+  useEffect(() => {
+    if (onDrawingSaved) onDrawingSaved(drawData);
+  }, [drawData]);
 
   useEffect(() => {
     if (annotationsFromProps) {
@@ -253,7 +269,6 @@ export const FileViewer = ({
   const [loading, setLoading] = useState(true);
   const [textboxes, setTextboxes] = useState<TextBox[]>([]);
   const [previewUrl, setPreviewUrl] = useState<string | undefined>(undefined);
-  const [drawData, setDrawData] = useState<string>("");
 
   const fileId = file ? file.id : undefined;
 
@@ -381,12 +396,6 @@ export const FileViewer = ({
     }
   };
 
-  const onDrawStroke = (compressedDrawData: string) => {
-    if (onDraw) {
-      onDraw(compressedDrawData);
-    }
-  };
-
   const isImage: boolean = useMemo(() => {
     if (file) {
       return isPreviewableImage(file);
@@ -495,6 +504,7 @@ export const FileViewer = ({
         editable={editable}
         drawable={drawable}
         drawData={drawData}
+        setDrawData={setDrawData}
         annotationData={annotationData}
         onChange={(e) => {
           // if (textboxesToShow.find(el=>el.id===))
@@ -552,14 +562,7 @@ export const FileViewer = ({
           onChange={(newPageNum) => setPage && setPage(newPageNum)}
         />
       )}
-      {paintLayerEditMode && (
-        <PaintLayerBar
-          onPaintLayerDraw={(newDrawData: string) => {
-            setDrawData(newDrawData);
-            onDrawStroke(newDrawData);
-          }}
-        />
-      )}
+      {paintLayerEditMode && <PaintLayerBar />}
       {!hideControls && (
         <Buttons>
           <div id="controls">
@@ -570,6 +573,7 @@ export const FileViewer = ({
                 }
               }}
               icon="ZoomIn"
+              aria-label="zoomInButon"
             />
             <Button
               icon="Refresh"
@@ -578,6 +582,7 @@ export const FileViewer = ({
                   reset();
                 }
               }}
+              aria-label="refreshButton"
             />
             <Button
               icon="ZoomOut"
@@ -586,6 +591,7 @@ export const FileViewer = ({
                   zoomOut();
                 }
               }}
+              aria-label="zoomOutButton"
             />
           </div>
         </Buttons>
@@ -595,7 +601,10 @@ export const FileViewer = ({
         {drawable && (
           <Button
             icon="Edit"
-            onClick={() => setPaintLayerEditMode(!paintLayerEditMode)}
+            onClick={() => {
+              setPaintLayerEditMode(!paintLayerEditMode);
+            }}
+            aria-label="editButton"
             style={{
               boxSizing: "border-box",
               boxShadow: paintLayerEditMode ? "inset 0 0 5px #000" : "none",
@@ -633,7 +642,7 @@ export const FileViewer = ({
               </Menu>
             }
           >
-            <Button icon="Download" />
+            <Button icon="Download" aria-label="downloadButton" />
           </Dropdown>
         )}
       </ToolingButtons>

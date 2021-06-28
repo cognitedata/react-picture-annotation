@@ -21,7 +21,6 @@ import {
   useDownloadPDF,
   useZoomControls,
 } from "../src/Cognite/FileViewerContext";
-import LZString from "lz-string";
 import styled from "styled-components";
 
 export const AllowCustomization = () => {
@@ -483,28 +482,24 @@ export const BoxAndArrows = () => {
 };
 
 export const AllowCustomDrawing = () => {
-  const [drawData, setDrawData] = useState<string>("");
-
-  const onDraw = (compressedDrawData: string) => {
-    if (compressedDrawData && compressedDrawData.length > 0) {
-      const drawDataDecompressed = String(
-        LZString.decompress(compressedDrawData)
-      );
-      setDrawData(drawDataDecompressed);
-    }
-  };
+  const [drawData, setDrawData] = useState<string | undefined>();
 
   return (
     <StoryWrapper>
       <SidebarHelper>
-        <strong>Decompressed paint layer data</strong>
+        <strong>Paint layer data</strong>
         <p>{drawData}</p>
       </SidebarHelper>
       <CogniteFileViewer
         sdk={imgSdk}
         file={imgFile}
         drawable={boolean("Drawable", true)}
-        onDraw={onDraw}
+        loadedDrawData={drawData}
+        onDrawingSaved={(newDrawData: string) => {
+          if (newDrawData && newDrawData.length > 0) {
+            setDrawData(String(newDrawData));
+          }
+        }}
       />
     </StoryWrapper>
   );

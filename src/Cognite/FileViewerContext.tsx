@@ -148,6 +148,14 @@ type FileViewerContextObserverPaintLayerProps = {
    *
    */
   setBrushColor: (newColor: RGBColor) => void;
+  /**
+   *
+   */
+  drawData: string;
+  /**
+   *
+   */
+  setDrawData: (drawData: string) => void;
 };
 
 const FileViewerContext = React.createContext({} as FileViewerContextObserver);
@@ -252,6 +260,9 @@ const FileViewerProvider = ({
   const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
   const [brushColor, setBrushColor] = useState<RGBColor>(DEFAULT.COLOR);
+  const [drawData, setDrawData] = useState<string>(
+    '{"lines":[],"width":"100%","height":"100%"}'
+  );
   const paintLayerCanvasRef = useRef<any>(null);
 
   const fileId = file ? file.id : undefined;
@@ -316,6 +327,8 @@ const FileViewerProvider = ({
         brushRadius,
         setBrushRadius,
         paintLayerCanvasRef,
+        drawData,
+        setDrawData,
       }}
     >
       {children}

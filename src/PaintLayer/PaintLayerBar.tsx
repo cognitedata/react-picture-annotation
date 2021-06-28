@@ -1,17 +1,11 @@
 import React, { useContext } from "react";
 import { Button } from "@cognite/cogs.js";
-import LZString from "lz-string";
 import CogniteFileViewerContext from "../Cognite/FileViewerContext";
 import { Bar, BrushRadiusGroup, BrushRadius } from "./components";
 import ColorPicker from "./ColorPicker";
 import { toRGB, DEFAULT } from "../utils";
 
-type Props = {
-  onPaintLayerDraw: any;
-};
-
-export default function PaintLayerBar(props: Props) {
-  const { onPaintLayerDraw } = props;
+export const PaintLayerBar = (): JSX.Element => {
   const {
     paintLayerCanvasRef,
     paintLayerEditMode,
@@ -30,13 +24,6 @@ export default function PaintLayerBar(props: Props) {
   const onClearClick = () => {
     if (paintLayerCanvasRef?.current) paintLayerCanvasRef.current.clear();
   };
-  const onSaveClick = () => {
-    if (paintLayerCanvasRef?.current && onPaintLayerDraw) {
-      const newDrawData = paintLayerCanvasRef.current.getSaveData();
-      const newDrawDataCompressed = LZString.compress(newDrawData);
-      onPaintLayerDraw(newDrawDataCompressed);
-    }
-  };
 
   return (
     <Bar visible={paintLayerEditMode}>
@@ -51,9 +38,16 @@ export default function PaintLayerBar(props: Props) {
         />
         <BrushRadius radius={DEFAULT.RADIUS_MAX} color={toRGB(brushColor)} />
       </BrushRadiusGroup>
-      <Button icon="RotateLeft" onClick={onUndoClick} />
-      <Button icon="Trash" onClick={onClearClick} />
-      {onPaintLayerDraw && <Button icon="FloppyDisk" onClick={onSaveClick} />}
+      <Button
+        icon="RotateLeft"
+        onClick={onUndoClick}
+        aria-label="redoDrawChangesButton"
+      />
+      <Button
+        icon="Trash"
+        onClick={onClearClick}
+        aria-label="deleteDrawingButton"
+      />
     </Bar>
   );
-}
+};
