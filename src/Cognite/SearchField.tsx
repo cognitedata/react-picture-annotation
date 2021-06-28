@@ -25,8 +25,8 @@ export const SearchField = () => {
           value={query}
         />
         <Button
+          aria-label="Clear"
           icon="Close"
-          aria-label="closeSearchButton"
           onClick={() => {
             setOpen(false);
             setQuery("");
@@ -36,11 +36,7 @@ export const SearchField = () => {
     );
   }
   return (
-    <Button
-      icon="Search"
-      onClick={() => setOpen(true)}
-      aria-label="searchButton"
-    />
+    <Button aria-label="Search" icon="Search" onClick={() => setOpen(true)} />
   );
 };
 

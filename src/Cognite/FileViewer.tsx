@@ -567,31 +567,31 @@ export const FileViewer = ({
         <Buttons>
           <div id="controls">
             <Button
+              aria-label="Zoom in"
               onClick={() => {
                 if (zoomIn) {
                   zoomIn();
                 }
               }}
               icon="ZoomIn"
-              aria-label="zoomInButon"
             />
             <Button
+              aria-label="Refresh"
               icon="Refresh"
               onClick={() => {
                 if (reset) {
                   reset();
                 }
               }}
-              aria-label="refreshButton"
             />
             <Button
+              aria-label="Zoom out"
               icon="ZoomOut"
               onClick={() => {
                 if (zoomOut) {
                   zoomOut();
                 }
               }}
-              aria-label="zoomOutButton"
             />
           </div>
         </Buttons>
@@ -642,7 +642,7 @@ export const FileViewer = ({
               </Menu>
             }
           >
-            <Button icon="Download" aria-label="downloadButton" />
+            <Button icon="Download" aria-label="Download" />
           </Dropdown>
         )}
       </ToolingButtons>
