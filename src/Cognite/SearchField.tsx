@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
-import { Input, Button } from '@cognite/cogs.js';
-import { useViewerQuery } from './FileViewerContext';
-import styled from 'styled-components';
+import React, { useState, useEffect } from "react";
+import { Input, Button } from "@cognite/cogs.js";
+import { useViewerQuery } from "./FileViewerContext";
+import styled from "styled-components";
 
 export const SearchField = () => {
   const [open, setOpen] = useState(false);
@@ -11,7 +11,7 @@ export const SearchField = () => {
 
   useEffect(() => {
     if (open && wrapperRef && wrapperRef.current) {
-      wrapperRef.current.querySelector('input')?.focus();
+      wrapperRef.current.querySelector("input")?.focus();
     }
   }, [wrapperRef, open]);
 
@@ -24,17 +24,20 @@ export const SearchField = () => {
           onChange={(e) => setQuery(e.target.value)}
           value={query}
         />
-        <Button aria-label="Clear"
+        <Button
+          aria-label="Clear"
           icon="Close"
           onClick={() => {
             setOpen(false);
-            setQuery('');
+            setQuery("");
           }}
         />
       </Wrapper>
     );
   }
-  return <Button aria-label="Search" icon="Search" onClick={() => setOpen(true)} />;
+  return (
+    <Button aria-label="Search" icon="Search" onClick={() => setOpen(true)} />
+  );
 };
 
 const Wrapper = styled.div`
