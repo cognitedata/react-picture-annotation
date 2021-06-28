@@ -22,6 +22,7 @@ import {
   useZoomControls,
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components";
+import { drawingMock } from "./drawingMock";
 
 export const AllowCustomization = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
@@ -139,11 +140,18 @@ export const AllowControlledEditing = () => {
   );
 };
 
-const Wrapper = styled.div`
+const StoryWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: grey;
+`;
+const SidebarHelper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 250px;
+  overflow: auto;
+  width: 350px;
   height: 100%;
   background: white;
   padding: 8px;
@@ -197,11 +205,11 @@ export const ZoomOnSelectedAnnotation = () => {
 
   return (
     <div style={{ height: "100%", width: "100%", display: "flex" }}>
-      <Wrapper>
+      <SidebarHelper>
         <Button onClick={() => onZoomOnRandomAnnotation()}>
           Zoom on random annotation
         </Button>
-      </Wrapper>
+      </SidebarHelper>
       <CogniteFileViewer
         sdk={pdfSdk}
         file={pdfFile}
@@ -230,7 +238,7 @@ export const SplitContextAndViewer = () => {
     const [selectedAnnotation] = selectedAnnotations;
 
     return (
-      <Wrapper>
+      <SidebarHelper>
         <Button onClick={() => download!("testing.pdf")}>Download</Button>
         <Button onClick={() => zoomIn!()}>Zoom In</Button>
         <Button onClick={() => zoomOut!()}>Zoom Out</Button>
@@ -257,7 +265,7 @@ export const SplitContextAndViewer = () => {
             )}
           />
         )}
-      </Wrapper>
+      </SidebarHelper>
     );
   };
   return (
@@ -450,20 +458,13 @@ export const BoxAndArrows = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "grey",
-      }}
-    >
-      <Wrapper>
+    <StoryWrapper>
+      <SidebarHelper>
         <strong>Moved arrow box</strong>
         <p>ID: {arrowBox.annotationId}</p>
         <p>offsetX: {arrowBox.offsetX}</p>
         <p>offsetY: {arrowBox.offsetY}</p>
-      </Wrapper>
+      </SidebarHelper>
       <CogniteFileViewer
         sdk={imgSdk}
         file={imgFile}
@@ -477,7 +478,34 @@ export const BoxAndArrows = () => {
         arrowPreviewOptions={arrowPreviewOptions}
         renderArrowPreview={renderArrowPreview}
       />
-    </div>
+    </StoryWrapper>
+  );
+};
+
+export const AllowCustomDrawing = () => {
+  const [drawData, setDrawData] = useState<string | undefined>();
+  const mock = JSON.stringify(drawingMock);
+  const onLoadDrawingClick = () => setDrawData(mock);
+
+  return (
+    <StoryWrapper>
+      <SidebarHelper>
+        <strong>Paint layer data</strong>
+        <button onClick={onLoadDrawingClick}>Load drawing</button>
+        <p>{drawData}</p>
+      </SidebarHelper>
+      <CogniteFileViewer
+        sdk={imgSdk}
+        file={imgFile}
+        drawable={boolean("Drawable", true)}
+        loadedDrawData={drawData}
+        onDrawingSaved={(newDrawData: string) => {
+          if (newDrawData && newDrawData.length > 0) {
+            setDrawData(String(newDrawData));
+          }
+        }}
+      />
+    </StoryWrapper>
   );
 };
 

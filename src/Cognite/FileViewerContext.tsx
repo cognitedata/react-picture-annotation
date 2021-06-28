@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { CogniteClient, FileInfo } from "@cognite/sdk";
 import {
   CogniteAnnotation,
@@ -11,9 +11,11 @@ import {
   ViewerZoomFunction,
   ViewerZoomControlledFunction,
 } from "../ReactPictureAnnotation";
+import { RGBColor, DEFAULT } from "../utils";
 
 export type FileViewerContextObserver = FileViewerContextObserverPublicProps &
-  FileViewerContextObserverPrivateProps;
+  FileViewerContextObserverPrivateProps &
+  FileViewerContextObserverPaintLayerProps;
 export type FileViewerContextObserverPublicProps = {
   /**
    * The sdk that was provided via provider
@@ -117,6 +119,45 @@ type FileViewerContextObserverPrivateProps = {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+type FileViewerContextObserverPaintLayerProps = {
+  /**
+   *
+   */
+  paintLayerCanvasRef: React.RefObject<any>;
+  /**
+   *
+   */
+  paintLayerEditMode: boolean;
+  /**
+   *
+   */
+  setPaintLayerEditMode: (editMode: boolean) => void;
+  /**
+   *
+   */
+  brushRadius: number;
+  /**
+   *
+   */
+  setBrushRadius: (newBrushRadius: number) => void;
+  /**
+   *
+   */
+  brushColor: RGBColor;
+  /**
+   *
+   */
+  setBrushColor: (newColor: RGBColor) => void;
+  /**
+   *
+   */
+  drawData: string;
+  /**
+   *
+   */
+  setDrawData: (drawData: string) => void;
+};
+
 const FileViewerContext = React.createContext({} as FileViewerContextObserver);
 
 export const useAnnotations = () => {
@@ -216,6 +257,14 @@ const FileViewerProvider = ({
     ExtractFromCanvasFunction | undefined
   >(undefined);
 
+  const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
+  const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
+  const [brushColor, setBrushColor] = useState<RGBColor>(DEFAULT.COLOR);
+  const [drawData, setDrawData] = useState<string>(
+    '{"lines":[],"width":"100%","height":"100%"}'
+  );
+  const paintLayerCanvasRef = useRef<any>(null);
+
   const fileId = file ? file.id : undefined;
 
   useEffect(() => {
@@ -271,6 +320,15 @@ const FileViewerProvider = ({
         query,
         setQuery,
         setSelectedAnnotations,
+        paintLayerEditMode,
+        setPaintLayerEditMode,
+        brushColor,
+        setBrushColor,
+        brushRadius,
+        setBrushRadius,
+        paintLayerCanvasRef,
+        drawData,
+        setDrawData,
       }}
     >
       {children}

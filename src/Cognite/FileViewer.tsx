@@ -22,6 +22,7 @@ import {
   TextBox,
   ArrowPreviewOptions,
 } from "./FileViewerUtils";
+import { PaintLayerBar } from "../PaintLayer";
 
 type RenderItemPreviewFunction = (
   annotations: (ProposedCogniteAnnotation | CogniteAnnotation)[],
@@ -60,6 +61,10 @@ export type ViewerProps = {
    * Should users be able to choose annotations purely using hovers? Useful in conjunction with `renderItemPreview`
    */
   hoverable?: boolean;
+  /**
+   * Should the drawable Paint Layer render? Also shows the Draw icon on the toolbar
+   */
+  drawable?: boolean;
   /**
    * Used when an annotation needs to be selected on start
    */
@@ -133,6 +138,11 @@ export type ViewerProps = {
    */
   hideSearch?: boolean;
   /**
+   * Callback for every stroke on the paint layer.
+   * Allows you to get the drawing data from outside to be able to save it externally.
+   */
+  onDrawingSaved?: (drawData: string) => void;
+  /**
    * What to display while loading. Note this is NOT displayed when `file` is not set.
    */
   loader?: React.ReactNode;
@@ -144,6 +154,10 @@ export type ViewerProps = {
    * Allows to customize the pinch zoom scale.
    */
   pinchScaleModifier?: number;
+  /**
+   * Allows you to inject an old drawing to component if you had it saved.
+   */
+  loadedDrawData?: string;
 };
 
 export const FileViewer = ({
@@ -152,6 +166,7 @@ export const FileViewer = ({
   file: fileFromProps,
   hideLabel = true,
   hoverable = false,
+  drawable = false,
   editCallbacks = {
     onUpdate: (a) => a,
     onCreate: (a) => a,
@@ -166,6 +181,8 @@ export const FileViewer = ({
   hideDownload = false,
   hideSearch = false,
   zoomOnAnnotation,
+  loadedDrawData,
+  onDrawingSaved,
   onAnnotationSelected,
   onArrowBoxMove,
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
@@ -196,7 +213,22 @@ export const FileViewer = ({
     setTotalPages,
     download,
     query,
+    paintLayerEditMode,
+    setPaintLayerEditMode,
+    paintLayerCanvasRef,
+    drawData,
+    setDrawData,
   } = useContext(CogniteFileViewerContext);
+
+  useEffect(() => {
+    if (loadedDrawData && drawData !== loadedDrawData) {
+      setDrawData(loadedDrawData);
+    }
+  }, [loadedDrawData]);
+
+  useEffect(() => {
+    if (onDrawingSaved) onDrawingSaved(drawData);
+  }, [drawData]);
 
   useEffect(() => {
     if (annotationsFromProps) {
@@ -470,6 +502,7 @@ export const FileViewer = ({
         drawLabel={!hideLabel}
         hoverable={hoverable}
         editable={editable}
+        drawable={drawable}
         annotationData={annotationData}
         onChange={(e) => {
           // if (textboxesToShow.find(el=>el.id===))
@@ -514,6 +547,7 @@ export const FileViewer = ({
           }
         }}
         zoomOnAnnotation={zoomOnAnnotation}
+        paintLayerCanvasRef={paintLayerCanvasRef}
         pinchScaleModifier={pinchScaleModifier}
       />
       {totalPages > 1 && pagination && (
@@ -526,10 +560,12 @@ export const FileViewer = ({
           onChange={(newPageNum) => setPage && setPage(newPageNum)}
         />
       )}
+      {paintLayerEditMode && <PaintLayerBar />}
       {!hideControls && (
         <Buttons>
           <div id="controls">
-            <Button aria-label="Zoom in"
+            <Button
+              aria-label="Zoom in"
               onClick={() => {
                 if (zoomIn) {
                   zoomIn();
@@ -537,7 +573,8 @@ export const FileViewer = ({
               }}
               icon="ZoomIn"
             />
-            <Button aria-label="Refresh"
+            <Button
+              aria-label="Refresh"
               icon="Refresh"
               onClick={() => {
                 if (reset) {
@@ -545,7 +582,8 @@ export const FileViewer = ({
                 }
               }}
             />
-            <Button aria-label="Zoom out"
+            <Button
+              aria-label="Zoom out"
               icon="ZoomOut"
               onClick={() => {
                 if (zoomOut) {
@@ -558,6 +596,19 @@ export const FileViewer = ({
       )}
       <ToolingButtons>
         {!hideSearch && textboxes.length !== 0 && <SearchField />}
+        {drawable && (
+          <Button
+            icon="Edit"
+            onClick={() => {
+              setPaintLayerEditMode(!paintLayerEditMode);
+            }}
+            aria-label="editButton"
+            style={{
+              boxSizing: "border-box",
+              boxShadow: paintLayerEditMode ? "inset 0 0 5px #000" : "none",
+            }}
+          />
+        )}
         {download && !hideDownload && (
           <Dropdown
             content={
@@ -613,7 +664,7 @@ const DocumentPagination = styled(Pagination)`
 const Buttons = styled.div`
   display: inline-flex;
   position: absolute;
-  z-index: 2;
+  z-index: 200;
   right: 24px;
   bottom: 24px;
   && #controls {
@@ -634,7 +685,7 @@ const Buttons = styled.div`
 const ToolingButtons = styled.div`
   display: inline-flex;
   position: absolute;
-  z-index: 2;
+  z-index: 200;
   right: 24px;
   top: 24px;
   align-items: stretch;
