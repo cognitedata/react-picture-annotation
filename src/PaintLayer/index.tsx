@@ -46,8 +46,8 @@ export default function PaintLayer(props: Props): JSX.Element {
         return {
           ...line,
           points: line.points.map((point: any) => ({
-            x: (point.x + originX) * scale,
-            y: (point.y + originY) * scale,
+            x: scale / point.x + originX,
+            y: scale / point.y + originY,
           })),
           brushRadius: line.brushRadius * scale,
         };
@@ -67,8 +67,8 @@ export default function PaintLayer(props: Props): JSX.Element {
           ...line,
           points: simplify(line.points, tolerance, highQuality).map(
             (point: any) => ({
-              x: point.x / scale - originX,
-              y: point.y / scale - originY,
+              x: scale / (point.x - originX),
+              y: scale / (point.y - originY),
             })
           ),
           brushRadius: line.brushRadius / scale,
@@ -91,62 +91,9 @@ export default function PaintLayer(props: Props): JSX.Element {
   }, [paintLayerEditMode]);
 
   useEffect(() => {
-    const rescaled = getRescaledDrawData(drawData);
-    setScaledDrawData(rescaled);
-  }, [drawData]);
-
-  useEffect(() => {
-    onImageMove();
-  }, [scaleState.originX, scaleState.originY]);
-
-  useEffect(() => {
-    onImageResize();
-  }, [scaleState.scale]);
-
-  // useEffect(() => {
-  //   console.log(scaleState)
-  // }, [scaleState.scale, scaleState.originX, scaleState.originY])
-
-  const onImageMove = () => {
-    const { originX, originY, scale } = scaleState;
-    const drawDataParsed = JSON.parse(drawData);
-    const drawDataMapped = {
-      ...drawDataParsed,
-      lines: drawDataParsed.lines.map((line: any) => {
-        return {
-          ...line,
-          points: line.points.map((point: any) => ({
-            x: point.x + originX * scale,
-            y: point.y + originY * scale,
-          })),
-        };
-      }),
-    };
-    const stringifiedDrawDataMapped = JSON.stringify(drawDataMapped);
-    const rescaled = getRescaledDrawData(stringifiedDrawDataMapped);
-    setScaledDrawData(rescaled);
-  };
-
-  const onImageResize = () => {
-    const { scale } = scaleState;
-    const drawDataParsed = JSON.parse(drawData);
-    const drawDataMapped = {
-      ...drawDataParsed,
-      lines: drawDataParsed.lines.map((line: any) => {
-        return {
-          ...line,
-          points: line.points.map((point: any) => ({
-            x: point.x * scale,
-            y: point.y * scale,
-          })),
-          brushRadius: line.brushRadius / scale,
-        };
-      }),
-    };
-    const stringifiedDrawDataMapped = JSON.stringify(drawDataMapped);
-    const rescaled = getRescaledDrawData(stringifiedDrawDataMapped);
-    setScaledDrawData(rescaled);
-  };
+    const rescaledData = getRescaledDrawData(drawData);
+    setScaledDrawData(rescaledData);
+  }, [scaleState.scale, scaleState.originX, scaleState.originY, drawData]);
 
   return (
     <Wrapper>

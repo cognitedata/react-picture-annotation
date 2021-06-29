@@ -150,8 +150,9 @@ const SidebarHelper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  overflow: auto;
-  width: 350px;
+  overflow-y: auto;
+  width: 400px;
+  max-width: 400px;
   height: 100%;
   background: white;
   padding: 8px;
@@ -490,9 +491,11 @@ export const AllowCustomDrawing = () => {
   return (
     <StoryWrapper>
       <SidebarHelper>
-        <strong>Paint layer data</strong>
         <button onClick={onLoadDrawingClick}>Load drawing</button>
-        <p>{drawData}</p>
+        <div style={{ width: "100%", maxHeight: "90%" }}>
+          <strong>Paint layer data</strong>
+          <p>{drawData}</p>
+        </div>
       </SidebarHelper>
       <CogniteFileViewer
         sdk={imgSdk}
