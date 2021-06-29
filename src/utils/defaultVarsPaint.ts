@@ -1,11 +1,11 @@
 export const DEFAULT = {
   COLOR: {
-    r: 255,
-    g: 0,
-    b: 0,
-    a: 0.1,
+    r: 120,
+    g: 210,
+    b: 30,
+    a: 0.5,
   },
-  RADIUS: 20,
+  RADIUS: 10,
   RADIUS_MIN: 2,
   RADIUS_MAX: 20,
 };
