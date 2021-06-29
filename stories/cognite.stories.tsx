@@ -124,7 +124,7 @@ export const AllowControlledEditing = () => {
       onAnnotationSelected={handleAnnotationSelection}
       renderItemPreview={(anno) => (
         <>
-          <span>{anno[0].label}</span>
+          <span>{anno[0]?.label ?? "UNKNOWN"}</span>
           <Button
             icon="Delete"
             onClick={() =>
@@ -478,6 +478,42 @@ export const BoxAndArrows = () => {
         renderArrowPreview={renderArrowPreview}
       />
     </div>
+  );
+};
+
+export const AllowLinkClick = () => {
+  const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
+
+  const appendLinkToAnnotation = async () => {
+    const annotationsFromCdf = await listAnnotationsForFile(pdfSdk, pdfFile);
+    const singleAnnotation = annotationsFromCdf[0];
+    const fixedAnnotation = {
+      ...singleAnnotation,
+      metadata: {
+        ...(singleAnnotation.metadata ?? {}),
+        url: "https://en.wikipedia.org/wiki/Kitten",
+      },
+    };
+    setAnnotations([fixedAnnotation]);
+  };
+
+  useEffect(() => {
+    appendLinkToAnnotation();
+  }, []);
+
+  return (
+    <CogniteFileViewer
+      disableAutoFetch={true}
+      sdk={pdfSdk}
+      file={pdfFile}
+      annotations={annotations}
+      onAnnotationSelected={(annotation) => {
+        const url = annotation[0]?.metadata?.url;
+        if (url) {
+          window.open(url, "_blank");
+        }
+      }}
+    />
   );
 };
 
