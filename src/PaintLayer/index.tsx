@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
+import simplify from "simplify-js";
 import styled from "styled-components";
 import CogniteFileViewerContext from "../Cognite/FileViewerContext";
 import { IStageState } from "../ReactPictureAnnotation";
@@ -30,6 +31,8 @@ export default function PaintLayer(props: Props): JSX.Element {
     setDrawData,
   } = useContext(CogniteFileViewerContext);
   const [loadTimeOffset] = useState(0);
+  const [tolerance] = useState(5);
+  const [highQuality] = useState(true);
   const [scaledDrawData, setScaledDrawData] = useState(drawData);
 
   // initial rescaling //
@@ -43,9 +46,10 @@ export default function PaintLayer(props: Props): JSX.Element {
         return {
           ...line,
           points: line.points.map((point: any) => ({
-            x: (point.x + originX) * scale,
-            y: (point.y + originY) * scale,
+            x: scale / point.x + originX,
+            y: scale / point.y + originY,
           })),
+          brushRadius: line.brushRadius * scale,
         };
       }),
     };
@@ -61,10 +65,13 @@ export default function PaintLayer(props: Props): JSX.Element {
       lines: drawDataParsed.lines.map((line: any) => {
         return {
           ...line,
-          points: line.points.map((point: any) => ({
-            x: point.x / scale - originX,
-            y: point.y / scale - originY,
-          })),
+          points: simplify(line.points, tolerance, highQuality).map(
+            (point: any) => ({
+              x: scale / (point.x - originX),
+              y: scale / (point.y - originY),
+            })
+          ),
+          brushRadius: line.brushRadius / scale,
         };
       }),
     };
@@ -84,60 +91,9 @@ export default function PaintLayer(props: Props): JSX.Element {
   }, [paintLayerEditMode]);
 
   useEffect(() => {
-    const rescaled = getRescaledDrawData(drawData);
-    setScaledDrawData(rescaled);
-  }, [drawData]);
-
-  // dynamic rescaling //
-
-  useEffect(() => {
-    onImageMove();
-  }, [scaleState.originX, scaleState.originY]);
-
-  useEffect(() => {
-    onImageResize();
-  }, [scaleState.scale]);
-
-  const onImageMove = () => {
-    const { originX, originY } = scaleState;
-    const drawDataParsed = JSON.parse(drawData);
-    const drawDataMapped = {
-      ...drawDataParsed,
-      lines: drawDataParsed.lines.map((line: any) => {
-        return {
-          ...line,
-          points: line.points.map((point: any) => ({
-            x: point.x + originX,
-            y: point.y + originY,
-          })),
-        };
-      }),
-    };
-    const stringifiedDrawDataMapped = JSON.stringify(drawDataMapped);
-    const rescaled = getRescaledDrawData(stringifiedDrawDataMapped);
-    setScaledDrawData(rescaled);
-  };
-
-  const onImageResize = () => {
-    const { scale } = scaleState;
-    const drawDataParsed = JSON.parse(drawData);
-    const drawDataMapped = {
-      ...drawDataParsed,
-      lines: drawDataParsed.lines.map((line: any) => {
-        return {
-          ...line,
-          points: line.points.map((point: any) => ({
-            x: point.x * scale,
-            y: point.y * scale,
-          })),
-          brushRadius: line.brushRadius / scale,
-        };
-      }),
-    };
-    const stringifiedDrawDataMapped = JSON.stringify(drawDataMapped);
-    const rescaled = getRescaledDrawData(stringifiedDrawDataMapped);
-    setScaledDrawData(rescaled);
-  };
+    const rescaledData = getRescaledDrawData(drawData);
+    setScaledDrawData(rescaledData);
+  }, [scaleState.scale, scaleState.originX, scaleState.originY, drawData]);
 
   return (
     <Wrapper>
