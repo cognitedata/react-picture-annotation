@@ -107,6 +107,7 @@
     "react-splitter-layout": "^4.0.0",
     "react-tiny-popover": "^6.0.5",
     "reselect": "^4.0.0",
+    "simplify-js": "^1.2.4",
     "styled-components": "^5.2.0",
     "typescript": "^4.1.2",
     "uuid": "^8.3.0"

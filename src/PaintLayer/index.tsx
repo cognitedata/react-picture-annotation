@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
+import simplify from "simplify-js";
 import styled from "styled-components";
 import CogniteFileViewerContext from "../Cognite/FileViewerContext";
 import { IStageState } from "../ReactPictureAnnotation";
@@ -30,6 +31,8 @@ export default function PaintLayer(props: Props): JSX.Element {
     setDrawData,
   } = useContext(CogniteFileViewerContext);
   const [loadTimeOffset] = useState(0);
+  const [tolerance] = useState(5);
+  const [highQuality] = useState(true);
   const [scaledDrawData, setScaledDrawData] = useState(drawData);
 
   // initial rescaling //
@@ -46,6 +49,7 @@ export default function PaintLayer(props: Props): JSX.Element {
             x: (point.x + originX) * scale,
             y: (point.y + originY) * scale,
           })),
+          brushRadius: line.brushRadius * scale,
         };
       }),
     };
@@ -61,10 +65,13 @@ export default function PaintLayer(props: Props): JSX.Element {
       lines: drawDataParsed.lines.map((line: any) => {
         return {
           ...line,
-          points: line.points.map((point: any) => ({
-            x: point.x / scale - originX,
-            y: point.y / scale - originY,
-          })),
+          points: simplify(line.points, tolerance, highQuality).map(
+            (point: any) => ({
+              x: point.x / scale - originX,
+              y: point.y / scale - originY,
+            })
+          ),
+          brushRadius: line.brushRadius / scale,
         };
       }),
     };
@@ -88,8 +95,6 @@ export default function PaintLayer(props: Props): JSX.Element {
     setScaledDrawData(rescaled);
   }, [drawData]);
 
-  // dynamic rescaling //
-
   useEffect(() => {
     onImageMove();
   }, [scaleState.originX, scaleState.originY]);
@@ -98,8 +103,12 @@ export default function PaintLayer(props: Props): JSX.Element {
     onImageResize();
   }, [scaleState.scale]);
 
+  // useEffect(() => {
+  //   console.log(scaleState)
+  // }, [scaleState.scale, scaleState.originX, scaleState.originY])
+
   const onImageMove = () => {
-    const { originX, originY } = scaleState;
+    const { originX, originY, scale } = scaleState;
     const drawDataParsed = JSON.parse(drawData);
     const drawDataMapped = {
       ...drawDataParsed,
@@ -107,8 +116,8 @@ export default function PaintLayer(props: Props): JSX.Element {
         return {
           ...line,
           points: line.points.map((point: any) => ({
-            x: point.x + originX,
-            y: point.y + originY,
+            x: point.x + originX * scale,
+            y: point.y + originY * scale,
           })),
         };
       }),
