@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { Button, Tooltip } from "@cognite/cogs.js";
+import { Button, Tooltip, Switch } from "@cognite/cogs.js";
 import CogniteFileViewerContext from "../Cognite/FileViewerContext";
 import { Bar, BrushRadiusGroup, BrushRadius } from "./components";
 import ColorPicker from "./ColorPicker";
@@ -19,9 +19,6 @@ export const PaintLayerBar = (): JSX.Element => {
   const onBrushRadiusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const radius = Number(event.target.value);
     setBrushRadius(radius);
-  };
-  const onFreeDrawClick = () => {
-    setFreeDrawEnabled(!freeDrawEnabled);
   };
   const onUndoClick = () => {
     if (paintLayerCanvasRef?.current) paintLayerCanvasRef.current.undo();
@@ -52,15 +49,13 @@ export const PaintLayerBar = (): JSX.Element => {
           </span>
         }
       >
-        <Button
-          icon="LineChart"
-          onClick={onFreeDrawClick}
-          aria-label="freeDrawButton"
-          style={{
-            boxSizing: "border-box",
-            boxShadow: freeDrawEnabled ? "inset 0 0 5px #000" : "none",
-          }}
-        />
+        <Switch
+          name="freeDrawSwitch"
+          value={freeDrawEnabled}
+          onChange={(nextState: boolean) => setFreeDrawEnabled(nextState)}
+        >
+          Freehand mode
+        </Switch>
       </Tooltip>
       <Tooltip content={<span>Undo the last change</span>}>
         <Button
