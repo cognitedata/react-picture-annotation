@@ -151,6 +151,14 @@ type FileViewerContextObserverPaintLayerProps = {
   /**
    *
    */
+  freeDrawEnabled: boolean;
+  /**
+   *
+   */
+  setFreeDrawEnabled: (freeDrawEnabled: boolean) => void;
+  /**
+   *
+   */
   drawData: string;
   /**
    *
@@ -258,6 +266,7 @@ const FileViewerProvider = ({
   >(undefined);
 
   const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
+  const [freeDrawEnabled, setFreeDrawEnabled] = useState<boolean>(false);
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
   const [brushColor, setBrushColor] = useState<RGBColor>(DEFAULT.COLOR);
   const [drawData, setDrawData] = useState<string>(
@@ -322,6 +331,8 @@ const FileViewerProvider = ({
         setSelectedAnnotations,
         paintLayerEditMode,
         setPaintLayerEditMode,
+        freeDrawEnabled,
+        setFreeDrawEnabled,
         brushColor,
         setBrushColor,
         brushRadius,
