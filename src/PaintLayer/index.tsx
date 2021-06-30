@@ -28,6 +28,7 @@ export default function PaintLayer(props: Props): JSX.Element {
     brushColor,
     brushRadius,
     drawData,
+    freeDrawEnabled,
     setDrawData,
   } = useContext(CogniteFileViewerContext);
   const [loadTimeOffset] = useState(0);
@@ -79,6 +80,18 @@ export default function PaintLayer(props: Props): JSX.Element {
     return descaled;
   };
 
+  const onGetCanvasClick = () => {
+    if (freeDrawEnabled) return;
+    const freshSaveData = paintLayerCanvasRef?.current?.getSaveData();
+    const saveData = JSON.parse(freshSaveData);
+    const lineToFix = saveData.lines.pop();
+    lineToFix.points.splice(1, lineToFix.points.length - 2);
+    saveData.lines.push(lineToFix);
+    const fixedSaveData = JSON.stringify(saveData);
+    const rescaledDrawing = getRawDrawData(fixedSaveData);
+    setDrawData(String(rescaledDrawing));
+  };
+
   useEffect(() => {
     if (hidePaintLayer) return;
     if (!paintLayerEditMode) {
@@ -96,7 +109,7 @@ export default function PaintLayer(props: Props): JSX.Element {
   }, [scaleState.scale, scaleState.originX, scaleState.originY, drawData]);
 
   return (
-    <Wrapper>
+    <Wrapper onMouseUp={onGetCanvasClick}>
       {!hidePaintLayer && (
         <StyledCanvasDraw
           ref={paintLayerCanvasRef}
