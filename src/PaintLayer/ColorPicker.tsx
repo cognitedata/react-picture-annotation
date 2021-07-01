@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { SketchPicker } from "react-color";
 import { Popover, ArrowContainer } from "react-tiny-popover";
-import { ColorSwatch, ColorPreview } from "./components";
+import { ColorPreview } from "./components";
 import { RGBColor } from "../utils/RGB";
 
 type Props = {
@@ -36,9 +36,7 @@ export default function ColorPicker(props: Props) {
         </ArrowContainer>
       )}
     >
-      <ColorSwatch onClick={onColorPickerClick}>
-        <ColorPreview userColor={brushColor} />
-      </ColorSwatch>
+      <ColorPreview onClick={onColorPickerClick} userColor={brushColor} />
     </Popover>
   );
 }

@@ -151,11 +151,11 @@ type FileViewerContextObserverPaintLayerProps = {
   /**
    *
    */
-  freeDrawEnabled: boolean;
+  snapStraightEnabled: boolean;
   /**
    *
    */
-  setFreeDrawEnabled: (freeDrawEnabled: boolean) => void;
+  setSnapStraightEnabled: (snapStraightEnabled: boolean) => void;
   /**
    *
    */
@@ -266,7 +266,7 @@ const FileViewerProvider = ({
   >(undefined);
 
   const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
-  const [freeDrawEnabled, setFreeDrawEnabled] = useState<boolean>(false);
+  const [snapStraightEnabled, setSnapStraightEnabled] = useState<boolean>(true);
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
   const [brushColor, setBrushColor] = useState<RGBColor>(DEFAULT.COLOR);
   const [drawData, setDrawData] = useState<string>(
@@ -331,8 +331,8 @@ const FileViewerProvider = ({
         setSelectedAnnotations,
         paintLayerEditMode,
         setPaintLayerEditMode,
-        freeDrawEnabled,
-        setFreeDrawEnabled,
+        snapStraightEnabled,
+        setSnapStraightEnabled,
         brushColor,
         setBrushColor,
         brushRadius,

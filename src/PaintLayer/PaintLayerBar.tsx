@@ -1,25 +1,23 @@
 import React, { useContext } from "react";
-import { Button, Tooltip, Switch } from "@cognite/cogs.js";
+import { Button, Switch, Slider } from "@cognite/cogs.js";
 import CogniteFileViewerContext from "../Cognite/FileViewerContext";
-import { Bar, BrushRadiusGroup, BrushRadius } from "./components";
 import ColorPicker from "./ColorPicker";
-import { toRGB, DEFAULT } from "../utils";
+import { WrappingBar, BarSection } from "./components";
+import { DEFAULT } from "../utils";
 
 export const PaintLayerBar = (): JSX.Element => {
   const {
     paintLayerCanvasRef,
     paintLayerEditMode,
     brushColor,
-    freeDrawEnabled,
+    brushRadius,
+    snapStraightEnabled,
     setBrushColor,
-    setFreeDrawEnabled,
+    setSnapStraightEnabled,
     setBrushRadius,
+    setPaintLayerEditMode,
   } = useContext(CogniteFileViewerContext);
 
-  const onBrushRadiusChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const radius = Number(event.target.value);
-    setBrushRadius(radius);
-  };
   const onUndoClick = () => {
     if (paintLayerCanvasRef?.current) paintLayerCanvasRef.current.undo();
   };
@@ -28,49 +26,73 @@ export const PaintLayerBar = (): JSX.Element => {
   };
 
   return (
-    <Bar visible={paintLayerEditMode}>
-      <ColorPicker brushColor={brushColor} setBrushColor={setBrushColor} />
-      <BrushRadiusGroup>
-        <BrushRadius radius={DEFAULT.RADIUS_MIN} color={toRGB(brushColor)} />
-        <input
-          min={DEFAULT.RADIUS_MIN}
-          max={DEFAULT.RADIUS_MAX}
-          type="range"
-          onChange={onBrushRadiusChange}
-        />
-        <BrushRadius radius={DEFAULT.RADIUS_MAX} color={toRGB(brushColor)} />
-      </BrushRadiusGroup>
-      <Tooltip
-        content={
-          <span>
-            {freeDrawEnabled
-              ? "Disable the freehand mode"
-              : "Enable the freehand mode"}
-          </span>
-        }
-      >
-        <Switch
-          name="freeDrawSwitch"
-          value={freeDrawEnabled}
-          onChange={(nextState: boolean) => setFreeDrawEnabled(nextState)}
-        >
-          Freehand mode
-        </Switch>
-      </Tooltip>
-      <Tooltip content={<span>Undo the last change</span>}>
+    <WrappingBar>
+      {paintLayerEditMode && (
+        <>
+          <BarSection hasMargin={true} noBorder={true}>
+            <span>Color</span>
+            <ColorPicker
+              brushColor={brushColor}
+              setBrushColor={setBrushColor}
+            />
+          </BarSection>
+          <BarSection hasMargin={true}>
+            <span>Size</span>
+            <div style={{ width: "68px", padding: "0 4px" }}>
+              <Slider
+                min={DEFAULT.RADIUS_MIN}
+                max={DEFAULT.RADIUS_MAX}
+                step={1}
+                value={brushRadius}
+                onChange={setBrushRadius}
+              />
+            </div>
+          </BarSection>
+          <BarSection hasMargin={true}>
+            <span>Snap straight</span>
+            <Switch
+              size="small"
+              name="snapStraightSwitch"
+              value={snapStraightEnabled}
+              onChange={(nextState: boolean) =>
+                setSnapStraightEnabled(nextState)
+              }
+              style={{ height: "16px" }}
+            />
+          </BarSection>
+          <BarSection hasMargin={true}>
+            <Button
+              size="small"
+              onClick={onUndoClick}
+              aria-label="redoDrawChangesButton"
+              style={{ fontSize: "11px", height: "24px" }}
+            >
+              Undo
+            </Button>
+            <Button
+              size="small"
+              type="ghost-danger"
+              onClick={onClearClick}
+              aria-label="deleteDrawingButton"
+              style={{ fontSize: "11px", height: "24px" }}
+            >
+              Erase all
+            </Button>
+          </BarSection>
+        </>
+      )}
+      <BarSection hasMargin={true} noBorder={!paintLayerEditMode}>
         <Button
-          icon="RotateLeft"
-          onClick={onUndoClick}
-          aria-label="redoDrawChangesButton"
+          icon="Edit"
+          variant={paintLayerEditMode ? "default" : "ghost"}
+          onClick={() => {
+            setPaintLayerEditMode(!paintLayerEditMode);
+          }}
+          aria-label="editButton"
+          size="small"
+          style={{ margin: "0 1px" }}
         />
-      </Tooltip>
-      <Tooltip content={<span>Clear the entire drawing</span>}>
-        <Button
-          icon="Trash"
-          onClick={onClearClick}
-          aria-label="deleteDrawingButton"
-        />
-      </Tooltip>
-    </Bar>
+      </BarSection>
+    </WrappingBar>
   );
 };

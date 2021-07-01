@@ -28,7 +28,7 @@ export default function PaintLayer(props: Props): JSX.Element {
     brushColor,
     brushRadius,
     drawData,
-    freeDrawEnabled,
+    snapStraightEnabled,
     setDrawData,
   } = useContext(CogniteFileViewerContext);
   const [loadTimeOffset] = useState(0);
@@ -81,7 +81,7 @@ export default function PaintLayer(props: Props): JSX.Element {
   };
 
   const onGetCanvasClick = () => {
-    if (freeDrawEnabled) return;
+    if (!snapStraightEnabled) return;
     const freshSaveData = paintLayerCanvasRef?.current?.getSaveData();
     const saveData = JSON.parse(freshSaveData);
     const lineToFix = saveData.lines.pop();
