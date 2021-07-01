@@ -213,8 +213,6 @@ export const FileViewer = ({
     setTotalPages,
     download,
     query,
-    paintLayerEditMode,
-    setPaintLayerEditMode,
     paintLayerCanvasRef,
     drawData,
     setDrawData,
