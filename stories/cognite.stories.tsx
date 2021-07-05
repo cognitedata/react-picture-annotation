@@ -605,6 +605,11 @@ export const Playground = () => {
         pagination={select("Pagination", ["small", "normal", false], "normal")}
         renderArrowPreview={renderArrowPreview}
         onAnnotationSelected={action("onAnnotationSelected")}
+        toolbarPosition={select(
+          "Toolbar position",
+          ["default", "topLeft", "topRight", "bottomLeft", "bottomRight"],
+          "default"
+        )}
         renderItemPreview={() => (
           <div
             style={{
