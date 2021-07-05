@@ -213,8 +213,6 @@ export const FileViewer = ({
     setTotalPages,
     download,
     query,
-    paintLayerEditMode,
-    setPaintLayerEditMode,
     paintLayerCanvasRef,
     drawData,
     setDrawData,
@@ -560,7 +558,6 @@ export const FileViewer = ({
           onChange={(newPageNum) => setPage && setPage(newPageNum)}
         />
       )}
-      {paintLayerEditMode && <PaintLayerBar />}
       {!hideControls && (
         <Buttons>
           <div id="controls">
@@ -595,20 +592,8 @@ export const FileViewer = ({
         </Buttons>
       )}
       <ToolingButtons>
+        {drawable && <PaintLayerBar />}
         {!hideSearch && textboxes.length !== 0 && <SearchField />}
-        {drawable && (
-          <Button
-            icon="Edit"
-            onClick={() => {
-              setPaintLayerEditMode(!paintLayerEditMode);
-            }}
-            aria-label="editButton"
-            style={{
-              boxSizing: "border-box",
-              boxShadow: paintLayerEditMode ? "inset 0 0 5px #000" : "none",
-            }}
-          />
-        )}
         {download && !hideDownload && (
           <Dropdown
             content={
@@ -664,7 +649,7 @@ const DocumentPagination = styled(Pagination)`
 const Buttons = styled.div`
   display: inline-flex;
   position: absolute;
-  z-index: 200;
+  z-index: 100;
   right: 24px;
   bottom: 24px;
   && #controls {
@@ -685,7 +670,7 @@ const Buttons = styled.div`
 const ToolingButtons = styled.div`
   display: inline-flex;
   position: absolute;
-  z-index: 200;
+  z-index: 100;
   right: 24px;
   top: 24px;
   align-items: stretch;

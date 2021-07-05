@@ -14,12 +14,13 @@ import {
   CogniteAnnotation,
 } from "@cognite/annotations";
 import { CustomizableCogniteAnnotation } from "./Cognite/FileViewerUtils";
-import { Button, Colors } from "@cognite/cogs.js";
+import { Button, Colors, Input } from "@cognite/cogs.js";
 import {
   useSelectedAnnotations,
   useExtractFromCanvas,
   useDownloadPDF,
   useZoomControls,
+  useViewerQuery,
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components";
 import { drawingMock } from "./drawingMock";
@@ -229,6 +230,7 @@ export const SplitContextAndViewer = () => {
   const AnotherComponent = () => {
     // This component now has access to all of the utilities and props of the viewer!
     const download = useDownloadPDF();
+    const { query, setQuery } = useViewerQuery();
     const { zoomIn, zoomOut, reset } = useZoomControls();
     const extract = useExtractFromCanvas();
     const {
@@ -244,6 +246,10 @@ export const SplitContextAndViewer = () => {
         <Button onClick={() => zoomIn!()}>Zoom In</Button>
         <Button onClick={() => zoomOut!()}>Zoom Out</Button>
         <Button onClick={() => reset!()}>Reset</Button>
+        <Input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
         {selectedAnnotation && (
           <Button onClick={() => setSelectedAnnotations([])}>
             Unselect Annotation
@@ -273,7 +279,13 @@ export const SplitContextAndViewer = () => {
     <CogniteFileViewer.Provider sdk={pdfSdk}>
       <div style={{ height: "100%", width: "100%", display: "flex" }}>
         <AnotherComponent />
-        <CogniteFileViewer.FileViewer file={pdfFile} editable={false} />
+        <CogniteFileViewer.FileViewer
+          file={pdfFile}
+          editable={false}
+          hideDownload={true}
+          hideSearch={true}
+          hideControls={true}
+        />
       </div>
     </CogniteFileViewer.Provider>
   );

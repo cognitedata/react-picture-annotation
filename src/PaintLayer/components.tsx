@@ -13,63 +13,6 @@ export const Wrapper = styled.div`
   align-items: center;
 `;
 
-type BarProps = { visible?: boolean };
-export const Bar = styled.div.attrs((props: BarProps) => {
-  const { visible } = props;
-  const style: any = {};
-  if (visible) style.display = "flex";
-  else style.display = "none";
-  return { style };
-})<BarProps>`
-  position: absolute;
-  align-items: center;
-  justify-content: space-between;
-  bottom: 16px;
-  left: 16px;
-  margin: 0;
-  padding: 8px 4px;
-  width: auto;
-  border-radius: 4px;
-  box-sizing: border-box;
-  background-color: ${Colors["greyscale-grey2"].hex()};
-  z-index: 100;
-  & > * {
-    margin: 0 4px;
-  }
-`;
-
-export const BrushRadiusGroup = styled.div`
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  & > * {
-    margin: 0 4px;
-  }
-`;
-
-type BrushRadiusProps = {
-  radius: number;
-  color: string;
-};
-export const BrushRadius = styled.div`
-  width: ${(props: BrushRadiusProps) => props.radius * 2}px;
-  height: ${(props: BrushRadiusProps) => props.radius * 2}px;
-  border-radius: ${(props: BrushRadiusProps) => props.radius * 2}px;
-  background-color: ${(props: BrushRadiusProps) => props.color};
-`;
-
-export const ColorSwatch = styled.div`
-  padding: 5px;
-  background: #fff;
-  border-radius: 1px;
-  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-`;
-
 export const ColorPickPopover = styled.div`
   position: absolute;
   z-index: 2;
@@ -94,7 +37,42 @@ export const ColorPreview = styled.div.attrs(
     };
   }
 )<{ userColor: RGBColor }>`
-  width: 36px;
-  height: 14px;
+  width: 24px;
+  height: 24px;
   border-radius: 2px;
+  cursor: pointer;
+`;
+
+export const WrappingBar = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  border-radius: 4px;
+  box-sizing: border-box;
+  background-color: ${Colors["greyscale-grey1"].hex()};
+  z-index: 100;
+  font-size: 10px;
+`;
+
+type BarSectionType = {
+  hasMargin?: boolean;
+  noBorder?: boolean;
+};
+export const BarSection = styled.div`
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  padding: ${({ hasMargin }: BarSectionType) => (hasMargin ? "0 4px" : "0")};
+  border-left: ${({ noBorder }: BarSectionType) =>
+    noBorder ? "0" : `1px solid ${Colors["greyscale-grey4"].hex()}`};
+
+  & > * {
+    box-sizing: border-box;
+    margin: ${({ hasMargin }: BarSectionType) => (hasMargin ? "0 4px" : "0")};
+  }
 `;
