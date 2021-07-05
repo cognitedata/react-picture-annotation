@@ -20,7 +20,7 @@ import {
   TextBox,
   ArrowPreviewOptions,
 } from "./FileViewerUtils";
-import { Toolbars, Pagination } from "../Toolbars";
+import { Toolbars, Pagination, ToolbarPosition } from "../Toolbars";
 
 type RenderItemPreviewFunction = (
   annotations: (ProposedCogniteAnnotation | CogniteAnnotation)[],
@@ -138,12 +138,7 @@ export type ViewerProps = {
   /**
    *
    */
-  toolbarPosition?:
-    | "default"
-    | "topLeft"
-    | "topRight"
-    | "bottomLeft"
-    | "bottomRight";
+  toolbarPosition?: ToolbarPosition;
   /**
    * Callback for every stroke on the paint layer.
    * Allows you to get the drawing data from outside to be able to save it externally.

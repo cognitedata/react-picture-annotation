@@ -1,26 +1,41 @@
 import React, { useContext } from "react";
+import styled from "styled-components";
 import { Button, Dropdown, Menu } from "@cognite/cogs.js";
 import CogniteFileViewerContext from "../../Cognite/FileViewerContext";
 import { TextBox } from "../../Cognite/FileViewerUtils";
 import PaintLayerBar from "../PaintLayerBar";
 import { SearchField } from "./SearchField";
-import { Wrapper } from "./components";
+
+const Wrapper = styled.div`
+  display: inline-flex;
+  align-items: stretch;
+  & > * {
+    margin-left: 8px;
+  }
+`;
 
 type Props = {
   drawable: boolean;
   hideSearch: boolean;
   hideDownload: boolean;
   textboxes: TextBox[];
+  isMirrored?: boolean;
 };
 
 export default function ToolsBar(props: Props): JSX.Element {
-  const { drawable, hideSearch, hideDownload, textboxes } = props;
+  const {
+    drawable,
+    hideSearch,
+    hideDownload,
+    textboxes,
+    isMirrored = false,
+  } = props;
   const { file, download } = useContext(CogniteFileViewerContext);
 
   return (
     <Wrapper>
-      {drawable && <PaintLayerBar />}
-      {!hideSearch && textboxes.length !== 0 && <SearchField />}
+      {!isMirrored && drawable && <PaintLayerBar isMirrored={isMirrored} />}
+      {!isMirrored && !hideSearch && textboxes.length !== 0 && <SearchField />}
       {download && !hideDownload && (
         <Dropdown
           content={
@@ -50,6 +65,8 @@ export default function ToolsBar(props: Props): JSX.Element {
           <Button icon="Download" aria-label="Download" />
         </Dropdown>
       )}
+      {isMirrored && !hideSearch && textboxes.length !== 0 && <SearchField />}
+      {isMirrored && drawable && <PaintLayerBar isMirrored={isMirrored} />}
     </Wrapper>
   );
 }

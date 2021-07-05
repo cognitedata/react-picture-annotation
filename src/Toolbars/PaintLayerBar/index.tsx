@@ -5,7 +5,9 @@ import { DEFAULT } from "../../utils";
 import ColorPicker from "./ColorPicker";
 import { WrappingBar, BarSection } from "./components";
 
-export default function PaintLayerBar(): JSX.Element {
+type Props = { isMirrored: boolean };
+export default function PaintLayerBar(props: Props): JSX.Element {
+  const { isMirrored } = props;
   const {
     paintLayerCanvasRef,
     paintLayerEditMode,
@@ -27,6 +29,20 @@ export default function PaintLayerBar(): JSX.Element {
 
   return (
     <WrappingBar>
+      {isMirrored && (
+        <BarSection hasMargin={true} noBorder={!paintLayerEditMode}>
+          <Button
+            icon="Edit"
+            variant={paintLayerEditMode ? "default" : "ghost"}
+            onClick={() => {
+              setPaintLayerEditMode(!paintLayerEditMode);
+            }}
+            aria-label="editButton"
+            size="small"
+            style={{ margin: "0 1px" }}
+          />
+        </BarSection>
+      )}
       {paintLayerEditMode && (
         <>
           <BarSection hasMargin={true} noBorder={true}>
@@ -81,18 +97,20 @@ export default function PaintLayerBar(): JSX.Element {
           </BarSection>
         </>
       )}
-      <BarSection hasMargin={true} noBorder={!paintLayerEditMode}>
-        <Button
-          icon="Edit"
-          variant={paintLayerEditMode ? "default" : "ghost"}
-          onClick={() => {
-            setPaintLayerEditMode(!paintLayerEditMode);
-          }}
-          aria-label="editButton"
-          size="small"
-          style={{ margin: "0 1px" }}
-        />
-      </BarSection>
+      {!isMirrored && (
+        <BarSection hasMargin={true} noBorder={!paintLayerEditMode}>
+          <Button
+            icon="Edit"
+            variant={paintLayerEditMode ? "default" : "ghost"}
+            onClick={() => {
+              setPaintLayerEditMode(!paintLayerEditMode);
+            }}
+            aria-label="editButton"
+            size="small"
+            style={{ margin: "0 1px" }}
+          />
+        </BarSection>
+      )}
     </WrappingBar>
   );
 }

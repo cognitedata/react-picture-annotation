@@ -1,7 +1,16 @@
 import React, { useContext } from "react";
+import styled from "styled-components";
 import { Button } from "@cognite/cogs.js";
 import CogniteFileViewerContext from "../../Cognite/FileViewerContext";
-import { Wrapper } from "./components";
+
+const Wrapper = styled.div`
+  display: inline-flex;
+  border-radius: 4px;
+  overflow: hidden;
+  & > * {
+    border-radius: 0px;
+  }
+`;
 
 type Props = {
   hideControls: boolean;
