@@ -524,6 +524,31 @@ export const AllowCustomDrawing = () => {
   );
 };
 
+export const RepositionToolbars = () => {
+  const [drawData, setDrawData] = useState<string | undefined>();
+
+  return (
+    <StoryWrapper>
+      <CogniteFileViewer
+        sdk={imgSdk}
+        file={imgFile}
+        drawable={boolean("Drawable", true)}
+        toolbarPosition={select(
+          "Toolbar position",
+          ["default", "topLeft", "topRight", "bottomLeft", "bottomRight"],
+          "default"
+        )}
+        loadedDrawData={drawData}
+        onDrawingSaved={(newDrawData: string) => {
+          if (newDrawData && newDrawData.length > 0) {
+            setDrawData(String(newDrawData));
+          }
+        }}
+      />
+    </StoryWrapper>
+  );
+};
+
 export const Playground = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
   const [
