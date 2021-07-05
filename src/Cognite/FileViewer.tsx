@@ -136,7 +136,8 @@ export type ViewerProps = {
    */
   hideSearch?: boolean;
   /**
-   *
+   * Allows user to reposition the toolbars. When has value different than 'default' or 'undefined' all toolbars are merged into one
+   * and positioned accordingly to user's input. Toolbars are mirrored when on left side.
    */
   toolbarPosition?: ToolbarPosition;
   /**
