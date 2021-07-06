@@ -91,7 +91,7 @@
   },
   "dependencies": {
     "@cognite/annotations": "^1.1.0",
-    "@cognite/sdk": "^3.3.0",
+    "@cognite/sdk": "3.3.6",
     "lodash": "^4.17.21",
     "parse-color": "^1.0.0",
     "pdf-lib": "^1.12.0",
