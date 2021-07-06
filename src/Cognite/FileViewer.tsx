@@ -9,7 +9,7 @@ import {
   PendingCogniteAnnotation,
 } from "@cognite/annotations";
 import { FileInfo } from "@cognite/sdk";
-import CogniteFileViewerContext from "./FileViewerContext";
+import { FileViewerContext } from "../context";
 import {
   ProposedCogniteAnnotation,
   convertCogniteAnnotationToIAnnotation,
@@ -215,7 +215,7 @@ export const FileViewer = ({
     paintLayerCanvasRef,
     drawData,
     setDrawData,
-  } = useContext(CogniteFileViewerContext);
+  } = useContext(FileViewerContext);
 
   useEffect(() => {
     if (loadedDrawData && drawData !== loadedDrawData) {

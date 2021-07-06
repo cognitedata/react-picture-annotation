@@ -1,4 +1,3 @@
-export * from './FileViewer';
-export * from './FileViewerContext';
-export { CogniteFileViewer } from './CombinedCogniteViewer';
-export * from './FileViewerUtils';
+export * from "./FileViewer";
+export * from "./FileViewerUtils";
+export { CogniteFileViewer } from "./CombinedCogniteViewer";

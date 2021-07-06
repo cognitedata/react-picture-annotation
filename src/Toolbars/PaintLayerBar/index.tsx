@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Button, Switch, Slider } from "@cognite/cogs.js";
-import CogniteFileViewerContext from "../../Cognite/FileViewerContext";
+import { FileViewerContext } from "../../context";
 import { DEFAULT } from "../../utils";
 import ColorPicker from "./ColorPicker";
 import { WrappingBar, BarSection } from "./components";
@@ -18,13 +18,22 @@ export default function PaintLayerBar(props: Props): JSX.Element {
     setSnapStraightEnabled,
     setBrushRadius,
     setPaintLayerEditMode,
-  } = useContext(CogniteFileViewerContext);
+  } = useContext(FileViewerContext);
 
   const onUndoClick = () => {
     if (paintLayerCanvasRef?.current) paintLayerCanvasRef.current.undo();
   };
   const onClearClick = () => {
     if (paintLayerCanvasRef?.current) paintLayerCanvasRef.current.clear();
+  };
+  const onSaveClick = () => {
+    if (!paintLayerCanvasRef?.current) return;
+    // const newDrawing = paintLayerCanvasRef?.current?.getSaveData();
+    // if (newDrawing && newDrawing !== drawData) {
+    //   const rescaledDrawing = getRawDrawData(newDrawing);
+    //   setDrawData(String(rescaledDrawing));
+    // }
+    // console.log(newDrawing);
   };
 
   return (
@@ -93,6 +102,15 @@ export default function PaintLayerBar(props: Props): JSX.Element {
               style={{ fontSize: "11px", height: "24px" }}
             >
               Erase all
+            </Button>
+            <Button
+              size="small"
+              type="primary"
+              onClick={onSaveClick}
+              aria-label="saveDrawingButton"
+              style={{ fontSize: "11px", height: "24px" }}
+            >
+              Save
             </Button>
           </BarSection>
         </>

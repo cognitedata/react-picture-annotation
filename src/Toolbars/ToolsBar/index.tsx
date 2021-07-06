@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
 import { Button, Dropdown, Menu } from "@cognite/cogs.js";
-import CogniteFileViewerContext from "../../Cognite/FileViewerContext";
+import { FileViewerContext } from "../../context";
 import { TextBox } from "../../Cognite/FileViewerUtils";
 import PaintLayerBar from "../PaintLayerBar";
 import { SearchField } from "./SearchField";
@@ -30,7 +30,7 @@ export default function ToolsBar(props: Props): JSX.Element {
     textboxes,
     isMirrored = false,
   } = props;
-  const { file, download } = useContext(CogniteFileViewerContext);
+  const { file, download } = useContext(FileViewerContext);
 
   return (
     <Wrapper>

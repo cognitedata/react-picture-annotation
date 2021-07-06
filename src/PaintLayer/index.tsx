@@ -1,8 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
-import simplify from "simplify-js";
 import styled from "styled-components";
-import CogniteFileViewerContext from "../Cognite/FileViewerContext";
+import { FileViewerContext, useScaledDrawing } from "../context";
 import { IStageState } from "../ReactPictureAnnotation";
 import { Wrapper } from "./components";
 import { toRGB } from "../utils/RGB";
@@ -30,55 +29,10 @@ export default function PaintLayer(props: Props): JSX.Element {
     drawData,
     snapStraightEnabled,
     setDrawData,
-  } = useContext(CogniteFileViewerContext);
+  } = useContext(FileViewerContext);
+  const { getRescaledDrawData, getRawDrawData } = useScaledDrawing(scaleState);
   const [loadTimeOffset] = useState(0);
-  const [tolerance] = useState(5);
-  const [highQuality] = useState(true);
   const [scaledDrawData, setScaledDrawData] = useState(drawData);
-
-  // initial rescaling //
-
-  const getRescaledDrawData = (drawingToScale: string): string => {
-    const { scale, originX, originY } = scaleState;
-    const drawDataParsed = JSON.parse(drawingToScale);
-    const drawDataMapped = {
-      ...drawDataParsed,
-      lines: drawDataParsed.lines.map((line: any) => {
-        return {
-          ...line,
-          points: line.points.map((point: any) => ({
-            x: scale / point.x + originX,
-            y: scale / point.y + originY,
-          })),
-          brushRadius: line.brushRadius * scale,
-        };
-      }),
-    };
-    const scaled = JSON.stringify(drawDataMapped);
-    return scaled;
-  };
-
-  const getRawDrawData = (drawingToDescale: string): string => {
-    const { scale, originX, originY } = scaleState;
-    const drawDataParsed = JSON.parse(drawingToDescale);
-    const drawDataMapped = {
-      ...drawDataParsed,
-      lines: drawDataParsed.lines.map((line: any) => {
-        return {
-          ...line,
-          points: simplify(line.points, tolerance, highQuality).map(
-            (point: any) => ({
-              x: scale / (point.x - originX),
-              y: scale / (point.y - originY),
-            })
-          ),
-          brushRadius: line.brushRadius / scale,
-        };
-      }),
-    };
-    const descaled = JSON.stringify(drawDataMapped);
-    return descaled;
-  };
 
   const onGetCanvasClick = () => {
     if (!snapStraightEnabled) return;

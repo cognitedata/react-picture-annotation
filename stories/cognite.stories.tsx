@@ -21,7 +21,7 @@ import {
   useDownloadPDF,
   useZoomControls,
   useViewerQuery,
-} from "../src/Cognite/FileViewerContext";
+} from "../src/context";
 import styled from "styled-components";
 import { drawingMock } from "./drawingMock";
 
