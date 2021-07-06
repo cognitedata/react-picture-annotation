@@ -10,17 +10,18 @@ import {
 import { CogniteFileViewer } from '../src';
 import {
   AllowCustomization,
+  AllowCustomizationv2,
   AllowControlledEditing,
   AllowCustomDrawing,
   SplitContextAndViewer,
   CustomizedAnnotations,
   Playground,
   ZoomOnSelectedAnnotation,
-  BoxAndArrows
+  BoxAndArrows,
 } from './cognite.stories.tsx';
 
 <Meta
-  title="Cognite File Viewer"
+  title='Cognite File Viewer'
   component={CogniteFileViewer}
   decorators={[(storyFn) => <Container>{storyFn()}</Container>]}
 />
@@ -48,7 +49,7 @@ To use the viewer simply import the `CogniteFileViewer` and supply it a `sdk` an
 **NOTE:** Avoid using `annotations` to supply additional annotations, this will be explained in the next section
 
 <Canvas>
-  <Story name="Simple">
+  <Story name='Simple'>
     <CogniteFileViewer sdk={imgSdk} file={imgFile} />
   </Story>
 </Canvas>
@@ -151,9 +152,9 @@ If you want to customize arrow boxes in other fields than the connected componen
 
 ```
   arrowPreviewOptions: {
-    baseOffset?: { 
-      x?: number, 
-      y?: number 
+    baseOffset?: {
+      x?: number,
+      y?: number
     },
     customOffset?: {
       [annotationId]: {
@@ -175,7 +176,7 @@ You can drag all of the boxes around, but their positions will reset once the co
   onArrowBoxMove = ({ annotationId: string|number, offsetX?: number, offsetY?: number }) => void
 ```
 
-It is a callback that allows you to access the `offsetX` and `offsetY` for the dragged arrow box, identified by the `annotationId` field. 
+It is a callback that allows you to access the `offsetX` and `offsetY` for the dragged arrow box, identified by the `annotationId` field.
 You can store that value somewhere, and then pass it back to the `arrowPreviewOptions.customOffset[annotationId]` if you want to recreate it!
 
 ## Custom drawing on a dedicated paint layer
@@ -195,4 +196,10 @@ This data is not saved with the file - any kind of saving the paint layer conten
 
 <Canvas>
   <Story story={Playground} />
+</Canvas>
+
+## Playground2
+
+<Canvas>
+  <Story story={AllowCustomizationv2} />
 </Canvas>

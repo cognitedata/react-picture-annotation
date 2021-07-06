@@ -24,6 +24,7 @@ import {
 } from "../src/Cognite/FileViewerContext";
 import styled from "styled-components";
 import { drawingMock } from "./drawingMock";
+import { Rv2 } from "../src/Rv2";
 
 export const AllowCustomization = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
@@ -62,6 +63,31 @@ export const AllowCustomization = () => {
       })}
     />
   );
+};
+export const AllowCustomizationv2 = () => {
+  const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
+  useEffect(() => {
+    (async () => {
+      const annotationsFromCdf = await listAnnotationsForFile(pdfSdk, pdfFile);
+      setAnnotations(
+        annotationsFromCdf.concat([
+          {
+            id: 123,
+            label: "David",
+            createdTime: new Date(),
+            lastUpdatedTime: new Date(),
+            type: "tmp_annotation",
+            status: "unhandled",
+            box: { xMin: 0.1, xMax: 0.2, yMin: 0.1, yMax: 0.2 },
+            version: 5,
+            page: 1,
+            source: "tmp",
+          },
+        ])
+      );
+    })();
+  }, []);
+  return <Rv2 sdk={pdfSdk} pdf={pdfFile} annotations={annotations} />;
 };
 
 let id = 0;
