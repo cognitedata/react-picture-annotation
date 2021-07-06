@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { SketchPicker } from "react-color";
 import { Popover, ArrowContainer } from "react-tiny-popover";
+import { RGBColor } from "../../utils/RGB";
 import { ColorPreview } from "./components";
-import { RGBColor } from "../utils/RGB";
 
 type Props = {
   brushColor: RGBColor;

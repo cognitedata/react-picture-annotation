@@ -1,11 +1,13 @@
 import React, { useContext } from "react";
 import { Button, Switch, Slider } from "@cognite/cogs.js";
-import CogniteFileViewerContext from "../Cognite/FileViewerContext";
+import CogniteFileViewerContext from "../../Cognite/FileViewerContext";
+import { DEFAULT } from "../../utils";
 import ColorPicker from "./ColorPicker";
 import { WrappingBar, BarSection } from "./components";
-import { DEFAULT } from "../utils";
 
-export const PaintLayerBar = (): JSX.Element => {
+type Props = { isMirrored: boolean };
+export default function PaintLayerBar(props: Props): JSX.Element {
+  const { isMirrored } = props;
   const {
     paintLayerCanvasRef,
     paintLayerEditMode,
@@ -27,6 +29,20 @@ export const PaintLayerBar = (): JSX.Element => {
 
   return (
     <WrappingBar>
+      {isMirrored && (
+        <BarSection hasMargin={true} noBorder={!paintLayerEditMode}>
+          <Button
+            icon="Edit"
+            variant={paintLayerEditMode ? "default" : "ghost"}
+            onClick={() => {
+              setPaintLayerEditMode(!paintLayerEditMode);
+            }}
+            aria-label="editButton"
+            size="small"
+            style={{ margin: "0 1px" }}
+          />
+        </BarSection>
+      )}
       {paintLayerEditMode && (
         <>
           <BarSection hasMargin={true} noBorder={true}>
@@ -81,18 +97,20 @@ export const PaintLayerBar = (): JSX.Element => {
           </BarSection>
         </>
       )}
-      <BarSection hasMargin={true} noBorder={!paintLayerEditMode}>
-        <Button
-          icon="Edit"
-          variant={paintLayerEditMode ? "default" : "ghost"}
-          onClick={() => {
-            setPaintLayerEditMode(!paintLayerEditMode);
-          }}
-          aria-label="editButton"
-          size="small"
-          style={{ margin: "0 1px" }}
-        />
-      </BarSection>
+      {!isMirrored && (
+        <BarSection hasMargin={true} noBorder={!paintLayerEditMode}>
+          <Button
+            icon="Edit"
+            variant={paintLayerEditMode ? "default" : "ghost"}
+            onClick={() => {
+              setPaintLayerEditMode(!paintLayerEditMode);
+            }}
+            aria-label="editButton"
+            size="small"
+            style={{ margin: "0 1px" }}
+          />
+        </BarSection>
+      )}
     </WrappingBar>
   );
-};
+}

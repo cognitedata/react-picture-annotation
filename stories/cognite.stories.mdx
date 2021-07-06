@@ -16,7 +16,8 @@ import {
   CustomizedAnnotations,
   Playground,
   ZoomOnSelectedAnnotation,
-  BoxAndArrows
+  BoxAndArrows,
+  RepositionToolbars,
 } from './cognite.stories.tsx';
 
 <Meta
@@ -181,14 +182,28 @@ You can store that value somewhere, and then pass it back to the `arrowPreviewOp
 ## Custom drawing on a dedicated paint layer
 
 Since 1.14, there is a possibility of showing a dedicated paint layer which allows you to paint over the displayed file.
-To be able to use this, pass the `hideDraw={false}` flag to the CogniteFileViewer component. This will display an `Edit` button alongside other tooling buttons (between Search and Download).
-Clicking the button will show a dedicated drawing bar and will display a painting layer on top of the file. You can change the color, opacity and thickness of the brush, as well as undo all of the drawn lines and clear everything.
+To be able to use this, pass the `drawable={true}` flag to the CogniteFileViewer component. This will display an `Edit` button alongside other tooling buttons (before Search).
+Clicking the button will show a dedicated drawing bar and will display a painting layer on top of the file. 
 
-A data object containing all the information about the paint layer will be generated with every stroke and compressed using the `lz-string` library. You can access that data by using the `onDraw()` callback.
-This data is not saved with the file - any kind of saving the paint layer contents is intended to be use externally and not with the particular file, so you can have several overlays for a single file.
+The drawing menu allows you to change the color, opacity and thickness of the brush, choose freehand or snap to straight line drawing mode, undo the drawn shapes, and clear everything.
+
+A data object containing all the information about the paint layer will be generated whenever the Save button is clicked (or the Draw mode is left). This data is returned inside `onDrawingSaved()` callback in a form of stringified JSON.
+This data is not saved with the file - any kind of saving the paint layer contents is intended to be use externally and not with the particular file, so you can have several overlays for a single file. That saved data can be later passed back to the drawing layer in the `loadedDrawData` field.
 
 <Canvas>
   <Story story={AllowCustomDrawing} />
+</Canvas>
+
+### Repositioning toolbars
+
+By default, the zooming toolbar is positioned in the bottom right corner, and the rest of the toolbar buttons (search, download and draw) are positioned in the top right corner.
+
+In case user wants/needs to change that placement, an optional `toolbarPlacement` flag can be used. Not using it will leave the toolbars in their default positions.
+
+The `toolbarPlacement` flag takes one string argument, which can be `topRight` | `topLeft` | `bottomRight` | `bottomLeft`. Using any of those options will cause all of the tooling buttons to be put in one toolbar, and then positioned in the viewer respectively. Since their default positioning is on the right side, they are mirrored when placed on the left side.
+
+<Canvas>
+  <Story story={RepositionToolbars} />
 </Canvas>
 
 ## Playground

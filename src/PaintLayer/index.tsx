@@ -130,4 +130,3 @@ export default function PaintLayer(props: Props): JSX.Element {
 }
 
 export * from "./helpers";
-export * from "./PaintLayerBar";

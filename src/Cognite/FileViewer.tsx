@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
 import { ReactPictureAnnotation, IAnnotation, IRectShapeData } from "..";
-import { Button, Colors, Pagination, Dropdown, Menu } from "@cognite/cogs.js";
-import styled from "styled-components";
+import { Colors } from "@cognite/cogs.js";
 import {
   CogniteAnnotation,
   CURRENT_VERSION,
@@ -11,7 +10,6 @@ import {
 } from "@cognite/annotations";
 import { FileInfo } from "@cognite/sdk";
 import CogniteFileViewerContext from "./FileViewerContext";
-import { SearchField } from "./SearchField";
 import {
   ProposedCogniteAnnotation,
   convertCogniteAnnotationToIAnnotation,
@@ -22,7 +20,7 @@ import {
   TextBox,
   ArrowPreviewOptions,
 } from "./FileViewerUtils";
-import { PaintLayerBar } from "../PaintLayer";
+import { Toolbars, Pagination, ToolbarPosition } from "../Toolbars";
 
 type RenderItemPreviewFunction = (
   annotations: (ProposedCogniteAnnotation | CogniteAnnotation)[],
@@ -138,6 +136,11 @@ export type ViewerProps = {
    */
   hideSearch?: boolean;
   /**
+   * Allows user to reposition the toolbars. When has value different than 'default' or 'undefined' all toolbars are merged into one
+   * and positioned accordingly to user's input. Toolbars are mirrored when on left side.
+   */
+  toolbarPosition?: ToolbarPosition;
+  /**
    * Callback for every stroke on the paint layer.
    * Allows you to get the drawing data from outside to be able to save it externally.
    */
@@ -190,13 +193,13 @@ export const FileViewer = ({
   arrowPreviewOptions,
   onFileLoaded,
   pinchScaleModifier,
+  toolbarPosition,
 }: ViewerProps) => {
   const {
     annotations,
     setAnnotations,
     page,
     setFile,
-    setPage,
     sdk,
     file,
     selectedAnnotations,
@@ -206,12 +209,8 @@ export const FileViewer = ({
     setReset,
     setZoomIn,
     setZoomOut,
-    zoomIn,
-    zoomOut,
-    reset,
     totalPages,
     setTotalPages,
-    download,
     query,
     paintLayerCanvasRef,
     drawData,
@@ -548,134 +547,15 @@ export const FileViewer = ({
         paintLayerCanvasRef={paintLayerCanvasRef}
         pinchScaleModifier={pinchScaleModifier}
       />
-      {totalPages > 1 && pagination && (
-        <DocumentPagination
-          total={totalPages}
-          current={page || 1}
-          pageSize={1}
-          showPrevNextJumpers={true}
-          simple={pagination === "small"}
-          onChange={(newPageNum) => setPage && setPage(newPageNum)}
-        />
-      )}
-      {!hideControls && (
-        <Buttons>
-          <div id="controls">
-            <Button
-              aria-label="Zoom in"
-              onClick={() => {
-                if (zoomIn) {
-                  zoomIn();
-                }
-              }}
-              icon="ZoomIn"
-            />
-            <Button
-              aria-label="Refresh"
-              icon="Refresh"
-              onClick={() => {
-                if (reset) {
-                  reset();
-                }
-              }}
-            />
-            <Button
-              aria-label="Zoom out"
-              icon="ZoomOut"
-              onClick={() => {
-                if (zoomOut) {
-                  zoomOut();
-                }
-              }}
-            />
-          </div>
-        </Buttons>
-      )}
-      <ToolingButtons>
-        {drawable && <PaintLayerBar />}
-        {!hideSearch && textboxes.length !== 0 && <SearchField />}
-        {download && !hideDownload && (
-          <Dropdown
-            content={
-              <Menu>
-                <Menu.Item
-                  onClick={() =>
-                    download!(
-                      file ? file.name : "export.pdf",
-                      false,
-                      false,
-                      false
-                    )
-                  }
-                >
-                  Original File
-                </Menu.Item>
-                <Menu.Item
-                  onClick={() =>
-                    download!(
-                      file ? file.name : "export.pdf",
-                      false,
-                      true,
-                      true
-                    )
-                  }
-                >
-                  File with Annotations
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button icon="Download" aria-label="Download" />
-          </Dropdown>
-        )}
-      </ToolingButtons>
+      <Pagination pagination={pagination} />
+      <Toolbars
+        toolbarPosition={toolbarPosition}
+        hideControls={hideControls}
+        hideDownload={hideDownload}
+        hideSearch={hideSearch}
+        drawable={drawable}
+        textboxes={textboxes}
+      />
     </div>
   );
 };
-
-const DocumentPagination = styled(Pagination)`
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  bottom: 16px;
-  && {
-    background: #fff;
-    border-radius: 50px;
-    padding: 12px 24px;
-    box-shadow: 0px 0px 8px ${Colors["greyscale-grey3"].hex()};
-  }
-`;
-
-const Buttons = styled.div`
-  display: inline-flex;
-  position: absolute;
-  z-index: 100;
-  right: 24px;
-  bottom: 24px;
-  && #controls {
-    display: inline-flex;
-  }
-  && #controls > * {
-    border-radius: 0px;
-  }
-  && #controls > *:nth-child(1) {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-  }
-  && #controls > *:nth-last-child(1) {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-  }
-`;
-const ToolingButtons = styled.div`
-  display: inline-flex;
-  position: absolute;
-  z-index: 100;
-  right: 24px;
-  top: 24px;
-  align-items: stretch;
-
-  && > * {
-    margin-left: 8px;
-  }
-`;
