@@ -1,7 +1,7 @@
 import styled from "styled-components";
 import { CogniteClient } from "@cognite/sdk";
 import { response, threeAnnotationsResponse, orcResults } from "./resources";
-import { FileViewerContextObserverPublicProps } from "../src";
+import { FileViewerContextObserverPublicProps } from "../src/context";
 import randomId from "../src/utils/randomId";
 // @ts-ignore
 import pdfFileUrl from "./img/pnid.pdf";
