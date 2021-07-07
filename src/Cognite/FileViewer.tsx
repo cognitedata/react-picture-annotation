@@ -301,11 +301,11 @@ export const FileViewer = ({
 
   useEffect(() => {
     (async () => {
-      if (fileId) {
+      if (fileId && !hideSearch) {
         setTextboxes(await retrieveOCRResults(sdk, fileId));
       }
     })();
-  }, [fileId, setTextboxes]);
+  }, [fileId, hideSearch, setTextboxes]);
 
   useEffect(() => {
     (async () => {
