@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { Button, Switch, Slider } from "@cognite/cogs.js";
-import { FileViewerContext } from "../../context";
+import { FileViewerContext, useScaledDrawing } from "../../context";
 import { DEFAULT } from "../../utils";
 import ColorPicker from "./ColorPicker";
 import { WrappingBar, BarSection } from "./components";
@@ -14,11 +14,15 @@ export default function PaintLayerBar(props: Props): JSX.Element {
     brushColor,
     brushRadius,
     snapStraightEnabled,
+    drawData,
     setBrushColor,
     setSnapStraightEnabled,
     setBrushRadius,
     setPaintLayerEditMode,
+    setDrawData,
   } = useContext(FileViewerContext);
+  const scaleState = { scale: 1, originX: 0, originY: 0 }; // WIP
+  const { getRawDrawData } = useScaledDrawing(scaleState);
 
   const onUndoClick = () => {
     if (paintLayerCanvasRef?.current) paintLayerCanvasRef.current.undo();
@@ -28,12 +32,11 @@ export default function PaintLayerBar(props: Props): JSX.Element {
   };
   const onSaveClick = () => {
     if (!paintLayerCanvasRef?.current) return;
-    // const newDrawing = paintLayerCanvasRef?.current?.getSaveData();
-    // if (newDrawing && newDrawing !== drawData) {
-    //   const rescaledDrawing = getRawDrawData(newDrawing);
-    //   setDrawData(String(rescaledDrawing));
-    // }
-    // console.log(newDrawing);
+    const newDrawing = paintLayerCanvasRef?.current?.getSaveData();
+    if (newDrawing && newDrawing !== drawData) {
+      const rescaledDrawing = getRawDrawData(newDrawing);
+      setDrawData(String(rescaledDrawing));
+    }
   };
 
   return (

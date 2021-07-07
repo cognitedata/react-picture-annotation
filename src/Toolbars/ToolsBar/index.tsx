@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import styled from "styled-components";
 import { Button, Dropdown, Menu } from "@cognite/cogs.js";
 import { FileViewerContext } from "../../context";
+import { IStageState } from "../../ReactPictureAnnotation";
 import { TextBox } from "../../Cognite/FileViewerUtils";
 import PaintLayerBar from "../PaintLayerBar";
 import { SearchField } from "./SearchField";

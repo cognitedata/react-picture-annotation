@@ -1,5 +1,6 @@
 import React from "react";
 import { TextBox } from "../Cognite/FileViewerUtils";
+import { IStageState } from "../ReactPictureAnnotation";
 import ControlBar from "./ControlBar";
 import ToolsBar from "./ToolsBar";
 import { ToolbarPosition } from "./types";
@@ -16,6 +17,7 @@ type Props = {
   hideSearch: boolean;
   drawable: boolean;
   textboxes: TextBox[];
+  scaleState: IStageState;
 };
 
 export const Toolbars = (props: Props): JSX.Element => {
