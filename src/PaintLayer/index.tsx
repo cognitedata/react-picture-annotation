@@ -28,39 +28,69 @@ export default function PaintLayer(props: Props): JSX.Element {
     brushRadius,
     drawData,
     snapStraightEnabled,
+    shouldSaveDrawData,
     setDrawData,
+    setShouldSaveDrawData,
   } = useContext(FileViewerContext);
-  const { getRescaledDrawData, getRawDrawData } = useScaledDrawing(scaleState);
+  const { getScaledDrawData, getRawDrawData } = useScaledDrawing(scaleState);
   const [loadTimeOffset] = useState(0);
   const [scaledDrawData, setScaledDrawData] = useState(drawData);
+  const [tempDrawData, setTempDrawData] = useState(drawData);
+
+  const saveDrawing = () => {
+    if (!shouldSaveDrawData || hidePaintLayer) return;
+    if (tempDrawData && tempDrawData !== drawData) {
+      const rawDrawing = getRawDrawData(tempDrawData);
+      setDrawData(String(rawDrawing));
+    }
+    setShouldSaveDrawData(false);
+  };
+
+  const saveTempDrawing = () => {
+    if (hidePaintLayer || paintLayerEditMode) return;
+    const newDrawing = paintLayerCanvasRef?.current?.getSaveData();
+    if (newDrawing && newDrawing !== drawData) {
+      const rawDrawing = getRawDrawData(newDrawing);
+      setTempDrawData(String(rawDrawing));
+    }
+  };
+
+  const adjustDrawingToScale = () => {
+    const scaledData = getScaledDrawData(tempDrawData);
+    setScaledDrawData(scaledData);
+  };
 
   const onGetCanvasClick = () => {
     if (!snapStraightEnabled) return;
-    const freshSaveData = paintLayerCanvasRef?.current?.getSaveData();
-    const saveData = JSON.parse(freshSaveData);
+    const saveData = JSON.parse(tempDrawData);
     const lineToFix = saveData.lines.pop();
     lineToFix.points.splice(1, lineToFix.points.length - 2);
     saveData.lines.push(lineToFix);
     const fixedSaveData = JSON.stringify(saveData);
-    const rescaledDrawing = getRawDrawData(fixedSaveData);
-    setDrawData(String(rescaledDrawing));
+    const rawDrawing = getRawDrawData(fixedSaveData);
+    setTempDrawData(String(rawDrawing));
+
+    // const freshSaveData = paintLayerCanvasRef?.current?.getSaveData();
+    // const saveData = JSON.parse(freshSaveData);
+    // const lineToFix = saveData.lines.pop();
+    // lineToFix.points.splice(1, lineToFix.points.length - 2);
+    // saveData.lines.push(lineToFix);
+    // const fixedSaveData = JSON.stringify(saveData);
+    // const rescaledDrawing = getRawDrawData(fixedSaveData);
+    // setTempDrawData(String(rescaledDrawing));
   };
 
   useEffect(() => {
-    if (hidePaintLayer) return;
-    if (!paintLayerEditMode) {
-      const newDrawing = paintLayerCanvasRef?.current?.getSaveData();
-      if (newDrawing && newDrawing !== drawData) {
-        const rescaledDrawing = getRawDrawData(newDrawing);
-        setDrawData(String(rescaledDrawing));
-      }
-    }
-  }, [paintLayerEditMode]);
+    adjustDrawingToScale();
+  }, [scaleState.scale, scaleState.originX, scaleState.originY, tempDrawData]);
 
   useEffect(() => {
-    const rescaledData = getRescaledDrawData(drawData);
-    setScaledDrawData(rescaledData);
-  }, [scaleState.scale, scaleState.originX, scaleState.originY, drawData]);
+    saveDrawing();
+  }, [shouldSaveDrawData]);
+
+  useEffect(() => {
+    saveTempDrawing();
+  }, [paintLayerEditMode]);
 
   return (
     <Wrapper onMouseUp={onGetCanvasClick}>

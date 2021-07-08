@@ -6,7 +6,10 @@ export const useScaledDrawing = (scaleState: IStageState) => {
   const [tolerance] = useState(5);
   const [highQuality] = useState(true);
 
-  const getRescaledDrawData = (drawingToScale: string): string => {
+  /**
+   * Returns drawing scaled to current scale.
+   */
+  const getScaledDrawData = (drawingToScale: string): string => {
     const { scale, originX, originY } = scaleState;
     const drawDataParsed = JSON.parse(drawingToScale);
     const drawDataMapped = {
@@ -26,6 +29,10 @@ export const useScaledDrawing = (scaleState: IStageState) => {
     return scaled;
   };
 
+  /**
+   * Returns drawing in its raw state - aka converted to scale 1,
+   * or to percentage of canvas.
+   */
   const getRawDrawData = (drawingToDescale: string): string => {
     const { scale, originX, originY } = scaleState;
     const drawDataParsed = JSON.parse(drawingToDescale);
@@ -44,12 +51,12 @@ export const useScaledDrawing = (scaleState: IStageState) => {
         };
       }),
     };
-    const descaled = JSON.stringify(drawDataMapped);
-    return descaled;
+    const raw = JSON.stringify(drawDataMapped);
+    return raw;
   };
 
   return {
-    getRescaledDrawData,
+    getScaledDrawData,
     getRawDrawData,
   };
 };

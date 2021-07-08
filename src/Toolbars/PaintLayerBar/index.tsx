@@ -1,6 +1,12 @@
-import React, { useContext } from "react";
-import { Button, Switch, Slider } from "@cognite/cogs.js";
-import { FileViewerContext, useScaledDrawing } from "../../context";
+import React, { useContext, useEffect } from "react";
+import {
+  Button,
+  Switch,
+  Slider,
+  ToastContainer,
+  toast,
+} from "@cognite/cogs.js";
+import { FileViewerContext } from "../../context";
 import { DEFAULT } from "../../utils";
 import ColorPicker from "./ColorPicker";
 import { WrappingBar, BarSection } from "./components";
@@ -14,15 +20,12 @@ export default function PaintLayerBar(props: Props): JSX.Element {
     brushColor,
     brushRadius,
     snapStraightEnabled,
-    drawData,
     setBrushColor,
     setSnapStraightEnabled,
     setBrushRadius,
     setPaintLayerEditMode,
-    setDrawData,
+    setShouldSaveDrawData,
   } = useContext(FileViewerContext);
-  const scaleState = { scale: 1, originX: 0, originY: 0 }; // WIP
-  const { getRawDrawData } = useScaledDrawing(scaleState);
 
   const onUndoClick = () => {
     if (paintLayerCanvasRef?.current) paintLayerCanvasRef.current.undo();
@@ -32,11 +35,17 @@ export default function PaintLayerBar(props: Props): JSX.Element {
   };
   const onSaveClick = () => {
     if (!paintLayerCanvasRef?.current) return;
-    const newDrawing = paintLayerCanvasRef?.current?.getSaveData();
-    if (newDrawing && newDrawing !== drawData) {
-      const rescaledDrawing = getRawDrawData(newDrawing);
-      setDrawData(String(rescaledDrawing));
-    }
+    setShouldSaveDrawData(true);
+    toast.success(
+      <div>
+        <h3>Success!</h3>
+        <p>Your drawing had been saved!</p>
+      </div>,
+      {
+        autoClose: 2000,
+        position: "top-center",
+      }
+    );
   };
 
   return (
@@ -57,6 +66,7 @@ export default function PaintLayerBar(props: Props): JSX.Element {
       )}
       {paintLayerEditMode && (
         <>
+          <ToastContainer />
           <BarSection hasMargin={true} noBorder={true}>
             <span>Color</span>
             <ColorPicker

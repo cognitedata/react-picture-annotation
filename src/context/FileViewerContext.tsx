@@ -164,6 +164,15 @@ type FileViewerContextObserverPaintLayerProps = {
    *
    */
   setDrawData: (drawData: string) => void;
+  /**
+   * This is a very hacky way to connect Save button from PaintLayerBar
+   * and the actual PaintLayer
+   */
+  shouldSaveDrawData: boolean;
+  /**
+   *
+   */
+  setShouldSaveDrawData: (shouldSaveDrawData: boolean) => void;
 };
 
 export const FileViewerContext = React.createContext(
@@ -219,6 +228,7 @@ const FileViewerProvider = ({
     ExtractFromCanvasFunction | undefined
   >(undefined);
 
+  const [shouldSaveDrawData, setShouldSaveDrawData] = useState<boolean>(false);
   const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
   const [snapStraightEnabled, setSnapStraightEnabled] = useState<boolean>(true);
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
@@ -294,6 +304,8 @@ const FileViewerProvider = ({
         paintLayerCanvasRef,
         drawData,
         setDrawData,
+        shouldSaveDrawData,
+        setShouldSaveDrawData,
       }}
     >
       {children}
