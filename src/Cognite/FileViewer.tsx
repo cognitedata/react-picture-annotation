@@ -381,6 +381,7 @@ export const FileViewer = ({
         }
       }
     }
+    annotatorRef.current?.forceMouseUp();
   };
 
   const onArrowBoxMoved = (
