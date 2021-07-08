@@ -498,12 +498,14 @@ export const BoxAndArrows = () => {
 export const AllowCustomDrawing = () => {
   const [drawData, setDrawData] = useState<string | undefined>();
   const mock = JSON.stringify(drawingMock);
-  const onLoadDrawingClick = () => setDrawData(mock);
+  const onLoadExampleDrawingClick = () => setDrawData(mock);
 
   return (
     <StoryWrapper>
       <SidebarHelper>
-        <button onClick={onLoadDrawingClick}>Load drawing</button>
+        <button onClick={onLoadExampleDrawingClick}>
+          Load example drawing
+        </button>
         <div style={{ width: "100%", maxHeight: "90%" }}>
           <strong>Paint layer data</strong>
           <p>{drawData}</p>

@@ -37,10 +37,13 @@ export default function PaintLayer(props: Props): JSX.Element {
   const [scaledDrawData, setScaledDrawData] = useState(drawData);
   const [tempDrawData, setTempDrawData] = useState(drawData);
 
+  const getDrawData = (): string | undefined =>
+    paintLayerCanvasRef?.current?.getSaveData();
   const saveDrawing = () => {
-    if (!shouldSaveDrawData || hidePaintLayer) return;
-    if (tempDrawData && tempDrawData !== drawData) {
-      const rawDrawing = getRawDrawData(tempDrawData);
+    if (hidePaintLayer || !shouldSaveDrawData) return;
+    const newDrawing = getDrawData();
+    if (newDrawing && newDrawing !== drawData) {
+      const rawDrawing = getRawDrawData(newDrawing);
       setDrawData(String(rawDrawing));
     }
     setShouldSaveDrawData(false);
@@ -48,7 +51,7 @@ export default function PaintLayer(props: Props): JSX.Element {
 
   const saveTempDrawing = () => {
     if (hidePaintLayer || paintLayerEditMode) return;
-    const newDrawing = paintLayerCanvasRef?.current?.getSaveData();
+    const newDrawing = getDrawData();
     if (newDrawing && newDrawing !== drawData) {
       const rawDrawing = getRawDrawData(newDrawing);
       setTempDrawData(String(rawDrawing));
@@ -60,24 +63,17 @@ export default function PaintLayer(props: Props): JSX.Element {
     setScaledDrawData(scaledData);
   };
 
-  const onGetCanvasClick = () => {
+  const snapLineStraight = () => {
     if (!snapStraightEnabled) return;
-    const saveData = JSON.parse(tempDrawData);
+    const drawing = getDrawData();
+    if (!drawing) return;
+    const saveData = JSON.parse(drawing);
     const lineToFix = saveData.lines.pop();
     lineToFix.points.splice(1, lineToFix.points.length - 2);
     saveData.lines.push(lineToFix);
     const fixedSaveData = JSON.stringify(saveData);
     const rawDrawing = getRawDrawData(fixedSaveData);
     setTempDrawData(String(rawDrawing));
-
-    // const freshSaveData = paintLayerCanvasRef?.current?.getSaveData();
-    // const saveData = JSON.parse(freshSaveData);
-    // const lineToFix = saveData.lines.pop();
-    // lineToFix.points.splice(1, lineToFix.points.length - 2);
-    // saveData.lines.push(lineToFix);
-    // const fixedSaveData = JSON.stringify(saveData);
-    // const rescaledDrawing = getRawDrawData(fixedSaveData);
-    // setTempDrawData(String(rescaledDrawing));
   };
 
   useEffect(() => {
@@ -92,8 +88,12 @@ export default function PaintLayer(props: Props): JSX.Element {
     saveTempDrawing();
   }, [paintLayerEditMode]);
 
+  useEffect(() => {
+    setTempDrawData(drawData);
+  }, [drawData]);
+
   return (
-    <Wrapper onMouseUp={onGetCanvasClick}>
+    <Wrapper onMouseUp={snapLineStraight}>
       {!hidePaintLayer && (
         <StyledCanvasDraw
           ref={paintLayerCanvasRef}
