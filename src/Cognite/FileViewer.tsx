@@ -9,7 +9,7 @@ import {
   PendingCogniteAnnotation,
 } from "@cognite/annotations";
 import { FileInfo } from "@cognite/sdk";
-import CogniteFileViewerContext from "./FileViewerContext";
+import { FileViewerContext } from "../context";
 import {
   ProposedCogniteAnnotation,
   convertCogniteAnnotationToIAnnotation,
@@ -215,7 +215,7 @@ export const FileViewer = ({
     paintLayerCanvasRef,
     drawData,
     setDrawData,
-  } = useContext(CogniteFileViewerContext);
+  } = useContext(FileViewerContext);
 
   useEffect(() => {
     if (loadedDrawData && drawData !== loadedDrawData) {
@@ -493,14 +493,41 @@ export const FileViewer = ({
           {loader}
         </div>
       )}
+      <Toolbars
+        toolbarPosition={toolbarPosition}
+        hideControls={hideControls}
+        hideDownload={hideDownload}
+        hideSearch={hideSearch}
+        drawable={drawable}
+        textboxes={textboxes}
+        scaleState={{ scale: 1, originX: 0, originY: 0 }}
+      />
       <ReactPictureAnnotation
         ref={annotatorRef}
+        width={width}
+        height={height}
+        page={page}
         selectedIds={selectedIds}
         drawLabel={!hideLabel}
         hoverable={hoverable}
         editable={editable}
         drawable={drawable}
+        creatable={creatable}
         annotationData={annotationData}
+        arrowPreviewOptions={arrowPreviewOptions}
+        zoomOnAnnotation={zoomOnAnnotation}
+        paintLayerCanvasRef={paintLayerCanvasRef}
+        pinchScaleModifier={pinchScaleModifier}
+        renderArrowPreview={renderArrowPreview}
+        onSelect={onAnnotationSelect}
+        onAnnotationCreate={onCreateAnnotation}
+        onAnnotationUpdate={onUpdateAnnotation}
+        onArrowBoxMove={onArrowBoxMoved}
+        onLoading={(isLoading) => setLoading(isLoading)}
+        image={file && isImage ? previewUrl : undefined}
+        pdf={
+          file && file.mimeType === "application/pdf" ? previewUrl : undefined
+        }
         onChange={(e) => {
           // if (textboxesToShow.find(el=>el.id===))
           setVisibleAnnotations(
@@ -513,18 +540,6 @@ export const FileViewer = ({
               )
           );
         }}
-        onSelect={onAnnotationSelect}
-        onAnnotationCreate={onCreateAnnotation}
-        onAnnotationUpdate={onUpdateAnnotation}
-        pdf={
-          file && file.mimeType === "application/pdf" ? previewUrl : undefined
-        }
-        image={file && isImage ? previewUrl : undefined}
-        creatable={creatable}
-        width={width}
-        height={height}
-        page={page}
-        onLoading={(isLoading) => setLoading(isLoading)}
         renderItemPreview={(items, maxHeight) => {
           const ids = items.map((el) => el.id);
           const currentAnnotations = annotations.filter((el) =>
@@ -532,9 +547,6 @@ export const FileViewer = ({
           );
           return renderItemPreview(currentAnnotations, maxHeight);
         }}
-        renderArrowPreview={renderArrowPreview}
-        arrowPreviewOptions={arrowPreviewOptions}
-        onArrowBoxMove={onArrowBoxMoved}
         onPDFLoaded={async ({ pages }) => {
           setLoading(false);
           setTotalPages(pages);
@@ -543,19 +555,8 @@ export const FileViewer = ({
             onFileLoaded();
           }
         }}
-        zoomOnAnnotation={zoomOnAnnotation}
-        paintLayerCanvasRef={paintLayerCanvasRef}
-        pinchScaleModifier={pinchScaleModifier}
       />
       <Pagination pagination={pagination} />
-      <Toolbars
-        toolbarPosition={toolbarPosition}
-        hideControls={hideControls}
-        hideDownload={hideDownload}
-        hideSearch={hideSearch}
-        drawable={drawable}
-        textboxes={textboxes}
-      />
     </div>
   );
 };

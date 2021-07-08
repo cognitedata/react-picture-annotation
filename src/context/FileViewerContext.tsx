@@ -1,10 +1,10 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { CogniteClient, FileInfo } from "@cognite/sdk";
 import {
   CogniteAnnotation,
   listAnnotationsForFile,
 } from "@cognite/annotations";
-import { ProposedCogniteAnnotation } from "./FileViewerUtils";
+import { ProposedCogniteAnnotation } from "../Cognite/FileViewerUtils";
 import {
   DownloadFileFunction,
   ExtractFromCanvasFunction,
@@ -164,57 +164,20 @@ type FileViewerContextObserverPaintLayerProps = {
    *
    */
   setDrawData: (drawData: string) => void;
+  /**
+   * This is a very hacky way to connect Save button from PaintLayerBar
+   * and the actual PaintLayer
+   */
+  shouldSaveDrawData: boolean;
+  /**
+   *
+   */
+  setShouldSaveDrawData: (shouldSaveDrawData: boolean) => void;
 };
 
-const FileViewerContext = React.createContext({} as FileViewerContextObserver);
-
-export const useAnnotations = () => {
-  const { annotations, setAnnotations } = useContext(FileViewerContext);
-  return { annotations, setAnnotations };
-};
-
-export const useIsFileLoading = () => {
-  const { isLoading } = useContext(FileViewerContext);
-  return isLoading;
-};
-
-export const usePage = () => {
-  const { page, setPage } = useContext(FileViewerContext);
-  return { page, setPage };
-};
-
-export const useZoomControls = () => {
-  const { zoomIn, zoomOut, zoomOnAnnotation, reset } = useContext(
-    FileViewerContext
-  );
-  return { zoomIn, zoomOut, zoomOnAnnotation, reset };
-};
-
-export const useDownloadPDF = () => {
-  const { download } = useContext(FileViewerContext);
-  return download;
-};
-
-export const useExtractFromCanvas = () => {
-  const { extractFromCanvas } = useContext(FileViewerContext);
-  return extractFromCanvas;
-};
-
-export const useSelectedAnnotations = () => {
-  const { selectedAnnotations, setSelectedAnnotations } = useContext(
-    FileViewerContext
-  );
-  return { selectedAnnotations, setSelectedAnnotations };
-};
-export const useViewerQuery = () => {
-  const { query, setQuery } = useContext(FileViewerContext);
-  return { query, setQuery };
-};
-
-export const useViewerPage = () => {
-  const { page, setPage, totalPages } = useContext(FileViewerContext);
-  return { page, setPage, totalPages };
-};
+export const FileViewerContext = React.createContext(
+  {} as FileViewerContextObserver
+);
 
 export type ContextProps = {
   /**
@@ -265,6 +228,7 @@ const FileViewerProvider = ({
     ExtractFromCanvasFunction | undefined
   >(undefined);
 
+  const [shouldSaveDrawData, setShouldSaveDrawData] = useState<boolean>(false);
   const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
   const [snapStraightEnabled, setSnapStraightEnabled] = useState<boolean>(true);
   const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
@@ -340,6 +304,8 @@ const FileViewerProvider = ({
         paintLayerCanvasRef,
         drawData,
         setDrawData,
+        shouldSaveDrawData,
+        setShouldSaveDrawData,
       }}
     >
       {children}
@@ -348,4 +314,3 @@ const FileViewerProvider = ({
 };
 
 export { FileViewerProvider };
-export default FileViewerContext;

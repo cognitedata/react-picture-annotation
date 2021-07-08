@@ -1,8 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
-import simplify from "simplify-js";
 import styled from "styled-components";
-import CogniteFileViewerContext from "../Cognite/FileViewerContext";
+import { FileViewerContext, useScaledDrawing } from "../context";
 import { IStageState } from "../ReactPictureAnnotation";
 import { Wrapper } from "./components";
 import { toRGB } from "../utils/RGB";
@@ -29,87 +28,72 @@ export default function PaintLayer(props: Props): JSX.Element {
     brushRadius,
     drawData,
     snapStraightEnabled,
+    shouldSaveDrawData,
     setDrawData,
-  } = useContext(CogniteFileViewerContext);
+    setShouldSaveDrawData,
+  } = useContext(FileViewerContext);
+  const { getScaledDrawData, getRawDrawData } = useScaledDrawing(scaleState);
   const [loadTimeOffset] = useState(0);
-  const [tolerance] = useState(5);
-  const [highQuality] = useState(true);
   const [scaledDrawData, setScaledDrawData] = useState(drawData);
+  const [tempDrawData, setTempDrawData] = useState(drawData);
 
-  // initial rescaling //
-
-  const getRescaledDrawData = (drawingToScale: string): string => {
-    const { scale, originX, originY } = scaleState;
-    const drawDataParsed = JSON.parse(drawingToScale);
-    const drawDataMapped = {
-      ...drawDataParsed,
-      lines: drawDataParsed.lines.map((line: any) => {
-        return {
-          ...line,
-          points: line.points.map((point: any) => ({
-            x: scale / point.x + originX,
-            y: scale / point.y + originY,
-          })),
-          brushRadius: line.brushRadius * scale,
-        };
-      }),
-    };
-    const scaled = JSON.stringify(drawDataMapped);
-    return scaled;
+  const getDrawData = (): string | undefined =>
+    paintLayerCanvasRef?.current?.getSaveData();
+  const saveDrawing = () => {
+    if (hidePaintLayer || !shouldSaveDrawData) return;
+    const newDrawing = getDrawData();
+    if (newDrawing && newDrawing !== drawData) {
+      const rawDrawing = getRawDrawData(newDrawing);
+      setDrawData(String(rawDrawing));
+    }
+    setShouldSaveDrawData(false);
   };
 
-  const getRawDrawData = (drawingToDescale: string): string => {
-    const { scale, originX, originY } = scaleState;
-    const drawDataParsed = JSON.parse(drawingToDescale);
-    const drawDataMapped = {
-      ...drawDataParsed,
-      lines: drawDataParsed.lines.map((line: any) => {
-        return {
-          ...line,
-          points: simplify(line.points, tolerance, highQuality).map(
-            (point: any) => ({
-              x: scale / (point.x - originX),
-              y: scale / (point.y - originY),
-            })
-          ),
-          brushRadius: line.brushRadius / scale,
-        };
-      }),
-    };
-    const descaled = JSON.stringify(drawDataMapped);
-    return descaled;
+  const saveTempDrawing = () => {
+    if (hidePaintLayer || paintLayerEditMode) return;
+    const newDrawing = getDrawData();
+    if (newDrawing && newDrawing !== drawData) {
+      const rawDrawing = getRawDrawData(newDrawing);
+      setTempDrawData(String(rawDrawing));
+    }
   };
 
-  const onGetCanvasClick = () => {
+  const adjustDrawingToScale = () => {
+    const scaledData = getScaledDrawData(tempDrawData);
+    setScaledDrawData(scaledData);
+  };
+
+  const snapLineStraight = () => {
     if (!snapStraightEnabled) return;
-    const freshSaveData = paintLayerCanvasRef?.current?.getSaveData();
-    const saveData = JSON.parse(freshSaveData);
+    const drawing = getDrawData();
+    if (!drawing) return;
+    const saveData = JSON.parse(drawing);
     const lineToFix = saveData.lines.pop();
     lineToFix.points.splice(1, lineToFix.points.length - 2);
     saveData.lines.push(lineToFix);
     const fixedSaveData = JSON.stringify(saveData);
-    const rescaledDrawing = getRawDrawData(fixedSaveData);
-    setDrawData(String(rescaledDrawing));
+    const rawDrawing = getRawDrawData(fixedSaveData);
+    setTempDrawData(String(rawDrawing));
   };
 
   useEffect(() => {
-    if (hidePaintLayer) return;
-    if (!paintLayerEditMode) {
-      const newDrawing = paintLayerCanvasRef?.current?.getSaveData();
-      if (newDrawing && newDrawing !== drawData) {
-        const rescaledDrawing = getRawDrawData(newDrawing);
-        setDrawData(String(rescaledDrawing));
-      }
-    }
+    adjustDrawingToScale();
+  }, [scaleState.scale, scaleState.originX, scaleState.originY, tempDrawData]);
+
+  useEffect(() => {
+    saveDrawing();
+  }, [shouldSaveDrawData]);
+
+  useEffect(() => {
+    saveTempDrawing();
   }, [paintLayerEditMode]);
 
   useEffect(() => {
-    const rescaledData = getRescaledDrawData(drawData);
-    setScaledDrawData(rescaledData);
-  }, [scaleState.scale, scaleState.originX, scaleState.originY, drawData]);
+    setTempDrawData(drawData);
+  }, [drawData]);
 
   return (
-    <Wrapper onMouseUp={onGetCanvasClick}>
+    <Wrapper onMouseUp={snapLineStraight}>
       {!hidePaintLayer && (
         <StyledCanvasDraw
           ref={paintLayerCanvasRef}

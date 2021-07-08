@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import styled from "styled-components";
 import { Button } from "@cognite/cogs.js";
-import CogniteFileViewerContext from "../../Cognite/FileViewerContext";
+import { FileViewerContext } from "../../context";
 
 const Wrapper = styled.div`
   display: inline-flex;
@@ -18,7 +18,7 @@ type Props = {
 
 export default function ControlBar(props: Props): JSX.Element {
   const { hideControls } = props;
-  const { zoomIn, zoomOut, reset } = useContext(CogniteFileViewerContext);
+  const { zoomIn, zoomOut, reset } = useContext(FileViewerContext);
 
   const onZoomIn = () => zoomIn && zoomIn();
   const onZoomOut = () => zoomOut && zoomOut();

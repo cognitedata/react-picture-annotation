@@ -1,6 +1,12 @@
 import React, { useContext } from "react";
-import { Button, Switch, Slider } from "@cognite/cogs.js";
-import CogniteFileViewerContext from "../../Cognite/FileViewerContext";
+import {
+  Button,
+  Switch,
+  Slider,
+  ToastContainer,
+  toast,
+} from "@cognite/cogs.js";
+import { FileViewerContext } from "../../context";
 import { DEFAULT } from "../../utils";
 import ColorPicker from "./ColorPicker";
 import { WrappingBar, BarSection } from "./components";
@@ -18,13 +24,28 @@ export default function PaintLayerBar(props: Props): JSX.Element {
     setSnapStraightEnabled,
     setBrushRadius,
     setPaintLayerEditMode,
-  } = useContext(CogniteFileViewerContext);
+    setShouldSaveDrawData,
+  } = useContext(FileViewerContext);
 
   const onUndoClick = () => {
     if (paintLayerCanvasRef?.current) paintLayerCanvasRef.current.undo();
   };
   const onClearClick = () => {
     if (paintLayerCanvasRef?.current) paintLayerCanvasRef.current.clear();
+  };
+  const onSaveClick = () => {
+    if (!paintLayerCanvasRef?.current) return;
+    setShouldSaveDrawData(true);
+    toast.success(
+      <div>
+        <h3>Success!</h3>
+        <p>Your drawing had been saved!</p>
+      </div>,
+      {
+        autoClose: 2000,
+        position: "top-center",
+      }
+    );
   };
 
   return (
@@ -45,6 +66,7 @@ export default function PaintLayerBar(props: Props): JSX.Element {
       )}
       {paintLayerEditMode && (
         <>
+          <ToastContainer />
           <BarSection hasMargin={true} noBorder={true}>
             <span>Color</span>
             <ColorPicker
@@ -93,6 +115,15 @@ export default function PaintLayerBar(props: Props): JSX.Element {
               style={{ fontSize: "11px", height: "24px" }}
             >
               Erase all
+            </Button>
+            <Button
+              size="small"
+              type="primary"
+              onClick={onSaveClick}
+              aria-label="saveDrawingButton"
+              style={{ fontSize: "11px", height: "24px" }}
+            >
+              Save
             </Button>
           </BarSection>
         </>

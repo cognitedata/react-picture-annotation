@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import CogniteFileViewerContext from "../../Cognite/FileViewerContext";
+import { FileViewerContext } from "../../context";
 import { DocumentPagination } from "./components";
 
 type Props = {
@@ -8,7 +8,7 @@ type Props = {
 
 export const Pagination = (props: Props): JSX.Element => {
   const { pagination } = props;
-  const { totalPages, page, setPage } = useContext(CogniteFileViewerContext);
+  const { totalPages, page, setPage } = useContext(FileViewerContext);
 
   if (totalPages <= 1 || !pagination) return <></>;
   return (

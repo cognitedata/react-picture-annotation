@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Input, Button } from "@cognite/cogs.js";
 import styled from "styled-components";
-import { useViewerQuery } from "../../Cognite/FileViewerContext";
+import { useViewerQuery } from "../../context";
 
 const Wrapper = styled.div`
   display: flex;
