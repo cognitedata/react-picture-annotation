@@ -375,13 +375,12 @@ export const FileViewer = ({
       );
       if (newlySelectedAnnotations.length > 0) {
         setSelectedAnnotations(newlySelectedAnnotations);
-
+        annotatorRef.current?.forceMouseUp();
         if (onAnnotationSelected) {
           onAnnotationSelected(newlySelectedAnnotations);
         }
       }
     }
-    annotatorRef.current?.forceMouseUp();
   };
 
   const onArrowBoxMoved = (

@@ -124,19 +124,21 @@ export const AllowControlledEditing = () => {
       editCallbacks={callbacks}
       selectedIds={selectedIds}
       onAnnotationSelected={handleAnnotationSelection}
-      renderItemPreview={(anno) => (
-        <>
-          <span>{anno[0].label}</span>
-          <Button
-            icon="Delete"
-            onClick={() =>
-              setAnnotations(
-                annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
-              )
-            }
-          />
-        </>
-      )}
+      renderItemPreview={(anno) => {
+        return (
+          <>
+            <span>{anno[0]?.label ?? "no label"}</span>
+            <Button
+              icon="Delete"
+              onClick={() =>
+                setAnnotations(
+                  annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
+                )
+              }
+            />
+          </>
+        );
+      }}
     />
   );
 };
