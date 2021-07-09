@@ -1,5 +1,5 @@
 import React, { useContext, useState, useEffect } from "react";
-import CanvasDraw from "@agadacz-cognite/react-canvas-draw";
+import CanvasDraw from "react-canvas-draw";
 import styled from "styled-components";
 import { FileViewerContext, useScaledDrawing } from "../context";
 import { IStageState } from "../ReactPictureAnnotation";
