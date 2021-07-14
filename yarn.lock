@@ -2,6 +2,20 @@
 # yarn lockfile v1
 
 
+"@azure/msal-browser@^2.11.0":
+  version "2.15.0"
+  resolved "https://registry.yarnpkg.com/@azure/msal-browser/-/msal-browser-2.15.0.tgz#78ee195b36fde45037f198342475a2eef187f4bd"
+  integrity sha512-Du0BHQiDQgkqg6OoKovUZWdEIZbTnhh/lma7QLyi5jFKDekk78wXsFIOJLUcFoY97+ZhB+Y2WQOYT1DJphAdCg==
+  dependencies:
+    "@azure/msal-common" "^4.4.0"
+
+"@azure/msal-common@^4.4.0":
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/@azure/msal-common/-/msal-common-4.4.0.tgz#818526042f78838ebc332fb735e7de64d8bccb45"
+  integrity sha512-Qrs33Ctt2KM7NxArFPIUKc8UbIcm7zYxJFdJeQ9k7HKBhVk3e88CUz1Mw33cS/Jr+YA1H02OAzHg++bJ+4SFyQ==
+  dependencies:
+    debug "^4.1.1"
+
 "@babel/code-frame@7.8.3":
   version "7.8.3"
   resolved "https://registry.yarnpkg.com/@babel/code-frame/-/code-frame-7.8.3.tgz#33e25903d7481181534e12ec0a25f16b6fcf419e"
@@ -1180,23 +1194,24 @@
     react-toastify "^6.0.9"
     tippy.js "6.2.0"
 
-"@cognite/sdk-core@^1.0.3":
-  version "1.0.3"
-  resolved "https://registry.yarnpkg.com/@cognite/sdk-core/-/sdk-core-1.0.3.tgz#203e504947a0d481656c34d1d71a0caebd2bcb12"
-  integrity sha512-cQdYX4u2hwJt/0MZvN+Z1V495r3yDdxPn60JYfsxBwWWsDSrFAAx+eH4z0QL7EaE1xcOOLK6ayOV1Qa8zzbhAA==
+"@cognite/sdk-core@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@cognite/sdk-core/-/sdk-core-2.2.0.tgz#b7963bac1f032b853de6b1be60a3c5448258b84d"
+  integrity sha512-k4MQCLyl2MLBO5ZMSnz1bsdlP4ggEAlfCOS1NNfaFLMb0HFq0tf2MYFY2Om9UEG9qHkKMSYEhVJb+DcQNn8hWw==
   dependencies:
+    "@azure/msal-browser" "^2.11.0"
     cross-fetch "^3.0.4"
     is-buffer "^2.0.5"
     lodash "^4.17.11"
     query-string "^5.1.1"
     url "^0.11.0"
 
-"@cognite/sdk@^3.3.0":
-  version "3.3.0"
-  resolved "https://registry.yarnpkg.com/@cognite/sdk/-/sdk-3.3.0.tgz#49f766f63931f8716a997c2af5eb45f0cb3849b2"
-  integrity sha512-p/7xN96IS8t9+nBm3nzW+68z9yEaIm5lKJgx3IWi61nidajE2OAVBYFZjjuvCAlR/OCz/8xIBFndlZjP7JCIjw==
+"@cognite/sdk@^4.3.1":
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/@cognite/sdk/-/sdk-4.3.1.tgz#580309587e52a0b6eca8e4ffe71b47b66db69184"
+  integrity sha512-exvaoa5oLZN8wfuAO0Jo0anLPz5GAvR6gWFSq7+xlwpbt73r5FpNiHJt7fTQw6EZPDfa2d6Zj27fnhynHGqFqg==
   dependencies:
-    "@cognite/sdk-core" "^1.0.3"
+    "@cognite/sdk-core" "^2.2.0"
     lodash "^4.17.11"
 
 "@commitlint/cli@^11.0.0":
