@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useContext } from "react";
 import { ReactPictureAnnotation, IAnnotation, IRectShapeData } from "..";
-import { Button, Colors, Pagination, Dropdown, Menu } from "@cognite/cogs.js";
-import styled from "styled-components";
+import { Colors } from "@cognite/cogs.js";
 import {
   CogniteAnnotation,
   CURRENT_VERSION,
@@ -10,8 +9,7 @@ import {
   PendingCogniteAnnotation,
 } from "@cognite/annotations";
 import { FileInfo } from "@cognite/sdk";
-import CogniteFileViewerContext from "./FileViewerContext";
-import { SearchField } from "./SearchField";
+import { FileViewerContext } from "../context";
 import {
   ProposedCogniteAnnotation,
   convertCogniteAnnotationToIAnnotation,
@@ -22,6 +20,7 @@ import {
   TextBox,
   ArrowPreviewOptions,
 } from "./FileViewerUtils";
+import { Toolbars, Pagination, ToolbarPosition } from "../Toolbars";
 
 type RenderItemPreviewFunction = (
   annotations: (ProposedCogniteAnnotation | CogniteAnnotation)[],
@@ -60,6 +59,10 @@ export type ViewerProps = {
    * Should users be able to choose annotations purely using hovers? Useful in conjunction with `renderItemPreview`
    */
   hoverable?: boolean;
+  /**
+   * Should the drawable Paint Layer render? Also shows the Draw icon on the toolbar
+   */
+  drawable?: boolean;
   /**
    * Used when an annotation needs to be selected on start
    */
@@ -133,6 +136,16 @@ export type ViewerProps = {
    */
   hideSearch?: boolean;
   /**
+   * Allows user to reposition the toolbars. When has value different than 'default' or 'undefined' all toolbars are merged into one
+   * and positioned accordingly to user's input. Toolbars are mirrored when on left side.
+   */
+  toolbarPosition?: ToolbarPosition;
+  /**
+   * Callback for every stroke on the paint layer.
+   * Allows you to get the drawing data from outside to be able to save it externally.
+   */
+  onDrawingSaved?: (drawData: string) => void;
+  /**
    * What to display while loading. Note this is NOT displayed when `file` is not set.
    */
   loader?: React.ReactNode;
@@ -144,6 +157,10 @@ export type ViewerProps = {
    * Allows to customize the pinch zoom scale.
    */
   pinchScaleModifier?: number;
+  /**
+   * Allows you to inject an old drawing to component if you had it saved.
+   */
+  loadedDrawData?: string;
 };
 
 export const FileViewer = ({
@@ -152,6 +169,7 @@ export const FileViewer = ({
   file: fileFromProps,
   hideLabel = true,
   hoverable = false,
+  drawable = false,
   editCallbacks = {
     onUpdate: (a) => a,
     onCreate: (a) => a,
@@ -166,6 +184,8 @@ export const FileViewer = ({
   hideDownload = false,
   hideSearch = false,
   zoomOnAnnotation,
+  loadedDrawData,
+  onDrawingSaved,
   onAnnotationSelected,
   onArrowBoxMove,
   renderAnnotation = convertCogniteAnnotationToIAnnotation,
@@ -173,13 +193,13 @@ export const FileViewer = ({
   arrowPreviewOptions,
   onFileLoaded,
   pinchScaleModifier,
+  toolbarPosition,
 }: ViewerProps) => {
   const {
     annotations,
     setAnnotations,
     page,
     setFile,
-    setPage,
     sdk,
     file,
     selectedAnnotations,
@@ -189,14 +209,23 @@ export const FileViewer = ({
     setReset,
     setZoomIn,
     setZoomOut,
-    zoomIn,
-    zoomOut,
-    reset,
     totalPages,
     setTotalPages,
-    download,
     query,
-  } = useContext(CogniteFileViewerContext);
+    paintLayerCanvasRef,
+    drawData,
+    setDrawData,
+  } = useContext(FileViewerContext);
+
+  useEffect(() => {
+    if (loadedDrawData && drawData !== loadedDrawData) {
+      setDrawData(loadedDrawData);
+    }
+  }, [loadedDrawData]);
+
+  useEffect(() => {
+    if (onDrawingSaved) onDrawingSaved(drawData);
+  }, [drawData]);
 
   useEffect(() => {
     if (annotationsFromProps) {
@@ -272,11 +301,11 @@ export const FileViewer = ({
 
   useEffect(() => {
     (async () => {
-      if (fileId) {
+      if (fileId && !hideSearch) {
         setTextboxes(await retrieveOCRResults(sdk, fileId));
       }
     })();
-  }, [fileId, setTextboxes]);
+  }, [fileId, hideSearch, setTextboxes]);
 
   useEffect(() => {
     (async () => {
@@ -346,7 +375,7 @@ export const FileViewer = ({
       );
       if (newlySelectedAnnotations.length > 0) {
         setSelectedAnnotations(newlySelectedAnnotations);
-
+        annotatorRef.current?.forceMouseUp();
         if (onAnnotationSelected) {
           onAnnotationSelected(newlySelectedAnnotations);
         }
@@ -464,13 +493,41 @@ export const FileViewer = ({
           {loader}
         </div>
       )}
+      <Toolbars
+        toolbarPosition={toolbarPosition}
+        hideControls={hideControls}
+        hideDownload={hideDownload}
+        hideSearch={hideSearch}
+        drawable={drawable}
+        textboxes={textboxes}
+        scaleState={{ scale: 1, originX: 0, originY: 0 }}
+      />
       <ReactPictureAnnotation
         ref={annotatorRef}
+        width={width}
+        height={height}
+        page={page}
         selectedIds={selectedIds}
         drawLabel={!hideLabel}
         hoverable={hoverable}
         editable={editable}
+        drawable={drawable}
+        creatable={creatable}
         annotationData={annotationData}
+        arrowPreviewOptions={arrowPreviewOptions}
+        zoomOnAnnotation={zoomOnAnnotation}
+        paintLayerCanvasRef={paintLayerCanvasRef}
+        pinchScaleModifier={pinchScaleModifier}
+        renderArrowPreview={renderArrowPreview}
+        onSelect={onAnnotationSelect}
+        onAnnotationCreate={onCreateAnnotation}
+        onAnnotationUpdate={onUpdateAnnotation}
+        onArrowBoxMove={onArrowBoxMoved}
+        onLoading={(isLoading) => setLoading(isLoading)}
+        image={file && isImage ? previewUrl : undefined}
+        pdf={
+          file && file.mimeType === "application/pdf" ? previewUrl : undefined
+        }
         onChange={(e) => {
           // if (textboxesToShow.find(el=>el.id===))
           setVisibleAnnotations(
@@ -483,18 +540,6 @@ export const FileViewer = ({
               )
           );
         }}
-        onSelect={onAnnotationSelect}
-        onAnnotationCreate={onCreateAnnotation}
-        onAnnotationUpdate={onUpdateAnnotation}
-        pdf={
-          file && file.mimeType === "application/pdf" ? previewUrl : undefined
-        }
-        image={file && isImage ? previewUrl : undefined}
-        creatable={creatable}
-        width={width}
-        height={height}
-        page={page}
-        onLoading={(isLoading) => setLoading(isLoading)}
         renderItemPreview={(items, maxHeight) => {
           const ids = items.map((el) => el.id);
           const currentAnnotations = annotations.filter((el) =>
@@ -502,9 +547,6 @@ export const FileViewer = ({
           );
           return renderItemPreview(currentAnnotations, maxHeight);
         }}
-        renderArrowPreview={renderArrowPreview}
-        arrowPreviewOptions={arrowPreviewOptions}
-        onArrowBoxMove={onArrowBoxMoved}
         onPDFLoaded={async ({ pages }) => {
           setLoading(false);
           setTotalPages(pages);
@@ -513,133 +555,8 @@ export const FileViewer = ({
             onFileLoaded();
           }
         }}
-        zoomOnAnnotation={zoomOnAnnotation}
-        pinchScaleModifier={pinchScaleModifier}
       />
-      {totalPages > 1 && pagination && (
-        <DocumentPagination
-          total={totalPages}
-          current={page || 1}
-          pageSize={1}
-          showPrevNextJumpers={true}
-          simple={pagination === "small"}
-          onChange={(newPageNum) => setPage && setPage(newPageNum)}
-        />
-      )}
-      {!hideControls && (
-        <Buttons>
-          <div id="controls">
-            <Button aria-label="Zoom in"
-              onClick={() => {
-                if (zoomIn) {
-                  zoomIn();
-                }
-              }}
-              icon="ZoomIn"
-            />
-            <Button aria-label="Refresh"
-              icon="Refresh"
-              onClick={() => {
-                if (reset) {
-                  reset();
-                }
-              }}
-            />
-            <Button aria-label="Zoom out"
-              icon="ZoomOut"
-              onClick={() => {
-                if (zoomOut) {
-                  zoomOut();
-                }
-              }}
-            />
-          </div>
-        </Buttons>
-      )}
-      <ToolingButtons>
-        {!hideSearch && textboxes.length !== 0 && <SearchField />}
-        {download && !hideDownload && (
-          <Dropdown
-            content={
-              <Menu>
-                <Menu.Item
-                  onClick={() =>
-                    download!(
-                      file ? file.name : "export.pdf",
-                      false,
-                      false,
-                      false
-                    )
-                  }
-                >
-                  Original File
-                </Menu.Item>
-                <Menu.Item
-                  onClick={() =>
-                    download!(
-                      file ? file.name : "export.pdf",
-                      false,
-                      true,
-                      true
-                    )
-                  }
-                >
-                  File with Annotations
-                </Menu.Item>
-              </Menu>
-            }
-          >
-            <Button icon="Download" aria-label="Download" />
-          </Dropdown>
-        )}
-      </ToolingButtons>
+      <Pagination pagination={pagination} />
     </div>
   );
 };
-
-const DocumentPagination = styled(Pagination)`
-  position: absolute;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  bottom: 16px;
-  && {
-    background: #fff;
-    border-radius: 50px;
-    padding: 12px 24px;
-    box-shadow: 0px 0px 8px ${Colors["greyscale-grey3"].hex()};
-  }
-`;
-
-const Buttons = styled.div`
-  display: inline-flex;
-  position: absolute;
-  z-index: 2;
-  right: 24px;
-  bottom: 24px;
-  && #controls {
-    display: inline-flex;
-  }
-  && #controls > * {
-    border-radius: 0px;
-  }
-  && #controls > *:nth-child(1) {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
-  }
-  && #controls > *:nth-last-child(1) {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
-  }
-`;
-const ToolingButtons = styled.div`
-  display: inline-flex;
-  position: absolute;
-  z-index: 2;
-  right: 24px;
-  top: 24px;
-  align-items: stretch;
-
-  && > * {
-    margin-left: 8px;
-  }
-`;

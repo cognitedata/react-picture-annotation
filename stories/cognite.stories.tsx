@@ -14,14 +14,16 @@ import {
   CogniteAnnotation,
 } from "@cognite/annotations";
 import { CustomizableCogniteAnnotation } from "./Cognite/FileViewerUtils";
-import { Button, Colors } from "@cognite/cogs.js";
+import { Button, Colors, Input } from "@cognite/cogs.js";
 import {
   useSelectedAnnotations,
   useExtractFromCanvas,
   useDownloadPDF,
   useZoomControls,
-} from "../src/Cognite/FileViewerContext";
+  useViewerQuery,
+} from "../src/context";
 import styled from "styled-components";
+import { drawingMock } from "./drawingMock";
 
 export const AllowCustomization = () => {
   const [annotations, setAnnotations] = useState<CogniteAnnotation[]>([]);
@@ -122,28 +124,38 @@ export const AllowControlledEditing = () => {
       editCallbacks={callbacks}
       selectedIds={selectedIds}
       onAnnotationSelected={handleAnnotationSelection}
-      renderItemPreview={(anno) => (
-        <>
-          <span>{anno[0].label}</span>
-          <Button
-            icon="Delete"
-            onClick={() =>
-              setAnnotations(
-                annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
-              )
-            }
-          />
-        </>
-      )}
+      renderItemPreview={(anno) => {
+        return (
+          <>
+            <span>{anno[0]?.label ?? "no label"}</span>
+            <Button
+              icon="Delete"
+              onClick={() =>
+                setAnnotations(
+                  annotations.filter((el) => `${el.id}` !== `${anno[0].id}`)
+                )
+              }
+            />
+          </>
+        );
+      }}
     />
   );
 };
 
-const Wrapper = styled.div`
+const StoryWrapper = styled.div`
+  display: flex;
+  width: 100%;
+  height: 100%;
+  background-color: grey;
+`;
+const SidebarHelper = styled.div`
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 250px;
+  overflow-y: auto;
+  width: 400px;
+  max-width: 400px;
   height: 100%;
   background: white;
   padding: 8px;
@@ -197,11 +209,11 @@ export const ZoomOnSelectedAnnotation = () => {
 
   return (
     <div style={{ height: "100%", width: "100%", display: "flex" }}>
-      <Wrapper>
+      <SidebarHelper>
         <Button onClick={() => onZoomOnRandomAnnotation()}>
           Zoom on random annotation
         </Button>
-      </Wrapper>
+      </SidebarHelper>
       <CogniteFileViewer
         sdk={pdfSdk}
         file={pdfFile}
@@ -220,6 +232,7 @@ export const SplitContextAndViewer = () => {
   const AnotherComponent = () => {
     // This component now has access to all of the utilities and props of the viewer!
     const download = useDownloadPDF();
+    const { query, setQuery } = useViewerQuery();
     const { zoomIn, zoomOut, reset } = useZoomControls();
     const extract = useExtractFromCanvas();
     const {
@@ -230,11 +243,15 @@ export const SplitContextAndViewer = () => {
     const [selectedAnnotation] = selectedAnnotations;
 
     return (
-      <Wrapper>
+      <SidebarHelper>
         <Button onClick={() => download!("testing.pdf")}>Download</Button>
         <Button onClick={() => zoomIn!()}>Zoom In</Button>
         <Button onClick={() => zoomOut!()}>Zoom Out</Button>
         <Button onClick={() => reset!()}>Reset</Button>
+        <Input
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
         {selectedAnnotation && (
           <Button onClick={() => setSelectedAnnotations([])}>
             Unselect Annotation
@@ -257,14 +274,20 @@ export const SplitContextAndViewer = () => {
             )}
           />
         )}
-      </Wrapper>
+      </SidebarHelper>
     );
   };
   return (
     <CogniteFileViewer.Provider sdk={pdfSdk}>
       <div style={{ height: "100%", width: "100%", display: "flex" }}>
         <AnotherComponent />
-        <CogniteFileViewer.FileViewer file={pdfFile} editable={false} />
+        <CogniteFileViewer.FileViewer
+          file={pdfFile}
+          editable={false}
+          hideDownload={true}
+          hideSearch={true}
+          hideControls={true}
+        />
       </div>
     </CogniteFileViewer.Provider>
   );
@@ -450,20 +473,13 @@ export const BoxAndArrows = () => {
   };
 
   return (
-    <div
-      style={{
-        display: "flex",
-        width: "100%",
-        height: "100%",
-        backgroundColor: "grey",
-      }}
-    >
-      <Wrapper>
+    <StoryWrapper>
+      <SidebarHelper>
         <strong>Moved arrow box</strong>
         <p>ID: {arrowBox.annotationId}</p>
         <p>offsetX: {arrowBox.offsetX}</p>
         <p>offsetY: {arrowBox.offsetY}</p>
-      </Wrapper>
+      </SidebarHelper>
       <CogniteFileViewer
         sdk={imgSdk}
         file={imgFile}
@@ -477,7 +493,63 @@ export const BoxAndArrows = () => {
         arrowPreviewOptions={arrowPreviewOptions}
         renderArrowPreview={renderArrowPreview}
       />
-    </div>
+    </StoryWrapper>
+  );
+};
+
+export const AllowCustomDrawing = () => {
+  const [drawData, setDrawData] = useState<string | undefined>();
+  const mock = JSON.stringify(drawingMock);
+  const onLoadExampleDrawingClick = () => setDrawData(mock);
+
+  return (
+    <StoryWrapper>
+      <SidebarHelper>
+        <button onClick={onLoadExampleDrawingClick}>
+          Load example drawing
+        </button>
+        <div style={{ width: "100%", maxHeight: "90%" }}>
+          <strong>Paint layer data</strong>
+          <p>{drawData}</p>
+        </div>
+      </SidebarHelper>
+      <CogniteFileViewer
+        sdk={imgSdk}
+        file={imgFile}
+        drawable={boolean("Drawable", true)}
+        loadedDrawData={drawData}
+        onDrawingSaved={(newDrawData: string) => {
+          if (newDrawData && newDrawData.length > 0) {
+            setDrawData(String(newDrawData));
+          }
+        }}
+      />
+    </StoryWrapper>
+  );
+};
+
+export const RepositionToolbars = () => {
+  const [drawData, setDrawData] = useState<string | undefined>();
+
+  return (
+    <StoryWrapper>
+      <CogniteFileViewer
+        sdk={imgSdk}
+        file={imgFile}
+        drawable={boolean("Drawable", true)}
+        toolbarPosition={select(
+          "Toolbar position",
+          ["default", "topLeft", "topRight", "bottomLeft", "bottomRight"],
+          "default"
+        )}
+        loadedDrawData={drawData}
+        onDrawingSaved={(newDrawData: string) => {
+          if (newDrawData && newDrawData.length > 0) {
+            setDrawData(String(newDrawData));
+          }
+        }}
+      />
+    </StoryWrapper>
   );
 };
 
@@ -537,6 +609,11 @@ export const Playground = () => {
         pagination={select("Pagination", ["small", "normal", false], "normal")}
         renderArrowPreview={renderArrowPreview}
         onAnnotationSelected={action("onAnnotationSelected")}
+        toolbarPosition={select(
+          "Toolbar position",
+          ["default", "topLeft", "topRight", "bottomLeft", "bottomRight"],
+          "default"
+        )}
         renderItemPreview={() => (
           <div
             style={{

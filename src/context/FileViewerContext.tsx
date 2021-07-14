@@ -1,19 +1,21 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { CogniteClient, FileInfo } from "@cognite/sdk";
 import {
   CogniteAnnotation,
   listAnnotationsForFile,
 } from "@cognite/annotations";
-import { ProposedCogniteAnnotation } from "./FileViewerUtils";
+import { ProposedCogniteAnnotation } from "../Cognite/FileViewerUtils";
 import {
   DownloadFileFunction,
   ExtractFromCanvasFunction,
   ViewerZoomFunction,
   ViewerZoomControlledFunction,
 } from "../ReactPictureAnnotation";
+import { RGBColor, DEFAULT } from "../utils";
 
 export type FileViewerContextObserver = FileViewerContextObserverPublicProps &
-  FileViewerContextObserverPrivateProps;
+  FileViewerContextObserverPrivateProps &
+  FileViewerContextObserverPaintLayerProps;
 export type FileViewerContextObserverPublicProps = {
   /**
    * The sdk that was provided via provider
@@ -117,55 +119,65 @@ type FileViewerContextObserverPrivateProps = {
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const FileViewerContext = React.createContext({} as FileViewerContextObserver);
-
-export const useAnnotations = () => {
-  const { annotations, setAnnotations } = useContext(FileViewerContext);
-  return { annotations, setAnnotations };
+type FileViewerContextObserverPaintLayerProps = {
+  /**
+   *
+   */
+  paintLayerCanvasRef: React.RefObject<any>;
+  /**
+   *
+   */
+  paintLayerEditMode: boolean;
+  /**
+   *
+   */
+  setPaintLayerEditMode: (editMode: boolean) => void;
+  /**
+   *
+   */
+  brushRadius: number;
+  /**
+   *
+   */
+  setBrushRadius: (newBrushRadius: number) => void;
+  /**
+   *
+   */
+  brushColor: RGBColor;
+  /**
+   *
+   */
+  setBrushColor: (newColor: RGBColor) => void;
+  /**
+   *
+   */
+  snapStraightEnabled: boolean;
+  /**
+   *
+   */
+  setSnapStraightEnabled: (snapStraightEnabled: boolean) => void;
+  /**
+   *
+   */
+  drawData: string;
+  /**
+   *
+   */
+  setDrawData: (drawData: string) => void;
+  /**
+   * This is a very hacky way to connect Save button from PaintLayerBar
+   * and the actual PaintLayer
+   */
+  shouldSaveDrawData: boolean;
+  /**
+   *
+   */
+  setShouldSaveDrawData: (shouldSaveDrawData: boolean) => void;
 };
 
-export const useIsFileLoading = () => {
-  const { isLoading } = useContext(FileViewerContext);
-  return isLoading;
-};
-
-export const usePage = () => {
-  const { page, setPage } = useContext(FileViewerContext);
-  return { page, setPage };
-};
-
-export const useZoomControls = () => {
-  const { zoomIn, zoomOut, zoomOnAnnotation, reset } = useContext(
-    FileViewerContext
-  );
-  return { zoomIn, zoomOut, zoomOnAnnotation, reset };
-};
-
-export const useDownloadPDF = () => {
-  const { download } = useContext(FileViewerContext);
-  return download;
-};
-
-export const useExtractFromCanvas = () => {
-  const { extractFromCanvas } = useContext(FileViewerContext);
-  return extractFromCanvas;
-};
-
-export const useSelectedAnnotations = () => {
-  const { selectedAnnotations, setSelectedAnnotations } = useContext(
-    FileViewerContext
-  );
-  return { selectedAnnotations, setSelectedAnnotations };
-};
-export const useViewerQuery = () => {
-  const { query, setQuery } = useContext(FileViewerContext);
-  return { query, setQuery };
-};
-
-export const useViewerPage = () => {
-  const { page, setPage, totalPages } = useContext(FileViewerContext);
-  return { page, setPage, totalPages };
-};
+export const FileViewerContext = React.createContext(
+  {} as FileViewerContextObserver
+);
 
 export type ContextProps = {
   /**
@@ -215,6 +227,16 @@ const FileViewerProvider = ({
   const [extractFromCanvas, setExtractFromCanvas] = useState<
     ExtractFromCanvasFunction | undefined
   >(undefined);
+
+  const [shouldSaveDrawData, setShouldSaveDrawData] = useState<boolean>(false);
+  const [paintLayerEditMode, setPaintLayerEditMode] = useState<boolean>(false);
+  const [snapStraightEnabled, setSnapStraightEnabled] = useState<boolean>(true);
+  const [brushRadius, setBrushRadius] = useState<number>(DEFAULT.RADIUS);
+  const [brushColor, setBrushColor] = useState<RGBColor>(DEFAULT.COLOR);
+  const [drawData, setDrawData] = useState<string>(
+    '{"lines":[],"width":"100%","height":"100%"}'
+  );
+  const paintLayerCanvasRef = useRef<any>(null);
 
   const fileId = file ? file.id : undefined;
 
@@ -271,6 +293,19 @@ const FileViewerProvider = ({
         query,
         setQuery,
         setSelectedAnnotations,
+        paintLayerEditMode,
+        setPaintLayerEditMode,
+        snapStraightEnabled,
+        setSnapStraightEnabled,
+        brushColor,
+        setBrushColor,
+        brushRadius,
+        setBrushRadius,
+        paintLayerCanvasRef,
+        drawData,
+        setDrawData,
+        shouldSaveDrawData,
+        setShouldSaveDrawData,
       }}
     >
       {children}
@@ -279,4 +314,3 @@ const FileViewerProvider = ({
 };
 
 export { FileViewerProvider };
-export default FileViewerContext;
