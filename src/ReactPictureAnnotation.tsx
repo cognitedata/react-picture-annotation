@@ -709,6 +709,18 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
       if (!isNaN(imageNodeRatio) && !isNaN(canvasNodeRatio)) {
         if (imageNodeRatio < canvasNodeRatio) {
           const scale = canvasWidth / width;
+          // console.log(
+          //   "canvasWidth",
+          //   canvasWidth,
+          //   "width",
+          //   width,
+          //   "height",
+          //   height,
+          //   "scale",
+          //   scale,
+          //   "targetScale",
+          //   0.3343934575193094
+          // );
           this.scaleState = {
             originX: (canvasWidth - scale * width) / 2,
             originY: (canvasHeight - scale * height) / 2,

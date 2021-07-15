@@ -502,9 +502,12 @@ export const AllowCustomDrawing = () => {
   const mock = JSON.stringify(drawingMock);
   const onLoadExampleDrawingClick = () => setDrawData(mock);
 
+  useEffect(() => {
+    setDrawData(mock);
+  }, []);
   return (
     <StoryWrapper>
-      <SidebarHelper>
+      <div style={{ position: "absolute", zIndex: 999 }}>
         <button onClick={onLoadExampleDrawingClick}>
           Load example drawing
         </button>
@@ -512,10 +515,10 @@ export const AllowCustomDrawing = () => {
           <strong>Paint layer data</strong>
           <p>{drawData}</p>
         </div>
-      </SidebarHelper>
+      </div>
       <CogniteFileViewer
-        sdk={imgSdk}
-        file={imgFile}
+        sdk={pdfSdk}
+        file={pdfFile}
         drawable={boolean("Drawable", true)}
         loadedDrawData={drawData}
         onDrawingSaved={(newDrawData: string) => {
