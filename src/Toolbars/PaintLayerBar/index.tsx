@@ -54,7 +54,7 @@ export default function PaintLayerBar(props: Props): JSX.Element {
         <BarSection hasMargin={true} noBorder={!paintLayerEditMode}>
           <Button
             icon="Edit"
-            variant={paintLayerEditMode ? "default" : "ghost"}
+            type={paintLayerEditMode ? "secondary" : "ghost"}
             onClick={() => {
               setPaintLayerEditMode(!paintLayerEditMode);
             }}
@@ -132,7 +132,7 @@ export default function PaintLayerBar(props: Props): JSX.Element {
         <BarSection hasMargin={true} noBorder={!paintLayerEditMode}>
           <Button
             icon="Edit"
-            variant={paintLayerEditMode ? "default" : "ghost"}
+            type={paintLayerEditMode ? "secondary" : "ghost"}
             onClick={() => {
               setPaintLayerEditMode(!paintLayerEditMode);
             }}

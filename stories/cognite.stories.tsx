@@ -518,6 +518,7 @@ export const AllowCustomDrawing = () => {
         file={imgFile}
         drawable={boolean("Drawable", true)}
         loadedDrawData={drawData}
+        toolbarPosition="topRight"
         onDrawingSaved={(newDrawData: string) => {
           if (newDrawData && newDrawData.length > 0) {
             setDrawData(String(newDrawData));
