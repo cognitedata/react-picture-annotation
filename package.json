@@ -87,7 +87,7 @@
   },
   "dependencies": {
     "@cognite/annotations": "^1.1.0",
-    "@cognite/sdk": "^3.3.0",
+    "@cognite/sdk": "^5.0.0",
     "@storybook/addon-knobs": "^6.1.10",
     "@types/lodash": "^4.14.165",
     "@types/lz-string": "^1.3.34",
