@@ -484,12 +484,11 @@ export class ReactPictureAnnotation extends React.Component<IReactPictureAnnotat
 
     return (
       <Wrapper>
-        {drawable && (
-          <PaintLayer
-            scaleState={this.scaleState}
-            hidePaintLayer={hidePaintLayer}
-          />
-        )}
+        <PaintLayer
+          scaleState={this.scaleState}
+          hidePaintLayer={hidePaintLayer}
+        />
+
         <canvas
           style={{ width, height }}
           className="rp-image"

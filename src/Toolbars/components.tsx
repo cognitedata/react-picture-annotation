@@ -41,6 +41,7 @@ export const CustomPosition = styled.div.attrs(
   display: flex;
   flex-direction: row;
   position: absolute;
+  z-index: 100;
   & > * {
     margin: 0 4px;
   }
