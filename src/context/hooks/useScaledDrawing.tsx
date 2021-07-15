@@ -11,20 +11,31 @@ export const useScaledDrawing = (scaleState: IStageState) => {
    */
   const getScaledDrawData = (drawingToScale: string): string => {
     const { scale, originX, originY } = scaleState;
+    let scaleToUse = scale;
+    // const scaleToUse = 0.3343934575193094;
+
     const drawDataParsed = JSON.parse(drawingToScale);
+
+    const canvasWidth = 736;
+    scaleToUse = canvasWidth / +drawDataParsed.width.replace("px", "");
+
     const drawDataMapped = {
       ...drawDataParsed,
       lines: drawDataParsed.lines.map((line: any) => {
         return {
           ...line,
           points: line.points.map((point: any) => ({
-            x: scale / point.x + originX,
-            y: scale / point.y + originY,
+            x: scaleToUse / point.x + originX,
+            y: scaleToUse / point.y + originY,
           })),
-          brushRadius: line.brushRadius * scale,
+          brushRadius: line.brushRadius * scaleToUse,
         };
       }),
     };
+    // console.log(drawDataParsed);
+    // console.log(drawDataMapped);
+    drawDataMapped.width = "100%";
+    drawDataMapped.height = "100%";
     const scaled = JSON.stringify(drawDataMapped);
     return scaled;
   };

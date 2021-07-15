@@ -8,6 +8,9 @@ import pdfFileUrl from "./img/pnid.pdf";
 // @ts-ignore
 import imgFileUrl from "./img/pnid.jpg";
 
+// @ts-ignore
+import secPdfFileUrl from "./img/23-10-00019-2.pdf";
+
 export const pdfFile = {
   id: 1,
   lastUpdatedTime: new Date(),
@@ -78,9 +81,12 @@ export const pdfSdk = ({
 } as unknown) as CogniteClient;
 
 export const Container = styled.div`
-  width: 100%;
-  height: 600px;
+  width: 736px;
+  height: 801px;
   background: grey;
+  position: absolute;
+  top: 0;
+  bottom: 0;
 `;
 
 export const stubObserverObj = (_: FileViewerContextObserverPublicProps) =>
